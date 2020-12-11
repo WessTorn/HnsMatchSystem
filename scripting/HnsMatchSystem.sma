@@ -7,12 +7,9 @@
 #include <json>
 #include <PersistentDataStorage>
 
-#define PLUGIN "Hide'n'Seek Match System"
-#define VERSION "1.0.0"
-#define AUTHOR "WessTorn" // Спасибо: Cultura, Garey, Medusa
-
 #define prefix "^1[^3System^1]"
 #define access ADMIN_MAP
+#define knifeMap "35hp_2"
 #define surrenderTimeDelay 120
 #define surrenderVoteTime 10
 
@@ -84,7 +81,7 @@ new bool:g_bLastFlash[MAX_PLAYERS + 1];
 new bool:g_bOnOff[33];
 
 new Float:g_flRoundTime;
-new Float:flSidesTime[2];
+new Float:g_flSidesTime[2];
 
 new g_iCurrentSW;
 new g_iRegisterSpawn;
@@ -118,7 +115,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin(PLUGIN, VERSION, AUTHOR);
+	register_plugin("Hide'n'Seek Match System", "1.0.1", "??"); // Спасибо: Cultura, Garey, Medusa
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -205,10 +202,12 @@ public plugin_init() {
 	g_aPlayersLoadData = ArrayCreate(PlayersLoad_s);
 	registerMode();
 	loadPlayers();
+
+	register_dictionary("mixsystem.txt");
 }
 
 public taskDelayedMode() {
-	if (equali("35hp_2", g_eMatchInfo[e_mMapName])) {
+	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
 		taskPrepareMode(e_mTraining);
 	} else if (!(get_pcvar_num(g_eCvars[e_cLastMode]))) {
 		taskPrepareMode(e_mTraining);
@@ -225,7 +224,7 @@ public registerMode() {
 }
 
 loadPlayers() {
-	if (!equali(g_eMatchInfo[e_mMapName], "35hp_2"))
+	if (!equali(g_eMatchInfo[e_mMapName], knifeMap))
 		g_bPlayersListLoaded = PDS_GetString("playerslist", g_szBuffer, charsmax(g_szBuffer));
 
 	if (g_bPlayersListLoaded) {
@@ -244,7 +243,7 @@ loadPlayers() {
 }
 
 public PDS_Save() {
-	if (equali(g_eMatchInfo[e_mMapName], "35hp_2")) {
+	if (equali(g_eMatchInfo[e_mMapName], knifeMap)) {
 		if (g_szBuffer[0])
 			PDS_SetString("playerslist", g_szBuffer);
 	}
@@ -372,25 +371,25 @@ public taskRoundEnd() {
 		get_players(iPlayers, count, "ce", "TERRORIST");
 
 		g_flRoundTime += 0.25;
-		flSidesTime[g_iCurrentSW] += 0.25;
+		g_flSidesTime[g_iCurrentSW] += 0.25;
 		for (new i; i < count; i++) {
 			new id = iPlayers[i];
 			if (!is_user_alive(id))
 				continue;
 		}
 
-		if (flSidesTime[g_iCurrentSW] >= get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) {
+		if (g_flSidesTime[g_iCurrentSW] >= get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) {
 			g_bGameStarted = false;
 			g_bSurvival = false;
 			new Float:flTimeDiff;
 			if (g_iCurrentSW)
-				flTimeDiff = flSidesTime[g_iCurrentSW] - flSidesTime[0];
+				flTimeDiff = g_flSidesTime[g_iCurrentSW] - g_flSidesTime[0];
 			else
-				flTimeDiff = flSidesTime[!g_iCurrentSW] - flSidesTime[1];
+				flTimeDiff = g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[1];
 
 			new szTime[24];
 			fnConvertTime(flTimeDiff, szTime, 23, false);
-			client_print_color(0, print_team_blue, "%s TT win the match! (^3%s^1 difference)", prefix, szTime);
+			client_print_color(0, print_team_blue, "%L", 0, "TT_WIN", prefix, szTime);
 
 			setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "Game Over");
 			taskPrepareMode(e_mTraining);
@@ -606,7 +605,7 @@ public fwdEmitSoundPre(id, iChannel, szSample[], Float:volume, Float:attenuation
 }
 
 public fwdClientKill(id) {
-	client_print_color(0, print_team_blue, "%s ^3%s^1 killed himself", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "KILL_HIMSELF", prefix, getName(id));
 }
 
 public fwdSpawn(entid) {
@@ -710,7 +709,7 @@ public taskSetPlayerTeam(id) {
 	}
 
 	if (g_iCurrentMode == e_mTraining) {
-		if (equali(g_eMatchInfo[e_mMapName], "35hp_2")) {
+		if (equali(g_eMatchInfo[e_mMapName], knifeMap)) {
 			rg_round_respawn(id);
 			return;
 		}
@@ -753,7 +752,7 @@ public sayHandle(id) {
 
 		if (is_str_num(szTarget)) {
 			set_pcvar_num(g_eCvars[e_cCapTime], str_to_num(szTarget));
-			client_print_color(0, print_team_blue, "%s ^3%s^1 set wintime to ^3%d^1 minutes", prefix, getName(id), str_to_num(szTarget));
+			client_print_color(0, print_team_blue, "%L", id, "SET_WINTIME", prefix, getName(id), str_to_num(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -766,7 +765,7 @@ public sayHandle(id) {
 
 		if (is_str_num(szTarget)) {
 			set_pcvar_float(g_eCvars[e_cRoundTime], str_to_float(szTarget));
-			client_print_color(0, print_team_blue, "%s ^3%s^1 set Roundtime to ^3%.2f^1 minutes", prefix, getName(id), str_to_float(szTarget));
+			client_print_color(0, print_team_blue, "%L", id, "SET_ROUNDTIME", prefix, getName(id), str_to_float(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -777,7 +776,7 @@ public sayHandle(id) {
 public cmdShowKnife(id) {
 	g_bOnOff[id] = !g_bOnOff[id];
 
-	client_print_color(id, print_team_blue, "%s Knife is now set %svisible", prefix, g_bOnOff[id] ? "^3in" : "^3");
+	client_print_color(id, print_team_blue, "%L", id, "SHOW_KNIFE", prefix, g_bOnOff[id] ? "^3in" : "^3");
 
 	if (!is_user_alive(id))
 		return PLUGIN_HANDLED;
@@ -802,10 +801,10 @@ public cmdPubMode(id) {
 	if (g_iCurrentMode != e_mPublic) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
 			taskPrepareMode(e_mPublic);
-			client_print_color(0, print_team_blue, "%s ^3%s^1 has activated ^3Public^1 mode", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "PUB_ACTIVATED", prefix, getName(id));
 		}
 	} else {
-		client_print_color(id, print_team_blue, "%s ^3%s^1 Public mode is already running", prefix, getName(id));
+		client_print_color(id, print_team_blue, "%L", id, "PUB_ALREADY", prefix, getName(id));
 	}
 
 	if (containi(g_eMatchInfo[e_mMapName], "boost") != -1) {
@@ -823,7 +822,7 @@ public cmdTransferSpec(id) {
 	if (!(get_user_flags(id) & access))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 transfered all players to ^3Spectators", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "TRANSF_SPEC", prefix, getName(id));
 	transferPlayers(TEAM_SPECTATOR);
 	return PLUGIN_HANDLED;
 }
@@ -832,7 +831,7 @@ public cmdTransferTT(id) {
 	if (!(get_user_flags(id) & access))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 transfered all players to ^3Terrorist", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "TRANSF_TT", prefix, getName(id));
 	new iPlayers[32], iNum; get_players(iPlayers, iNum, "ch");
 	transferPlayers(TEAM_TERRORIST);
 	return PLUGIN_HANDLED;
@@ -842,7 +841,7 @@ public cmdTransferCT(id) {
 	if (!(get_user_flags(id) & access))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 transfered all players to ^3Counter-Terrorist", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "TRANSF_CT", prefix, getName(id));
 	new iPlayers[32], iNum; get_players(iPlayers, iNum, "ch");
 	transferPlayers(TEAM_CT);
 	return PLUGIN_HANDLED;
@@ -864,7 +863,7 @@ public cmdSurrender(id) {
 	if (g_eSurrenderData[e_sFlDelay] > get_gametime()) {
 		new szTime[24];
 		fnConvertTime(g_eSurrenderData[e_sFlDelay] - get_gametime(), szTime, 23, false);
-		client_print_color(id, print_team_blue, "%s Wait ^3%s^1 for surrender!", prefix, szTime);
+		client_print_color(id, print_team_blue, "%L", id, "SUR_WAIT", prefix, szTime);
 		return;
 	}
 
@@ -877,7 +876,7 @@ public cmdSurrender(id) {
 	g_eSurrenderData[e_sStarted] = true;
 	g_eSurrenderData[e_sInitiator] = id;
 	g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
-	client_print_color(0, print_team_blue, "%s Player ^3%n^1 (^3%s^1) started vote for surrender!", prefix, id, rg_get_user_team(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
+	client_print_color(0, print_team_blue, "%L", id, "SUR_PLAYER", prefix, id, rg_get_user_team(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -925,7 +924,7 @@ public taskSurrender() {
 	if (g_eSurrenderData[e_sFlTime] == surrenderVoteTime) {
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
-			client_print_color(iPlayer, print_team_blue, "%s Need ^3%d/%d^1 votes for surrender!", prefix, g_eMatchInfo[e_mTeamSizeTT], g_eMatchInfo[e_mTeamSizeTT]);
+			client_print_color(iPlayer, print_team_blue, "%L", id, "SUR_NEED", prefix, g_eMatchInfo[e_mTeamSizeTT], g_eMatchInfo[e_mTeamSizeTT]);
 		}
 		resetSurrenderData();
 		return;
@@ -982,7 +981,7 @@ public surrenderMenuHandler(id, menu, item) {
 }
 
 autoLose(TeamName:iTeam) {
-	client_print_color(0, print_team_blue, "%s Team ^3%s^1 surrendered!", prefix, iTeam == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
+	client_print_color(0, print_team_blue, "%L", 0, "SUR_END", prefix, iTeam == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 	setTaskHud(0, 0.0, 1, 255, 255, 0, 4.0, "Game Over");
 	cmdStop(0);
 }
@@ -1023,14 +1022,14 @@ stock bool:playerInMatch(id) {
 public cmdNoplay(id) {
 		if (!g_bNoplay[id]) {
 			g_bNoplay[id] = true;
-			client_print_color(0, print_team_blue, "%s ^3%s^1 is now status: ^3Noplay", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "STATUS_NOPLAY", prefix, getName(id));
 		}
 }
 
 public cmdPlay(id) {
 		if (g_bNoplay[id]) {
 			g_bNoplay[id] = false;
-			client_print_color(0, print_team_blue, "%s ^3%s^1 is now status: ^3Play", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "STATUS_PLAY", prefix, getName(id));
 		}
 }
 
@@ -1073,13 +1072,13 @@ public cmdStartPause(id) {
 		g_iCurrentMode = e_mPaused;
 
 		if (g_bGameStarted) {
-			flSidesTime[g_iCurrentSW] -= g_flRoundTime;
+			g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 
 			g_bSurvival = false;
 			g_bGameStarted = false;
 		} else {
 			if (id)
-				client_print_color(id, print_team_blue, "%s Game not started or already paused use: ^3/unpause", prefix);
+				client_print_color(id, print_team_blue,  "%L", id, "GAME_NOTSTARTED", prefix);
 		}
 
 		get_players(iPlayers, iNum, "ac");
@@ -1094,7 +1093,7 @@ public cmdStartPause(id) {
 		set_task(1.0, "taskHudPaused", _, _, _, "b");
 
 		if (id) {
-			client_print_color(0, print_team_blue, "%s ^3%s^1 paused the game", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "GAME_PAUSED", prefix, getName(id));
 		}
 
 		rg_send_audio(0, "fvox/activated.wav");
@@ -1118,7 +1117,7 @@ public cmdStopPause(id) {
 		g_iCurrentMode = e_mMatch;
 
 		if (id) {
-			client_print_color(0, print_team_blue, "%s ^3%s^1 unpaused the game", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "GAME_UNPAUSED", prefix, getName(id));
 		}
 
 		rg_send_audio(0, "fvox/deactivated.wav");
@@ -1145,7 +1144,7 @@ public cmdSwapTeams(id) {
 	if (~get_user_flags(id) & access)
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 swap teams", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "GAME_SWAP", prefix, getName(id));
 
 	restartRound();
 	rg_swap_all_players();
@@ -1159,7 +1158,7 @@ public cmdRestartRound(id) {
 	if (~get_user_flags(id) & access)
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 did restart", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "GAME_RESTART", prefix, getName(id));
 	restartRound();
 	removeHook(id);
 
@@ -1171,9 +1170,9 @@ public cmdSkillMode(id) {
 	if (~get_user_flags(id) & access)
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 has activated ^3Skill^1 mode", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "TYPE_SKILL", prefix, getName(id));
 
-	if (equali("35hp_2", g_eMatchInfo[e_mMapName])) {
+	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
 		enableSemiclip(0);
 	} else {
 		if (g_iCurrentMode == e_mTraining)
@@ -1197,7 +1196,7 @@ public cmdBoostMode(id) {
 	if (~get_user_flags(id) & access)
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 has activated ^3Boost^1 mode", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "TYPE_BOOST", prefix, getName(id));
 
 	if (g_iCurrentMode == e_mMatch) {
 		set_cvar_num("mp_freezetime", 15);
@@ -1214,7 +1213,7 @@ public cmdAa10(id) {
 	if (~get_user_flags(id) & access)
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s^1 changed ^3sv_airaccelerate^1 to^3 10^1", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "AA_10", prefix, getName(id));
 
 	set_cvar_num("sv_airaccelerate", 10);
 	set_pcvar_num(g_eCvars[e_cAA], 10);
@@ -1226,7 +1225,7 @@ public cmdAa100(id) {
 	if (~get_user_flags(id) & access)
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%s ^3%s ^1changed ^3sv_airaccelerate^1 to^3 100^1", prefix, getName(id));
+	client_print_color(0, print_team_blue, "%L", id, "AA_100", prefix, getName(id));
 
 	set_cvar_num("sv_airaccelerate", 100);
 	set_pcvar_num(g_eCvars[e_cAA], 100);
@@ -1240,7 +1239,7 @@ public mainMatchMenu(id) {
 
 	new iMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
 
-	if (equali("35hp_2", g_eMatchInfo[e_mMapName])) {
+	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
 			menu_additem(iMenu, "Start captain mod", "1");
 		else if (g_iCurrentMode == e_mKnife)
@@ -1261,7 +1260,7 @@ public mainMatchMenu(id) {
 	}
 
 
-	if (equali("35hp_2", g_eMatchInfo[e_mMapName])) {
+	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 			if (g_iCurrentMode == e_mKnife)
 				menu_additem(iMenu, "\rStop Kniferound^n", "2");
@@ -1307,7 +1306,7 @@ public mainMatchMenuHandler(id, menu, item, level, cid) {
 
 	switch (iKey) {
 		case 1: {
-			if (equali("35hp_2", g_eMatchInfo[e_mMapName])) {
+			if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
 				if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
 					cmdCaptain(id);
 				else if (g_iCurrentMode == e_mKnife)
@@ -1324,12 +1323,12 @@ public mainMatchMenuHandler(id, menu, item, level, cid) {
 					if (get_user_flags(id) & ADMIN_BAN)
 						verifMenu(id);
 					else
-						client_print_color(id, print_team_blue, "%s Watcher does not have access to stop game", prefix);
+						client_print_color(id, print_team_blue, "%L", id, "HAS_NOT_STOP", prefix);
 				}
 			}
 		}
 		case 2: {
-			if (equali("35hp_2", g_eMatchInfo[e_mMapName])) {
+			if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
 				if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused && get_user_flags(id) & access) {
 					if (g_iCurrentMode == e_mKnife && get_user_flags(id) & access)
 						cmdStop(id);
@@ -1515,13 +1514,13 @@ public verifMenuHandler(id, menu, item, level, cid) {
 public cmdStartRound(id) {
 	if (get_user_flags(id) & access) {
 		if (g_iCurrentMode != e_mTraining) {
-			client_print_color(id, print_team_blue, "%s Please disable other mode before start mix game", prefix);
+			client_print_color(id, print_team_blue, "%L", id, "NOT_START_MIX", prefix);
 			return;
 		} else {
-			if (equali(g_eMatchInfo[e_mMapName], "35hp_2"))
+			if (equali(g_eMatchInfo[e_mMapName], knifeMap))
 				return;
 
-			client_print_color(0, print_team_blue, "%s ^3%s ^1has started mix game", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getName(id));
 			g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
 			pfStartMatch();
 		}
@@ -1559,21 +1558,21 @@ public cmdStop(id) {
 
 	switch (g_iCurrentMode) {
 		case e_mPaused, e_mMatch: {
-			client_print_color(0, print_team_blue, "%s ^3%s^1 stopped ^3Mix^1 game", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "STOP_MIX", prefix, getName(id));
 			g_bGameStarted = false;
 			g_bSurvival = false;
 			g_bPlayersListLoaded = false;
 		}
 		case e_mKnife: {
-			client_print_color(0, print_team_blue, "%s ^3%s^1 stopped ^3Knife^1 Round", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "STOP_KNIFE", prefix, getName(id));
 		}
 		case e_mCaptain: {
-			client_print_color(0, print_team_blue, "%s ^3%s^1 stopped ^3Captain^1 mode", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "STOP_CAP", prefix, getName(id));
 			resetCaptainData();
 			return;
 		}
 		case e_mPublic: {
-			client_print_color(0, print_team_blue, "%s ^3%s^1 stopped ^3Public^1 mode", prefix, getName(id));
+			client_print_color(0, print_team_blue, "%L", id, "STOP_PUB", prefix, getName(id));
 		}
 	}
 	rg_send_audio(0, "fvox/fuzz.wav");
@@ -1583,7 +1582,7 @@ public cmdStop(id) {
 public cmdKnifeRound(id) {
 	if (get_user_flags(id) & access) {
 		if (g_iCurrentMode != e_mTraining) {
-			client_print_color(id, print_team_blue, "%s Please disable other mode before start knife", prefix);
+			client_print_color(id, print_team_blue, "%L", id, "NOT_START_KNIFE", prefix);
 			return;
 		} else {
 			pfKnifeRound(id);
@@ -1604,7 +1603,7 @@ public pfKnifeRound(id) {
 	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "Knife Round Started");
 
 	if (id)
-		client_print_color(0, print_team_blue, "%s ^3%s^1 started ^3Knife^1 Round", prefix, getName(id));
+		client_print_color(0, print_team_blue, "%L", id, "START_KNIFE", prefix, getName(id));
 
 	return PLUGIN_HANDLED;
 }
@@ -1612,14 +1611,14 @@ public pfKnifeRound(id) {
 public cmdShowTimers(id) {
 	if (g_bGameStarted || g_iCurrentMode == e_mPaused) {
 		new timeToWin[2][24];
-		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - flSidesTime[g_iCurrentSW], timeToWin[0], 23);
-		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
+		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
+		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
 		if (!g_iCurrentSW)
-			client_print_color(id, print_team_blue, "TT [^3%s^1] vs [^3%s^1] CT", timeToWin[g_iCurrentSW], timeToWin[!g_iCurrentSW]);
+			client_print_color(id, print_team_blue, "%L", id, "SCORE_TIME", timeToWin[g_iCurrentSW], timeToWin[!g_iCurrentSW]);
 		else
-			client_print_color(id, print_team_blue, "TT [^3%s^1] vs [^3%s^1] CT", timeToWin[!g_iCurrentSW], timeToWin[g_iCurrentSW]);
+			client_print_color(id, print_team_blue, "%L", id, "SCORE_TIMESW", timeToWin[!g_iCurrentSW], timeToWin[g_iCurrentSW]);
 	} else {
-		client_print_color(id, print_team_blue, "%s Sorry, the game is not running", prefix);
+		client_print_color(id, print_team_blue, "%L", id, "SCORE_NOT", prefix);
 	}
 }
 
@@ -1653,8 +1652,8 @@ public taskPrepareMode(mode) {
 		}
 		case e_mMatch: {
 			g_iCurrentMode = e_mMatch;
-			flSidesTime[0] = 0.0;
-			flSidesTime[1] = 0.0;
+			g_flSidesTime[0] = 0.0;
+			g_flSidesTime[1] = 0.0;
 			g_iCurrentSW = 1;
 			g_bGameStarted = true;
 
@@ -1717,7 +1716,7 @@ restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
 		new iPlayers[32], iNum;
 		get_players(iPlayers, iNum, "c");
-		flSidesTime[g_iCurrentSW] -= g_flRoundTime;
+		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 	}
 	g_bSurvival = false;
 	rg_round_end(delay, WINSTATUS_DRAW, ROUND_END_DRAW, "Round Restarted", "none");
@@ -1804,7 +1803,7 @@ public cmdCaptain(id) {
 	if (~get_user_flags(id) & access)
 		return;
 
-	if (!equali(g_eMatchInfo[e_mMapName], "35hp_2"))
+	if (!equali(g_eMatchInfo[e_mMapName], knifeMap))
 		return;
 
 	if (g_iCurrentMode != e_mTraining)
@@ -1825,7 +1824,7 @@ public cmdCaptain(id) {
 		transferToSpec(iPlayer);
 	}
 	chooseCapsMenu(id);
-	client_print_color(0, print_team_blue, "%s Player ^3%n^1 choosing captains..", prefix, id);
+	client_print_color(0, print_team_blue, "%L", id, "CAP_CHOOSE", prefix, id);
 }
 
 public chooseCapsMenu(id) {
@@ -1900,12 +1899,12 @@ public chooseCapsHandler(id, menu, item) {
 
 	if (!g_eCaptain[e_cTT]) {
 		g_eCaptain[e_cTT] = iPlayer;
-		client_print_color(0, print_team_blue, "%s First captain: ^3%n^1", prefix, iPlayer);
+		client_print_color(0, print_team_blue, "%L", id, "CAP_FIRST", prefix, iPlayer);
 
 		chooseCapsMenu(id);
 	} else if (!g_eCaptain[e_cCT]) {
 		g_eCaptain[e_cCT] = iPlayer;
-		client_print_color(0, print_team_blue, "%s Second captain: ^3%n^1", prefix, iPlayer);
+		client_print_color(0, print_team_blue, "%L", id, "CAP_SECOND", prefix, iPlayer);
 
 		if (is_user_connected(g_eCaptain[e_cTT]) && is_user_connected(g_eCaptain[e_cCT])) {
 			rg_set_user_team(g_eCaptain[e_cTT], TEAM_TERRORIST);
@@ -1914,7 +1913,7 @@ public chooseCapsHandler(id, menu, item) {
 			g_bCaptainsBattle = true;
 			pfKnifeRound(0);
 		} else {
-			client_print_color(0, print_team_blue, "%s One of the captains left, captain mode stopped!", prefix);
+			client_print_color(0, print_team_blue, "%L", id, "CAP_HAS_LEFT", prefix);
 			resetCaptainData();
 		}
 	}
@@ -2001,7 +2000,7 @@ public pickHandler(id, menu, item) {
 		return;
 	}
 
-	client_print_color(0, print_team_blue, "%s Captain ^3%n^1 choose player ^3%n^1!", prefix, id, iPlayer);
+	client_print_color(0, print_team_blue, "%L", id, "PLAYER_CHOOSE", prefix, id, iPlayer);
 	rg_set_user_team(iPlayer, rg_get_user_team(id));
 	rg_round_respawn(iPlayer);
 
@@ -2023,7 +2022,7 @@ public pickHandler(id, menu, item) {
 
 	if (iTotalPlayers == 10) {
 		resetCaptainData();
-		client_print_color(0, print_team_blue, "%s Teams filled!", prefix);
+		client_print_color(0, print_team_blue, "%L", id, "TEAM_FULL", prefix);
 	}
 }
 
