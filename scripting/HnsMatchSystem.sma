@@ -1,3 +1,8 @@
+/*
+	Config - Добавить
+	Play / Noplay (menu) - Доделать
+*/
+
 #include <amxmodx>
 #include <amxmisc>
 #include <hamsandwich>
@@ -7,7 +12,7 @@
 #include <json>
 #include <PersistentDataStorage>
 
-#define prefix "^1[^3System^1]"
+#define prefix "^1>"
 #define access ADMIN_MAP
 #define knifeMap "35hp_2"
 #define surrenderTimeDelay 120
@@ -115,7 +120,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.1", "??"); // Спасибо: Cultura, Garey, Medusa
+	register_plugin("Hide'n'Seek Match System", "1.0.2", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -127,7 +132,7 @@ public plugin_init() {
 	g_eCvars[e_cLastMode]	= register_cvar("hns_lastmode", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cAA]			= register_cvar("hns_aa", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cSemiclip]	= register_cvar("hns_semiclip", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cGameName]	= register_cvar("hns_gamename", "Hide'n'Seek");
+	g_eCvars[e_cGameName]	= register_cvar("hns_gamename", Hide'n'Seek");
 
 	g_iAllocKnifeModel = engfunc(EngFunc_AllocString, knifeModel);
 
@@ -154,15 +159,15 @@ public plugin_init() {
 	RegisterSayCmd("stop", "st", "cmdStopMode", access, "Stop Current Mode");
 	RegisterSayCmd("skill", "skill", "cmdSkillMode", access, "Skill mode");
 	RegisterSayCmd("boost", "boost", "cmdBoostMode", access, "Boost mode");
-	RegisterSayCmd("aa10", "10aa", "cmdAa10", access, "10аа");
-	RegisterSayCmd("aa100", "100aa", "cmdAa100", access, "100аа");
-	RegisterSayCmd("rr", "restart", "cmdRestartRound", access, "rr");
-	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "swap");
+	RegisterSayCmd("aa10", "10aa", "cmdAa10", access, "10aa");
+	RegisterSayCmd("aa100", "100aa", "cmdAa100", access, "100aa");
+	RegisterSayCmd("rr", "restart", "cmdRestartRound", access, "Restart round");
+	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "Swap Teams");
 	RegisterSayCmd("mix", "mix", "mainMatchMenu", access, "Main menu admin");
 	RegisterSayCmd("pause", "ps", "cmdStartPause", access, "Start pause");
 	RegisterSayCmd("live", "unpause", "cmdStopPause", access, "Unpause");
 	RegisterSayCmd("surrender", "sur", "cmdSurrender", 0, "Surrender vote");
-	RegisterSayCmd("score", "s", "cmdShowTimers", 0, "Starts Round");
+	RegisterSayCmd("score", "s", "cmdShowTimers", 0, "Score");
 	RegisterSayCmd("pick", "pick", "cmdPick", 0, "Pick player");
 	RegisterSayCmd("back", "spec", "cmdTeamSpec", 0, "Spec/Back player");
 	RegisterSayCmd("np", "noPlay", "cmdNoplay", 0, "No play");
@@ -257,6 +262,10 @@ public client_putinserver(id) {
 	g_bOnOff[id] = false;
 }
 
+public client_disconnected(id) {
+	g_bHooked[id] = false;
+}
+
 public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 	if (event == ROUND_TARGET_SAVED || event == ROUND_HOSTAGE_NOT_RESCUED) {
 		SetHookChainArg(1, ATYPE_INTEGER, WINSTATUS_TERRORISTS);
@@ -332,8 +341,8 @@ public rgRestartRound() {
 	EnableHamForward(playerKilledPre);
 
 	new iPlayers[MAX_PLAYERS], iNum;
-
 	get_players(iPlayers, iNum, "ce", "TERRORIST");
+
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 		if (g_bLastFlash[iPlayer]) {
@@ -511,8 +520,8 @@ public fwdPlayerKilledPre(id) {
 	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPublic) {
 		new iPlayers[32], iNum, index;
 		get_players(iPlayers, iNum, "ace", "TERRORIST");
-		if (iNum == 1) {
 
+		if (iNum == 1) {
 			index = iPlayers[0];
 			g_bLastFlash[index] = true;
 			g_iGiveNadesTo = index;
@@ -711,6 +720,8 @@ public taskSetPlayerTeam(id) {
 	if (g_iCurrentMode == e_mTraining) {
 		if (equali(g_eMatchInfo[e_mMapName], knifeMap)) {
 			rg_round_respawn(id);
+			g_bNoplay[id] = true;
+			set_task(2.0, "taskPlay", id);
 			return;
 		}
 
@@ -722,6 +733,29 @@ public taskSetPlayerTeam(id) {
 		}
 		else
 			rg_round_respawn(id);
+	}
+}
+
+public taskPlay(id) {
+	new iMenu = menu_create("\rYou play?", "handlePlayMenu");
+
+	menu_additem(iMenu, "Yes", "1");
+	menu_additem(iMenu, "No", "2");
+
+	menu_setprop(iMenu, MPROP_EXIT, MEXIT_NEVER);
+	menu_display(id, iMenu, 0);
+}
+
+public handlePlayMenu(id, menu, item) {
+
+	new szData[6], szName[64], iAccess, iCallback;
+	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(menu);
+	new iKey = str_to_num(szData);
+	
+	switch(iKey) {
+		case 1: cmdPlay(id);
+		case 2: cmdNoplay(id);
 	}
 }
 
@@ -832,7 +866,6 @@ public cmdTransferTT(id) {
 		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_TT", prefix, getName(id));
-	new iPlayers[32], iNum; get_players(iPlayers, iNum, "ch");
 	transferPlayers(TEAM_TERRORIST);
 	return PLUGIN_HANDLED;
 }
@@ -842,7 +875,6 @@ public cmdTransferCT(id) {
 		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_CT", prefix, getName(id));
-	new iPlayers[32], iNum; get_players(iPlayers, iNum, "ch");
 	transferPlayers(TEAM_CT);
 	return PLUGIN_HANDLED;
 }
@@ -1067,8 +1099,6 @@ public cmdStartPause(id) {
 		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode == e_mMatch) {
-		new iPlayers[32], iNum;
-		get_players(iPlayers, iNum, "c");
 		g_iCurrentMode = e_mPaused;
 
 		if (g_bGameStarted) {
@@ -1081,7 +1111,9 @@ public cmdStartPause(id) {
 				client_print_color(id, print_team_blue,  "%L", id, "GAME_NOTSTARTED", prefix);
 		}
 
+		new iPlayers[32], iNum;
 		get_players(iPlayers, iNum, "ac");
+
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
 			rg_remove_all_items(iPlayer);
@@ -1714,8 +1746,6 @@ public taskPrepareMode(mode) {
 
 restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
-		new iPlayers[32], iNum;
-		get_players(iPlayers, iNum, "c");
 		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 	}
 	g_bSurvival = false;
@@ -2144,9 +2174,9 @@ arrayAppendValue(JSON:array, JSON:node) {
 
 public transferPlayers(TeamName:iTeam) {
 	new Float:flTime;
-	new iPlayers[32], iPlayersNum;
-	get_players(iPlayers, iPlayersNum, "ch");
-	for (new i = 0; i < iPlayersNum; i++) {
+	new iPlayers[32], iNum;
+	get_players(iPlayers, iNum, "ch");
+	for (new i = 0; i < iNum; i++) {
 		new id = iPlayers[i];
 		if (is_user_connected(id)) {
 			switch (id) {
@@ -2246,4 +2276,4 @@ setTeam(id, TeamName:iTeam) {
 	}
 }
 
-// Спасибо: Cultura, Garey, Medusa
+// Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
