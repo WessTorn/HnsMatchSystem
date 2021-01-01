@@ -132,7 +132,7 @@ public plugin_init() {
 	g_eCvars[e_cLastMode]	= register_cvar("hns_lastmode", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cAA]			= register_cvar("hns_aa", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cSemiclip]	= register_cvar("hns_semiclip", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cGameName]	= register_cvar("hns_gamename", Hide'n'Seek");
+	g_eCvars[e_cGameName]	= register_cvar("hns_gamename", "Hide'n'Seek");
 
 	g_iAllocKnifeModel = engfunc(EngFunc_AllocString, knifeModel);
 
