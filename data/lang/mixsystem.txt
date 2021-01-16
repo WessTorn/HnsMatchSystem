@@ -1,6 +1,6 @@
 [en]
 STATUS_NOPLAY   = %s ^3%s^1 is ^3not available^1 for pick [^3NOPLAY^1]
-STATUS_PLAY     = %s ^3%s^1 is now ^3available^1 for pick
+STATUS_PLAY     = %s ^3%s^1 is now ^3available^1 for pick [^3PLAY^1]
 
 SET_WINTIME     = %s ^3%s^1 set ^3wintime^1 to ^3%d^1 minutes.
 SET_ROUNDTIME   = %s ^3%s ^1 set ^3roundtime^1 to ^3%.2f^1 minutes.
@@ -11,6 +11,9 @@ SUR_WAIT        = %s Wait ^3%s^1 for surrender!
 SUR_PLAYER      = %s Player ^3%n^1 (^3%s^1) started vote for surrender!
 SUR_NEED        = %s Need ^3%d/%d^1 votes for surrender!
 SUR_END         = %s Team ^3%s^1 surrendered!
+
+AFK_PAUSE       = %s ^3%d^1 players AFK, pausing game
+AFK_UNPAUSE     = %s LIVE! All players is here! Unpausing match.
 
 GAME_NOTSTARTED = %s Game not started or already paused (use /unpause)
 GAME_PAUSED     = %s ^3%s^1 paused the game!
@@ -46,8 +49,12 @@ STOP_KNIFE      = %s ^3%s^1 stopped ^3knife^1 round
 STOP_PUB        = %s ^3%s^1 stopped ^3public^1 mode
 STOP_CAP        = %s ^3%s^1 stopped ^3captain^1 mode
 
-SCORE_TIME      = TT [^3%s^1] vs [^3%s^1] CT
-SCORE_TIMESW    = TT [^3%s^1] vs [^3%s^1] CT
+SCORE_TIME1    = TT [^3%s^1] %d vs %d [^4%s^1] CT (^3%s^1 difference)
+SCORE_TIME2    = TT [^3%s^1] %d vs %d [^4%s^1] CT (^3%s^1 difference)
+SCORE_TIME3    = TT [^4%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
+SCORE_TIME4    = TT [^4%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
+SCORE_TIME5    = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
+SCORE_TIME6    = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
 SCORE_NOT       = %s Sorry, but game ain't started atm
 
 TT_WIN          = %s TT win the match! (^3%s^1 difference)
