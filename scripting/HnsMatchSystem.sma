@@ -26,6 +26,7 @@ enum {
 	e_mKnife,
 	e_mCaptain,
 	e_mMatch,
+	e_mDM,
 	e_mPublic
 }
 new g_iCurrentMode;
@@ -73,7 +74,8 @@ enum _:Cvars_s {
 	e_cAA,
 	e_cLastMode,
 	e_cSemiclip,
-	e_cHpMode
+	e_cHpMode,
+	e_cDMRespawn
 };
 new g_eCvars[Cvars_s];
 
@@ -94,6 +96,7 @@ new bool:g_bSpec[MAX_PLAYERS + 1];
 new bool:g_bPlayersListLoaded;
 new bool:g_bLastFlash[MAX_PLAYERS + 1];
 new bool:g_bOnOff[33];
+
 
 new Float:g_flRoundTime;
 new Float:g_flSidesTime[2];
@@ -130,11 +133,12 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.3", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.4b", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
 	g_eCvars[e_cRoundTime] = get_cvar_pointer("mp_roundtime");
+	
 
 	g_eCvars[e_cCapTime]	= register_cvar("hns_wintime", "15");
 	g_eCvars[e_cFlashNum]	= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);
@@ -143,6 +147,7 @@ public plugin_init() {
 	g_eCvars[e_cAA]			= register_cvar("hns_aa", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cSemiclip]	= register_cvar("hns_semiclip", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cHpMode]		= register_cvar("hns_hpmode", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cDMRespawn] 	= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cGameName]	= register_cvar("hns_gamename", "Hide'n'Seek");
 
 	g_iAllocKnifeModel = engfunc(EngFunc_AllocString, knifeModel);
@@ -161,6 +166,7 @@ public plugin_init() {
 	register_clcmd("nightvision", "mainMatchMenu");
 
 	RegisterSayCmd("pub", "public", "cmdPubMode", access, "Public mode");
+	RegisterSayCmd("dm", "DM", "cmdDMMode", access, "Public mode");
 	RegisterSayCmd("specall", "specall", "cmdTransferSpec", access, "Spec Transfer");
 	RegisterSayCmd("ttall", "ttall", "cmdTransferTT", access, "TT Transfer");
 	RegisterSayCmd("ctall", "ctall", "cmdTransferCT", access, "CT Transfer");
@@ -192,6 +198,7 @@ public plugin_init() {
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
 	RegisterHookChain(RG_PM_Move, "rgPlayerMovePost", true);
+	RegisterHookChain(RG_CBasePlayer_Killed, "rgPlayerKilled", true); 
 
 	playerKilledPre = RegisterHam(Ham_Killed, "player", "fwdPlayerKilledPre", 0);
 	register_menucmd(register_menuid("NadesMenu"), 3, "handleNadesMenu");
@@ -203,9 +210,9 @@ public plugin_init() {
 	register_forward(FM_EmitSound, "fwdEmitSoundPre", 0);
 	register_forward(FM_ClientKill, "fwdClientKill");
 	register_forward(FM_GetGameDescription, "fwdGameNameDesc");
+
 	unregister_forward(FM_Spawn, g_iRegisterSpawn, 1);
-
-
+	
 	register_message(get_user_msgid("HostagePos"), "msgHostagePos");
 	register_message(get_user_msgid("ShowMenu"), "msgShowMenu");
 	register_message(get_user_msgid("VGUIMenu"), "msgVguiMenu");
@@ -227,10 +234,14 @@ public plugin_init() {
 public taskDelayedMode() {
 	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
 		taskPrepareMode(e_mTraining);
-	} else if (!(get_pcvar_num(g_eCvars[e_cLastMode]))) {
+	} else if (get_pcvar_num(g_eCvars[e_cLastMode]) == 0) {
 		taskPrepareMode(e_mTraining);
-	} else {
+	} else if (get_pcvar_num(g_eCvars[e_cLastMode]) == 1) {
 		taskPrepareMode(e_mPublic);
+	} else if (get_pcvar_num(g_eCvars[e_cLastMode]) == 2) {
+		taskPrepareMode(e_mDM);
+	} else {
+		taskPrepareMode(e_mTraining);
 	}
 }
 
@@ -277,6 +288,45 @@ public client_putinserver(id) {
 
 public client_disconnected(id) {
 	g_bHooked[id] = false;
+}
+
+public rgPlayerKilled(victim, killer) {
+	if (g_iCurrentMode != e_mDM) {
+		return;
+	}
+	
+	if(killer == 0)  {
+		if(rg_get_user_team(victim) == TEAM_TERRORIST) {
+			new lucky = GetRandomCT();
+			if(lucky) {
+				rg_set_user_team(lucky, TEAM_TERRORIST);
+				client_print_color(lucky, print_team_blue, "%L", lucky, "AFK_PAUSE", prefix)
+				rg_set_user_team(victim, TEAM_CT);
+				setRole(lucky);
+			}
+		}
+	} else if(killer != victim && rg_get_user_team(killer) == TEAM_CT) {
+		rg_set_user_team(killer, TEAM_TERRORIST); 
+		rg_set_user_team(victim, TEAM_CT); 
+		
+		setRole(killer);
+	}
+			
+	set_task(get_pcvar_float(g_eCvars[e_cDMRespawn]), "RespawnPlayer", victim);
+}
+
+public RespawnPlayer(id) {
+	rg_round_respawn(id);
+}
+
+GetRandomCT() {
+	static iPlayers[32], iCTNum
+	get_players(iPlayers, iCTNum, "ae", "CT");
+		
+	if(!iCTNum)
+		return 0
+		
+	return iCTNum > 1 ? iPlayers[random(iCTNum)] : iPlayers[iCTNum - 1];
 }
 
 public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
@@ -544,7 +594,7 @@ public rgPlayerSpawn(id) {
 	if (g_iCurrentMode <= 1 || g_iCurrentMode == e_mCaptain)
 		setUserGodmode(id, 1);
 
-	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPublic) {
+	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) {
 		if (get_pcvar_num(g_eCvars[e_cHpMode]) == 1) {
 			set_entvar(id, var_health, 1.0);
 		}
@@ -570,6 +620,13 @@ public setRole(id) {
 				if (get_pcvar_num(g_eCvars[e_cSmokeNum]) >= 1) {
 					rg_give_item(id, "weapon_smokegrenade");
 					rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, get_pcvar_num(g_eCvars[e_cSmokeNum]));
+				}
+
+				if (g_iCurrentMode == e_mDM) {
+					if (get_pcvar_num(g_eCvars[e_cHpMode]) == 100)
+						set_entvar(id, var_health, 100.0);
+					else 
+						set_entvar(id, var_health, 1.0);
 				}
 			}
 			case TEAM_CT: {
@@ -981,6 +1038,32 @@ public cmdPubMode(id) {
 	return PLUGIN_HANDLED;
 }
 
+public cmdDMMode(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	if (g_iCurrentMode != e_mDM) {
+		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
+			taskPrepareMode(e_mDM);
+			client_print_color(0, print_team_blue, "%L", id, "DM_ACTIVATED", prefix, getName(id));
+		}
+	} else {
+		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
+			client_print_color(id, print_team_blue, "%L", id, "DM_ALREADY", prefix, getName(id));
+		}
+	}
+
+	if (containi(g_eMatchInfo[e_mMapName], "boost") != -1) {
+		disableSemiclip();
+	} else {
+		enableSemiclip(3);
+	}
+
+	removeHook(id);
+
+	return PLUGIN_HANDLED;
+}
+
 public cmdTransferSpec(id) {
 	if (!(get_user_flags(id) & access))
 		return PLUGIN_HANDLED;
@@ -1205,6 +1288,9 @@ public cmdTeamSpec(id) {
 	if (g_iCurrentMode != e_mPublic)
 		return;
 
+	if (g_iCurrentMode != e_mDM)
+		return;
+
 	g_bSpec[id] = !g_bSpec[id];
 
 	if (g_bSpec[id]) {
@@ -1408,7 +1494,7 @@ public mainMatchMenu(id) {
 		else
 			menu_additem(iMenu, "\rStop captain mod", "1");
 	} else {
-		if (g_iCurrentMode == e_mPublic)
+		if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
 			menu_additem(iMenu, "\dStart mix match", "1");
 		else if (g_iCurrentMode == e_mTraining)
 			menu_additem(iMenu, "Start mix match", "1");
@@ -1432,9 +1518,9 @@ public mainMatchMenu(id) {
 		}
 	} else {
 		if (g_iCurrentMode == e_mTraining)
-			menu_additem(iMenu, "Start public mode^n", "2");
-		else if (g_iCurrentMode == e_mPublic)
-			menu_additem(iMenu, "\rStop public mode^n", "2");
+			menu_additem(iMenu, "Start custom mode^n", "2");
+		else if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
+			menu_additem(iMenu, "\rStop custom mode^n", "2");
 		else {
 			if (g_iCurrentMode != e_mPaused)
 				menu_additem(iMenu, "Pause match^n", "2");
@@ -1449,7 +1535,7 @@ public mainMatchMenu(id) {
 	menu_additem(iMenu, "Swap teams^n", "5");
 	menu_additem(iMenu, "Team Transfer Player", "6");
 	menu_additem(iMenu, "Change map", "7");
-
+	
 	menu_display(id, iMenu, 0);
 	return PLUGIN_HANDLED;
 }
@@ -1475,7 +1561,7 @@ public mainMatchMenuHandler(id, menu, item, level, cid) {
 				else
 					cmdStop(id);
 			} else {
-				if (g_iCurrentMode == e_mPublic && get_user_flags(id) & access) {
+				if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) && get_user_flags(id) & access) {
 					return 0;
 				}
 				else if (g_iCurrentMode == e_mTraining && get_user_flags(id) & access)
@@ -1498,8 +1584,8 @@ public mainMatchMenuHandler(id, menu, item, level, cid) {
 				}
 			} else {
 				if (g_iCurrentMode == e_mTraining && get_user_flags(id) & access)
-					cmdPubMode(id);
-				else if (g_iCurrentMode == e_mPublic && get_user_flags(id) & access)
+					customMenu(id);
+				else if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) && get_user_flags(id) & access)
 					cmdStop(id);
 				else {
 					if (g_iCurrentMode != e_mPaused && get_user_flags(id) & access)
@@ -1523,6 +1609,43 @@ public mainMatchMenuHandler(id, menu, item, level, cid) {
 		}
 		case 7: {
 			amxclient_cmd(id, "amx_mapmenu");
+		}
+	}
+	return PLUGIN_HANDLED;
+}
+
+public customMenu(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	new iMenu = menu_create("\yHide'n'Seek mix system", "customMenuHandler");
+
+	menu_additem(iMenu, "Publick", "1");
+
+	menu_additem(iMenu, "DeathMatch", "2");
+
+
+	menu_display(id, iMenu, 0);
+	return PLUGIN_HANDLED;
+}
+
+public customMenuHandler(id, menu, item, level, cid) {
+	if (item == MENU_EXIT) {
+		menu_destroy(menu);
+		return PLUGIN_HANDLED;
+	}
+
+	new szData[6], szName[64], iAccess, iCallback;
+	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(menu);
+	new iKey = str_to_num(szData);
+
+	switch (iKey) {
+		case 1: {
+			cmdPubMode(id);
+		}
+		case 2: {
+			cmdDMMode(id);
 		}
 	}
 	return PLUGIN_HANDLED;
@@ -1753,6 +1876,9 @@ public cmdStop(id) {
 		case e_mPublic: {
 			client_print_color(0, print_team_blue, "%L", id, "STOP_PUB", prefix, getName(id));
 		}
+		case e_mDM: {
+			client_print_color(0, print_team_blue, "%L", id, "STOP_DM", prefix, getName(id));
+		}
 	}
 	rg_send_audio(0, "fvox/fuzz.wav");
 	taskPrepareMode(e_mTraining);
@@ -1837,6 +1963,9 @@ public taskPrepareMode(mode) {
 			set_cvar_num("mp_freezetime", 0);
 			set_cvar_num("mp_timelimit", 0);
 			set_cvar_num("mp_roundtime", 99);
+			set_cvar_num("mp_round_infinite", 0);
+			set_cvar_num("mp_auto_join_team", 0);
+			set_cvar_num("mp_roundrespawn_time", 20);
 			set_pcvar_num(g_eCvars[e_cLastMode], 0);
 			disableSemiclip();
 		}
@@ -1847,6 +1976,9 @@ public taskPrepareMode(mode) {
 			set_cvar_num("mp_forcechasecam", 2);
 			set_cvar_num("mp_forcecamera", 2);
 			set_cvar_num("mp_timelimit", 0);
+			set_cvar_num("mp_round_infinite", 0);
+			set_cvar_num("mp_auto_join_team", 0);
+			set_cvar_num("mp_roundrespawn_time", 20);
 			set_pcvar_num(g_eCvars[e_cLastMode], 0);
 			disableSemiclip();
 		}
@@ -1861,6 +1993,9 @@ public taskPrepareMode(mode) {
 			set_cvar_num("mp_forcechasecam", 2);
 			set_cvar_num("mp_forcecamera", 2);
 			set_cvar_num("mp_timelimit", 0);
+			set_cvar_num("mp_round_infinite", 0);
+			set_cvar_num("mp_auto_join_team", 0);
+			set_cvar_num("mp_roundrespawn_time", 20);
 			set_pcvar_num(g_eCvars[e_cLastMode], 0);
 
 			if (get_pcvar_num(g_eCvars[e_cSemiclip]) == 1) {
@@ -1895,17 +2030,39 @@ public taskPrepareMode(mode) {
 			set_cvar_num("mp_forcechasecam", 0);
 			set_cvar_num("mp_forcecamera", 0);
 			set_cvar_num("mp_timelimit", 0);
+			set_cvar_num("mp_round_infinite", 0);
+			set_cvar_num("mp_auto_join_team", 0);
+			set_cvar_num("mp_roundrespawn_time", 20);
 			set_pcvar_num(g_eCvars[e_cFlashNum], 1);
 			set_pcvar_num(g_eCvars[e_cLastMode], 1);
 			enableSemiclip(3);
 			loadMapCFG();
-		} case e_mCaptain: {
+		}
+		case e_mDM: {
+			g_iCurrentMode = e_mDM;
+			set_cvar_num("mp_autoteambalance", 2);
+			set_cvar_num("mp_freezetime", 0);
+			set_cvar_num("mp_forcechasecam", 0);
+			set_cvar_num("mp_forcecamera", 0);
+			set_cvar_num("mp_timelimit", 0);
+			set_cvar_num("mp_round_infinite", 1);
+			set_cvar_num("mp_auto_join_team", 1);
+			set_cvar_num("mp_roundrespawn_time", -1);
+			set_cvar_num("mp_roundtime", 0);
+			set_pcvar_num(g_eCvars[e_cFlashNum], 1);
+			set_pcvar_num(g_eCvars[e_cLastMode], 2);
+			enableSemiclip(3);
+		} 
+		case e_mCaptain: {
 			g_iCurrentMode = e_mCaptain;
 			set_cvar_num("sv_alltalk", 1);
 			set_cvar_num("mp_autoteambalance", 0);
 			set_cvar_num("mp_freezetime", 0);
 			set_cvar_num("mp_timelimit", 0);
 			set_cvar_num("mp_roundtime", 99);
+			set_cvar_num("mp_round_infinite", 0);
+			set_cvar_num("mp_auto_join_team", 0);
+			set_cvar_num("mp_roundrespawn_time", 20);
 			enableSemiclip(0);
 		}
 	}
