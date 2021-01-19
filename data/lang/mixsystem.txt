@@ -15,6 +15,8 @@ SUR_END         = %s Team ^3%s^1 surrendered!
 AFK_PAUSE       = %s ^3%d^1 players AFK, pausing game
 AFK_UNPAUSE     = %s LIVE! All players is here! Unpausing match.
 
+DM_TRANSF       = %s Transfered to ^3Terrorist^1.
+
 GAME_NOTSTARTED = %s Game not started or already paused (use /unpause)
 GAME_PAUSED     = %s ^3%s^1 paused the game!
 GAME_UNPAUSED   = %s ^3%s^1 unpaused the game!
@@ -23,6 +25,9 @@ GAME_RESTART    = %s ^3%s^1 did restart!
 
 PUB_ACTIVATED   = %s ^3%s^1 has activated ^3public^1 mode
 PUB_ALREADY     = %s ^3%s^3 public mode is already running
+
+DM_ACTIVATED    = %s ^3%s^1 has activated ^3deatchmatch^1 mode
+DM_ALREADY      = %s deatchmatch mode is already running
 
 TRANSF_SPEC     = %s ^3%s^1 transfered all players to ^3spectators
 TRANSF_TT       = %s ^3%s^1 transfered all players to ^3terrorist's
@@ -48,6 +53,7 @@ STOP_MIX        = %s ^3%s^1 stopped ^3mix
 STOP_KNIFE      = %s ^3%s^1 stopped ^3knife^1 round
 STOP_PUB        = %s ^3%s^1 stopped ^3public^1 mode
 STOP_CAP        = %s ^3%s^1 stopped ^3captain^1 mode
+STOP_DM         = %s ^3%s^1 stopped ^3deathmatch^1 mode
 
 SCORE_TIME1    = TT [^3%s^1] %d vs %d [^4%s^1] CT (^3%s^1 difference)
 SCORE_TIME2    = TT [^3%s^1] %d vs %d [^4%s^1] CT (^3%s^1 difference)
