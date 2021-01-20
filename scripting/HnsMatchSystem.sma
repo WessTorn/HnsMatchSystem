@@ -133,7 +133,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.5", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.5b", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -303,7 +303,7 @@ public EventDeathMsg() {
 			new lucky = GetRandomCT();
 			if(lucky) {
 				rg_set_user_team(lucky, TEAM_TERRORIST);
-				client_print_color(lucky, print_team_blue, "%L", lucky, "AFK_PAUSE", prefix)
+				client_print_color(lucky, print_team_blue, "%L", lucky, "DM_TRANSF", prefix)
 				rg_set_user_team(victim, TEAM_CT);
 				setRole(lucky);
 			}
