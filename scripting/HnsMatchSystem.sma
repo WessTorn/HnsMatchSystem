@@ -133,7 +133,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.4b", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.5", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -198,7 +198,7 @@ public plugin_init() {
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
 	RegisterHookChain(RG_PM_Move, "rgPlayerMovePost", true);
-	RegisterHookChain(RG_CBasePlayer_Killed, "rgPlayerKilled", true); 
+	register_event("DeathMsg", "EventDeathMsg", "a");
 
 	playerKilledPre = RegisterHam(Ham_Killed, "player", "fwdPlayerKilledPre", 0);
 	register_menucmd(register_menuid("NadesMenu"), 3, "handleNadesMenu");
@@ -290,10 +290,13 @@ public client_disconnected(id) {
 	g_bHooked[id] = false;
 }
 
-public rgPlayerKilled(victim, killer) {
+public EventDeathMsg() {
 	if (g_iCurrentMode != e_mDM) {
 		return;
 	}
+
+	new killer = read_data(1);
+	new victim = read_data(2);
 	
 	if(killer == 0)  {
 		if(rg_get_user_team(victim) == TEAM_TERRORIST) {
