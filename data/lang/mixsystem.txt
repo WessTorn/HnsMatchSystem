@@ -39,7 +39,7 @@ TYPE_BOOST      = %s ^3%s^1 has activated ^3boost^1 mode
 AA_10           = %s ^3%s^1 changed ^3airaccelerate^1 to ^310
 AA_100          = %s ^3%s^1 changed ^3airaccelerate^1 to ^3100
 
-HAS_NOT_STOP    = %s ^3%s^1 has no access to stop the game!
+HAS_NOT_STOP    = %s has no access to stop the game!
 
 SHOW_KNIFE      = %s Knife is now set ^3%svisible
 
