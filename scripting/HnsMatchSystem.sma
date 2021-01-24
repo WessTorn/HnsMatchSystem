@@ -133,7 +133,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.5b", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.6", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -314,12 +314,16 @@ public EventDeathMsg() {
 		
 		setRole(killer);
 	}
-			
+
 	set_task(get_pcvar_float(g_eCvars[e_cDMRespawn]), "RespawnPlayer", victim);
 }
 
 public RespawnPlayer(id) {
-	rg_round_respawn(id);
+	if (!is_user_connected(id))
+		return;
+	
+	if (rg_get_user_team(id) != TEAM_SPECTATOR)
+		rg_round_respawn(id);
 }
 
 GetRandomCT() {
@@ -928,23 +932,24 @@ public taskSetPlayerTeam(id) {
 public taskPlay(id) {
 	new iMenu = menu_create("\rYou play?", "handlePlayMenu");
 
-	menu_additem(iMenu, "Yes", "1");
-	menu_additem(iMenu, "No", "2");
+	menu_additem(iMenu, "Yes");
+	menu_additem(iMenu, "No");
 
 	menu_setprop(iMenu, MPROP_EXIT, MEXIT_NEVER);
 	menu_display(id, iMenu, 0);
 }
 
-public handlePlayMenu(id, menu, item) {
+public handlePlayMenu(id, iMenu, item) {
+	menu_destroy(iMenu);
+	if (!is_user_connected(id))
+		return;
 
-	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(menu);
-	new iKey = str_to_num(szData);
+	if (item == MENU_EXIT)
+		return;
 	
-	switch(iKey) {
-		case 1: cmdPlay(id);
-		case 2: cmdNoplay(id);
+	switch (item) {
+		case 0: cmdPlay(id);
+		case 1: client_print_color(0, print_team_blue, "%L", id, "STATUS_NOPLAY", prefix, getName(id));
 	}
 }
 
@@ -1202,8 +1207,8 @@ public surrenderMenu(id) {
 	menu_display(id, iMenu, 0);
 }
 
-public surrenderMenuHandler(id, menu, item) {
-	menu_destroy(menu);
+public surrenderMenuHandler(id, iMenu, item) {
+	menu_destroy(iMenu);
 	if (!is_user_connected(id))
 		return;
 
@@ -1484,9 +1489,6 @@ public cmdAa100(id) {
 }
 
 public mainMatchMenu(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
-
 	new iMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
 
 	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
@@ -1540,18 +1542,17 @@ public mainMatchMenu(id) {
 	menu_additem(iMenu, "Change map", "7");
 	
 	menu_display(id, iMenu, 0);
-	return PLUGIN_HANDLED;
 }
 
-public mainMatchMenuHandler(id, menu, item, level, cid) {
+public mainMatchMenuHandler(id, iMenu, item) {
 	if (item == MENU_EXIT) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(menu);
+	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(iMenu);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
@@ -1632,15 +1633,15 @@ public customMenu(id) {
 	return PLUGIN_HANDLED;
 }
 
-public customMenuHandler(id, menu, item, level, cid) {
+public customMenuHandler(id, iMenu, item) {
 	if (item == MENU_EXIT) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(menu);
+	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(iMenu);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
@@ -1692,14 +1693,14 @@ public settingsMatchMenu(id) {
 	menu_display(id, iMenu, 0);
 }
 
-public settingsMatchMenuHandler(id, menu, item, level, cid) {
+public settingsMatchMenuHandler(id, iMenu, item) {
 	if (item == MENU_EXIT) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		mainMatchMenu(id);
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
@@ -1777,43 +1778,36 @@ public settingsMatchMenuHandler(id, menu, item, level, cid) {
 		}
 	}
 
-	menu_destroy(menu);
+	menu_destroy(iMenu);
 	return PLUGIN_HANDLED;
 }
 
 
 public verifMenu(id) {
-	new iMenu = menu_create("\yVerification menu^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
+	new iMenu = menu_create("\yVerification iMenu^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
 
-	menu_additem(iMenu, "\wNO", "1", 0);
-	menu_additem(iMenu, "\wYES", "2", 0);
+	menu_additem(iMenu, "No");
+	menu_additem(iMenu, "Yes");
+
 	menu_setprop(iMenu, MPROP_EXIT, MEXIT_NEVER);
-	menu_display(id, iMenu, 0);
+	menu_display(id, iMenu);
 }
 
-public verifMenuHandler(id, menu, item, level, cid) {
-	if (item == MENU_EXIT) {
-		menu_destroy(menu);
+public verifMenuHandler(id, iMenu, item) {
+	menu_destroy(iMenu);
 
-		return PLUGIN_HANDLED;
-	}
+	if (item == MENU_EXIT)
+		return;
 
-	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	new iKey = str_to_num(szData);
-
-	switch (iKey) {
-		case 1: {
-			menu_destroy(menu);
-			return PLUGIN_HANDLED;
+	switch (item) {
+		case 0: {
+			menu_destroy(iMenu);
+			return;
 		}
-		case 2: {
+		case 1: {
 			cmdStop(id);
 		}
 	}
-
-	menu_destroy(menu);
-	return PLUGIN_HANDLED;
 }
 
 public cmdStartRound(id) {
@@ -2043,6 +2037,7 @@ public taskPrepareMode(mode) {
 		}
 		case e_mDM: {
 			g_iCurrentMode = e_mDM;
+			set_cvar_num("sv_alltalk", 1);
 			set_cvar_num("mp_autoteambalance", 2);
 			set_cvar_num("mp_freezetime", 0);
 			set_cvar_num("mp_forcechasecam", 0);
@@ -2222,26 +2217,26 @@ public chooseCapsMenu(id) {
 	menu_display(id, iMenu, 0);
 }
 
-public chooseCapsHandler(id, menu, item) {
+public chooseCapsHandler(id, iMenu, item) {
 	if (!is_user_connected(id)) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return;
 	}
 
 	if (g_iCurrentMode != e_mCaptain) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return;
 	}
 
 	if (item == MENU_EXIT) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		chooseCapsMenu(id);
 		return;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(menu);
+	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(iMenu);
 
 	new iPlayer = str_to_num(szData);
 
@@ -2315,36 +2310,36 @@ public pickMenu(id) {
 	menu_display(id, iMenu, 0);
 }
 
-public pickHandler(id, menu, item) {
+public pickHandler(id, iMenu, item) {
 	if (!is_user_connected(id)) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return;
 	}
 
 	if (g_iCurrentMode != e_mCaptain) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return;
 	}
 
 	if (id != g_iCaptainPick) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return;
 	}
 
 	if (rg_get_user_team(id) == TEAM_SPECTATOR) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		return;
 	}
 
 	if (item == MENU_EXIT) {
-		menu_destroy(menu);
+		menu_destroy(iMenu);
 		pickMenu(id);
 		return;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(menu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(menu);
+	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(iMenu);
 
 	new iPlayer = str_to_num(szData);
 
