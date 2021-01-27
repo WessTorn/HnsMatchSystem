@@ -26,8 +26,8 @@ enum {
 	e_mKnife,
 	e_mCaptain,
 	e_mMatch,
-	e_mDM,
-	e_mPublic
+	e_mPublic,
+	e_mDM
 }
 new g_iCurrentMode;
 
@@ -133,7 +133,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.6", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.7", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -771,7 +771,7 @@ public fwdKnifePrim(const iPlayer) {
 }
 
 public fwdSetClientListening(iReceiver, iSender, bool:bListen) {
-	if (g_iCurrentMode <= e_mPaused || g_iCurrentMode == e_mCaptain || g_iCurrentMode == e_mPublic) {
+	if (g_iCurrentMode <= e_mPaused || g_iCurrentMode == e_mCaptain || g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) {
 		engfunc(EngFunc_SetClientListening, iReceiver, iSender, true);
 		forward_return(FMV_CELL, true);
 		return FMRES_SUPERCEDE;
@@ -905,7 +905,7 @@ public taskSetPlayerTeam(id) {
 	if (!is_user_connected(id))
 		return;
 
-	if (g_iCurrentMode >= e_mPaused && g_iCurrentMode != e_mPublic) {
+	if (g_iCurrentMode >= e_mPaused && g_iCurrentMode != e_mPublic && g_iCurrentMode != e_mDM) {
 		transferToSpec(id);
 		return;
 	}
@@ -2213,7 +2213,7 @@ public chooseCapsMenu(id) {
 	}
 
 	menu_setprop(iMenu, MPROP_EXITNAME, "Refresh");
-	menu_setprop(iMenu, MPROP_SHOWPAGE, false);
+	menu_setprop(iMenu, MPROP_SHOWPAGE, 0);
 	menu_display(id, iMenu, 0);
 }
 
