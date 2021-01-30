@@ -1,6 +1,14 @@
 /*
-	Config - Добавить
-	Play / Noplay (menu) - Доделать
+	Данная версия проверяется на ошибки!
+	
+	Ошибки: Меню
+
+	В след. версиях:
+	Play / Noplay (menu) - Доделать;
+	Добавить g_iGameMode Boost/Skill;
+	Доделать mapcfg;
+	убрать лишние проверки на access.
+
 */
 
 #include <amxmodx>
@@ -133,7 +141,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.7", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.7b", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -314,7 +322,7 @@ public EventDeathMsg() {
 		
 		setRole(killer);
 	}
-
+	
 	set_task(get_pcvar_float(g_eCvars[e_cDMRespawn]), "RespawnPlayer", victim);
 }
 
@@ -1542,6 +1550,7 @@ public mainMatchMenu(id) {
 	menu_additem(iMenu, "Change map", "7");
 	
 	menu_display(id, iMenu, 0);
+	return PLUGIN_HANDLED;
 }
 
 public mainMatchMenuHandler(id, iMenu, item) {
@@ -1952,30 +1961,19 @@ public getName(id) {
 }
 
 public taskPrepareMode(mode) {
+	new szPath[128];
+	get_configsdir(szPath, 127);
+	format(szPath, 127, "%s/mixsystem/mode", szPath);
 	switch (mode) {
 		case e_mTraining: {
 			g_iCurrentMode = e_mTraining;
-			set_cvar_num("sv_alltalk", 1);
-			set_cvar_num("mp_autoteambalance", 0);
-			set_cvar_num("mp_freezetime", 0);
-			set_cvar_num("mp_timelimit", 0);
-			set_cvar_num("mp_roundtime", 99);
-			set_cvar_num("mp_round_infinite", 0);
-			set_cvar_num("mp_auto_join_team", 0);
-			set_cvar_num("mp_roundrespawn_time", 20);
+			server_cmd("exec %s/training.cfg", szPath);
 			set_pcvar_num(g_eCvars[e_cLastMode], 0);
 			disableSemiclip();
 		}
 		case e_mKnife: {
 			g_iCurrentMode = e_mKnife;
-			set_cvar_num("mp_autoteambalance", 0);
-			set_cvar_num("mp_freezetime", 0);
-			set_cvar_num("mp_forcechasecam", 2);
-			set_cvar_num("mp_forcecamera", 2);
-			set_cvar_num("mp_timelimit", 0);
-			set_cvar_num("mp_round_infinite", 0);
-			set_cvar_num("mp_auto_join_team", 0);
-			set_cvar_num("mp_roundrespawn_time", 20);
+			server_cmd("exec %s/knife.cfg", szPath);
 			set_pcvar_num(g_eCvars[e_cLastMode], 0);
 			disableSemiclip();
 		}
@@ -1986,13 +1984,7 @@ public taskPrepareMode(mode) {
 			g_iCurrentSW = 1;
 			g_bGameStarted = true;
 
-			set_cvar_num("mp_autoteambalance", 0);
-			set_cvar_num("mp_forcechasecam", 2);
-			set_cvar_num("mp_forcecamera", 2);
-			set_cvar_num("mp_timelimit", 0);
-			set_cvar_num("mp_round_infinite", 0);
-			set_cvar_num("mp_auto_join_team", 0);
-			set_cvar_num("mp_roundrespawn_time", 20);
+			server_cmd("exec %s/match.cfg", szPath);
 			set_pcvar_num(g_eCvars[e_cLastMode], 0);
 
 			if (get_pcvar_num(g_eCvars[e_cSemiclip]) == 1) {
@@ -2022,14 +2014,7 @@ public taskPrepareMode(mode) {
 		}
 		case e_mPublic: {
 			g_iCurrentMode = e_mPublic;
-			set_cvar_num("mp_autoteambalance", 2);
-			set_cvar_num("mp_freezetime", 5);
-			set_cvar_num("mp_forcechasecam", 0);
-			set_cvar_num("mp_forcecamera", 0);
-			set_cvar_num("mp_timelimit", 0);
-			set_cvar_num("mp_round_infinite", 0);
-			set_cvar_num("mp_auto_join_team", 0);
-			set_cvar_num("mp_roundrespawn_time", 20);
+			server_cmd("exec %s/public.cfg", szPath);
 			set_pcvar_num(g_eCvars[e_cFlashNum], 1);
 			set_pcvar_num(g_eCvars[e_cLastMode], 1);
 			enableSemiclip(3);
@@ -2037,30 +2022,14 @@ public taskPrepareMode(mode) {
 		}
 		case e_mDM: {
 			g_iCurrentMode = e_mDM;
-			set_cvar_num("sv_alltalk", 1);
-			set_cvar_num("mp_autoteambalance", 2);
-			set_cvar_num("mp_freezetime", 0);
-			set_cvar_num("mp_forcechasecam", 0);
-			set_cvar_num("mp_forcecamera", 0);
-			set_cvar_num("mp_timelimit", 0);
-			set_cvar_num("mp_round_infinite", 1);
-			set_cvar_num("mp_auto_join_team", 1);
-			set_cvar_num("mp_roundrespawn_time", -1);
-			set_cvar_num("mp_roundtime", 0);
+			server_cmd("exec %s/deathmatch.cfg", szPath);
 			set_pcvar_num(g_eCvars[e_cFlashNum], 1);
 			set_pcvar_num(g_eCvars[e_cLastMode], 2);
 			enableSemiclip(3);
 		} 
 		case e_mCaptain: {
 			g_iCurrentMode = e_mCaptain;
-			set_cvar_num("sv_alltalk", 1);
-			set_cvar_num("mp_autoteambalance", 0);
-			set_cvar_num("mp_freezetime", 0);
-			set_cvar_num("mp_timelimit", 0);
-			set_cvar_num("mp_roundtime", 99);
-			set_cvar_num("mp_round_infinite", 0);
-			set_cvar_num("mp_auto_join_team", 0);
-			set_cvar_num("mp_roundrespawn_time", 20);
+			server_cmd("exec %s/captain.cfg", szPath);
 			enableSemiclip(0);
 		}
 	}
