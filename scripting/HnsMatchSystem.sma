@@ -1,10 +1,5 @@
 /*
-	Данная версия проверяется на ошибки!
-	
-	Ошибки: Меню
-
 	В след. версиях:
-	Play / Noplay (menu) - Доделать;
 	Добавить g_iGameMode Boost/Skill;
 	Доделать mapcfg;
 	убрать лишние проверки на access.
@@ -141,7 +136,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.7b", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.7r", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -1497,6 +1492,9 @@ public cmdAa100(id) {
 }
 
 public mainMatchMenu(id) {
+	if (!is_user_connected(id))
+		return;
+
 	new iMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
 
 	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
@@ -1550,7 +1548,6 @@ public mainMatchMenu(id) {
 	menu_additem(iMenu, "Change map", "7");
 	
 	menu_display(id, iMenu, 0);
-	return PLUGIN_HANDLED;
 }
 
 public mainMatchMenuHandler(id, iMenu, item) {
@@ -1628,8 +1625,8 @@ public mainMatchMenuHandler(id, iMenu, item) {
 }
 
 public customMenu(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!is_user_connected(id))
+		return;
 
 	new iMenu = menu_create("\yHide'n'Seek mix system", "customMenuHandler");
 
@@ -1639,7 +1636,6 @@ public customMenu(id) {
 
 
 	menu_display(id, iMenu, 0);
-	return PLUGIN_HANDLED;
 }
 
 public customMenuHandler(id, iMenu, item) {
@@ -1666,6 +1662,9 @@ public customMenuHandler(id, iMenu, item) {
 
 public settingsMatchMenu(id) {
 	if (~get_user_flags(id) & access)
+		return;
+
+	if (!is_user_connected(id))
 		return;
 
 	new title[64];
@@ -1793,6 +1792,9 @@ public settingsMatchMenuHandler(id, iMenu, item) {
 
 
 public verifMenu(id) {
+	if (!is_user_connected(id))
+		return;
+
 	new iMenu = menu_create("\yVerification iMenu^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
 
 	menu_additem(iMenu, "No");
