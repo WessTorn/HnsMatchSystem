@@ -136,7 +136,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.7r", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.8", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -933,6 +933,9 @@ public taskSetPlayerTeam(id) {
 }
 
 public taskPlay(id) {
+	if (!is_user_connected(id))
+		return;
+	
 	new iMenu = menu_create("\rYou play?", "handlePlayMenu");
 
 	menu_additem(iMenu, "Yes");
@@ -943,12 +946,13 @@ public taskPlay(id) {
 }
 
 public handlePlayMenu(id, iMenu, item) {
-	menu_destroy(iMenu);
 	if (!is_user_connected(id))
 		return;
 
 	if (item == MENU_EXIT)
 		return;
+
+	menu_destroy(iMenu);
 	
 	switch (item) {
 		case 0: cmdPlay(id);
@@ -1546,19 +1550,17 @@ public mainMatchMenu(id) {
 	menu_additem(iMenu, "Swap teams^n", "5");
 	menu_additem(iMenu, "Team Transfer Player", "6");
 	menu_additem(iMenu, "Change map", "7");
-	
-	menu_display(id, iMenu, 0);
+
+	menu_display(id, iMenu);
 }
 
 public mainMatchMenuHandler(id, iMenu, item) {
 	if (item == MENU_EXIT) {
-		menu_destroy(iMenu);
 		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(iMenu);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
