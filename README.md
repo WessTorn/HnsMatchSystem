@@ -1,24 +1,47 @@
-# HnsMatchSystem
+## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
-# Требование
-[Amxmodx](https://dev-cs.ru/resources/405/) 1.9.0 последняя версия
+## Требование
+- [ReHLDS](https://dev-cs.ru/resources/64/)
+- [Amxmodx 1.9.0](https://www.amxmodx.org/downloads-new.php)
+- [Reapi 5.19 (last)](https://dev-cs.ru/resources/73/updates)
+- [ReGameDLL 5.19 (last)](https://dev-cs.ru/resources/67/updates)
+- [ReSemiclip 2.3.9 (last)](https://dev-cs.ru/resources/71/updates)
 
-[Reapi](https://dev-cs.ru/resources/73/) Последняя версия
+## Установка
+ 
+1. Скомпилируйте плагин.
 
-[Regamedll](https://dev-cs.ru/resources/67/) Последняя версия
+2. Скопируйте скомпилированный файл `.amxx` в директорию: `amxmodx/plugins/`
 
-# Установка
+3. Скопируйте содержимое папки `configs/` в директорию: `amxmodx/configs/`
 
-Папку configs/mixsystem перенести в папку configs (addons/amxmodx/configs) на вашем сервере.
+4. Скопируйте содержимое папки `data/lang/` в директорию: `amxmodx/data/lang/`
 
-Файл data/lang/mixsystem.txt перенести в папку  lang (addons/amxmodx/data/lang) на вашем сервере.
+5. Скопируйте содержимое папки `modules/` (Если у вас сервер на линуксе, то берем файл `.so` , если винда `.dll`) в директорию: `amxmodx/modules/`
 
-Плагин plugins/mixsystem.amxx перенести в папку plugins (addons/amxmodx/data/plugins) на вашем сервере.
+6. Пропишите `.amxx` в файле `amxmodx/configs/plugins.ini`
 
-В папке configs на вашем сервере нужно добавить строку mixsystem.amxx в файле plugins.ini (addons/amxmodx/configs/plugins.ini).
+7. Перезапустите сервер или поменяйте карту.
 
-# Благодарности / Aвторы других плагинов
+## Cvars
+
+| Cvar                 | Default    | Descripción |
+| :------------------- | :--------: | :--------------------------------------------------- |
+| hns_wintime              | 15 | Кол-во минут для победы ТТ                                  |
+| hns_flash	           | 2         | Кол-во флешек (Плагин сам изменяет)                  |
+| hns_smoke       |     3     | Кол-во дыма (Плагин сам изменяет)                        |
+| hns_aa        | 100          | sv_airaccelerate <br/>`100`<br/>`10`                          |
+| hns_semiclip       | 0          | Проходить сквозь друг друга `0` off `1` on (Плагин сам изменяет)   |
+| hns_hpmode   |    100   | Кол-во HP `100` `1` (работает только во время Public/DM/Match)  |
+| hns_dmrespawn     |      3     | Время (в секундах), в течение которого игрок возродится в режиме DM  |
+
+## Дела, которые необходимо сделать
+- Исправить баги
+- HNS Статистику игроков
+- Новый pts
+
+## Благодарности / Aвторы других плагинов
 [Garey - Мixsystem](https://github.com/Garey27)
 
 [Medusa - Мixsystem](https://dev-cs.ru/members/65/)
