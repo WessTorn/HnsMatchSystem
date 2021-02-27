@@ -14,6 +14,7 @@
 #include <PersistentDataStorage>
 
 #include <hns-match/globals>
+#include <hns-match/cmds>
 #include <hns-match/hook>
 #include <hns-match/ham>
 #include <hns-match/forward>
@@ -26,3 +27,4 @@
 #include <hns-match/hookOnOff>
 #include <hns-match/captain>
 #include <hns-match/hnsmenu>
+#include <hns-match/hud>

@@ -1,0 +1,651 @@
+#if defined _cmds_included
+  #endinput
+#endif
+
+#define _cmds_included
+
+#define surrenderTimeDelay 120 // Добавить в квар
+
+stock cmds_init() {
+	register_clcmd("say", "sayHandle");
+	register_clcmd("nightvision", "mainMatchMenu");
+
+	register_clcmd("chooseteam", "blockCmd");
+	register_clcmd("jointeam", "blockCmd");
+	register_clcmd("joinclass", "blockCmd");
+
+	RegisterSayCmd("showknife", "knife", "cmdShowKnife");
+	RegisterSayCmd("hideknife", "hknife", "cmdShowKnife");
+
+	RegisterSayCmd("pub", "public", "cmdPubMode", access, "Public mode");
+	RegisterSayCmd("dm", "DM", "cmdDMMode", access, "Public mode");
+	RegisterSayCmd("specall", "specall", "cmdTransferSpec", access, "Spec Transfer");
+	RegisterSayCmd("ttall", "ttall", "cmdTransferTT", access, "TT Transfer");
+	RegisterSayCmd("ctall", "ctall", "cmdTransferCT", access, "CT Transfer");
+	RegisterSayCmd("startmix", "start", "cmdStartRound", access, "Starts Round");
+	RegisterSayCmd("kniferound", "kf", "cmdKnifeRound", access, "Knife Round");
+	RegisterSayCmd("captain", "cap", "cmdCaptain", access, "Captain Mode");
+	RegisterSayCmd("stop", "st", "cmdStopMode", access, "Stop Current Mode");
+	RegisterSayCmd("skill", "skill", "cmdSkillMode", access, "Skill mode");
+	RegisterSayCmd("boost", "boost", "cmdBoostMode", access, "Boost mode");
+	RegisterSayCmd("aa10", "10aa", "cmdAa10", access, "10aa");
+	RegisterSayCmd("aa100", "100aa", "cmdAa100", access, "100aa");
+	RegisterSayCmd("rr", "restart", "cmdRestartRound", access, "Restart round");
+	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "Swap Teams");
+	RegisterSayCmd("mix", "mix", "mainMatchMenu", access, "Main menu admin");
+	RegisterSayCmd("pause", "ps", "cmdStartPause", access, "Start pause");
+	RegisterSayCmd("live", "unpause", "cmdStopPause", access, "Unpause");
+	RegisterSayCmd("surrender", "sur", "cmdSurrender", 0, "Surrender vote");
+	RegisterSayCmd("score", "s", "cmdShowTimers", 0, "Score");
+	RegisterSayCmd("pick", "pick", "cmdPick", 0, "Pick player");
+	RegisterSayCmd("back", "spec", "cmdTeamSpec", 0, "Spec/Back player");
+	RegisterSayCmd("np", "noPlay", "cmdNoplay", 0, "No play");
+	RegisterSayCmd("ip", "play", "cmdPlay", 0, "Play play");
+}
+
+public sayHandle(id) {
+	new szArgs[64];
+
+	read_args(szArgs, charsmax(szArgs));
+	remove_quotes(szArgs);
+	trim(szArgs);
+
+	if (!szArgs[0])
+		return PLUGIN_HANDLED;
+
+	if (szArgs[0] != '/')
+		return PLUGIN_CONTINUE;
+
+	new szTarget[32];
+
+	parse(szArgs, \
+		  szArgs, charsmax(szArgs), \
+		  szTarget, charsmax(szTarget));
+
+	if (equali(szArgs, "/wintime", 8)) {
+		trim(szTarget);
+
+		if (!(get_user_flags(id) & access))
+			return PLUGIN_HANDLED;
+
+		if (is_str_num(szTarget)) {
+			set_pcvar_num(g_eCvars[e_cCapTime], str_to_num(szTarget));
+			client_print_color(0, print_team_blue, "%L", id, "SET_WINTIME", prefix, getUserName(id), str_to_num(szTarget));
+		}
+		return PLUGIN_CONTINUE;
+	}
+
+	if (equali(szArgs, "/Roundtime", 10)) {
+		trim(szTarget);
+
+		if (!(get_user_flags(id) & access))
+			return PLUGIN_HANDLED;
+
+		if (is_str_num(szTarget)) {
+			set_pcvar_float(g_eCvars[e_cRoundTime], str_to_float(szTarget));
+			client_print_color(0, print_team_blue, "%L", id, "SET_ROUNDTIME", prefix, getUserName(id), str_to_float(szTarget));
+		}
+		return PLUGIN_CONTINUE;
+	}
+
+	return PLUGIN_CONTINUE;
+}
+
+public blockCmd(id) {
+	if (g_iCurrentMode != e_mTraining)
+		return PLUGIN_HANDLED;
+
+	return PLUGIN_CONTINUE;
+}
+
+public cmdShowKnife(id) {
+	g_bOnOff[id] = !g_bOnOff[id];
+
+	client_print_color(id, print_team_blue, "%L", id, "SHOW_KNIFE", prefix, g_bOnOff[id] ? "^3in" : "^3");
+
+	if (!is_user_alive(id))
+		return PLUGIN_HANDLED;
+
+	if (get_user_weapon(id) == CSW_KNIFE) {
+		if (g_bOnOff[id]){
+			set_pev(id, pev_viewmodel, 0);
+		} else {
+			new iWeapon = get_member(id, m_pActiveItem);
+			if (iWeapon != -1)
+				ExecuteHamB(Ham_Item_Deploy, iWeapon);
+		}
+	}
+
+	return PLUGIN_CONTINUE;
+}
+
+public cmdPubMode(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	if (g_iCurrentMode != e_mPublic) {
+		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
+			taskPrepareMode(e_mPublic);
+			client_print_color(0, print_team_blue, "%L", id, "PUB_ACTIVATED", prefix, getUserName(id));
+		}
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "PUB_ALREADY", prefix, getUserName(id));
+	}
+
+	if (containi(g_eMatchInfo[e_mMapName], "boost") != -1) {
+		disableSemiclip();
+	} else {
+		enableSemiclip(3);
+	}
+
+	removeHook(id);
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdDMMode(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	if (g_iCurrentMode != e_mDM) {
+		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
+			taskPrepareMode(e_mDM);
+			client_print_color(0, print_team_blue, "%L", id, "DM_ACTIVATED", prefix, getUserName(id));
+		}
+	} else {
+		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
+			client_print_color(id, print_team_blue, "%L", id, "DM_ALREADY", prefix, getUserName(id));
+		}
+	}
+
+	if (containi(g_eMatchInfo[e_mMapName], "boost") != -1) {
+		disableSemiclip();
+	} else {
+		enableSemiclip(3);
+	}
+
+	removeHook(id);
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdTransferSpec(id) {
+	if (!(get_user_flags(id) & access))
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "TRANSF_SPEC", prefix, getUserName(id));
+	transferUsers(TEAM_SPECTATOR);
+	return PLUGIN_HANDLED;
+}
+
+public cmdTransferTT(id) {
+	if (!(get_user_flags(id) & access))
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "TRANSF_TT", prefix, getUserName(id));
+	transferUsers(TEAM_TERRORIST);
+	return PLUGIN_HANDLED;
+}
+
+public cmdTransferCT(id) {
+	if (!(get_user_flags(id) & access))
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "TRANSF_CT", prefix, getUserName(id));
+	transferUsers(TEAM_CT);
+	return PLUGIN_HANDLED;
+}
+
+public cmdStartRound(id) {
+	if (get_user_flags(id) & access) {
+		if (g_iCurrentMode != e_mTraining) {
+			client_print_color(id, print_team_blue, "%L", id, "NOT_START_MIX", prefix);
+			return;
+		} else {
+			if (equali(g_eMatchInfo[e_mMapName], knifeMap))
+				return;
+
+			client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
+			g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
+			pfStartMatch();
+		}
+	}
+}
+
+stock pfStartMatch() {
+	rg_send_audio(0, "plats/elevbell1.wav");
+	set_task(2.5, "taskPrepareMode", e_mMatch);
+	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "Going Live in 3 second!");
+	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "Live! Live! Live!^nGood Luck & Have Fun!");
+}
+
+public cmdKnifeRound(id) {
+	if (get_user_flags(id) & access) {
+		if (g_iCurrentMode != e_mTraining) {
+			client_print_color(id, print_team_blue, "%L", id, "NOT_START_KNIFE", prefix);
+			return;
+		} else {
+			pfKnifeRound(id);
+			removeHook(id);
+		}
+	}
+}
+
+stock pfKnifeRound(id) {
+	taskPrepareMode(e_mKnife);
+	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "Knife Round Started");
+
+	if (id)
+		client_print_color(0, print_team_blue, "%L", id, "START_KNIFE", prefix, getUserName(id));
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdCaptain(id) {
+	if (~get_user_flags(id) & access)
+		return;
+
+	if (!equali(g_eMatchInfo[e_mMapName], knifeMap))
+		return;
+
+	if (g_iCurrentMode != e_mTraining)
+		return;
+
+	resetCaptainData();
+	g_iCurrentMode = e_mCaptain;
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "c");
+
+	for (new i; i < iNum; i++) {
+		new iPlayer = iPlayers[i];
+
+		if (getUserTeam(iPlayer) == TEAM_SPECTATOR)
+			continue;
+
+		transferUserToSpec(iPlayer);
+	}
+	chooseCapsMenu(id);
+	client_print_color(0, print_team_blue, "%L", id, "CAP_CHOOSE", prefix, id);
+}
+
+public cmdStopMode(id) {
+	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
+		verifMenu(id);
+	} else {
+		cmdStop(id);
+	}
+}
+
+public cmdStop(id) {
+	if (id && ~get_user_flags(id) & access)
+		return;
+
+	if (!g_iCurrentMode)
+		return;
+
+	if (!id) {
+		if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
+			g_bGameStarted = false;
+			g_bSurvival = false;
+			g_bPlayersListLoaded = false;
+			taskPrepareMode(e_mTraining);
+			return;
+		}
+
+		rg_send_audio(0, "fvox/fuzz.wav");
+		taskPrepareMode(e_mTraining);
+		return;
+	}
+
+	switch (g_iCurrentMode) {
+		case e_mPaused, e_mMatch: {
+			client_print_color(0, print_team_blue, "%L", id, "STOP_MIX", prefix, getUserName(id));
+			g_bGameStarted = false;
+			g_bSurvival = false;
+			g_bPlayersListLoaded = false;
+		}
+		case e_mKnife: {
+			client_print_color(0, print_team_blue, "%L", id, "STOP_KNIFE", prefix, getUserName(id));
+		}
+		case e_mCaptain: {
+			client_print_color(0, print_team_blue, "%L", id, "STOP_CAP", prefix, getUserName(id));
+			resetCaptainData();
+			return;
+		}
+		case e_mPublic: {
+			client_print_color(0, print_team_blue, "%L", id, "STOP_PUB", prefix, getUserName(id));
+		}
+		case e_mDM: {
+			client_print_color(0, print_team_blue, "%L", id, "STOP_DM", prefix, getUserName(id));
+		}
+	}
+	rg_send_audio(0, "fvox/fuzz.wav");
+	taskPrepareMode(e_mTraining);
+}
+
+public cmdSkillMode(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "TYPE_SKILL", prefix, getUserName(id));
+
+	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
+		enableSemiclip(0);
+	} else {
+		if (g_iCurrentMode == e_mTraining)
+			enableSemiclip(0);
+		else
+			enableSemiclip(3);
+	}
+
+	if (g_iCurrentMode == e_mMatch) {
+		set_cvar_num("mp_freezetime", 5);
+		set_pcvar_num(g_eCvars[e_cFlashNum], 1);
+		set_pcvar_num(g_eCvars[e_cSmokeNum], 1);
+	}
+
+	set_pcvar_num(g_eCvars[e_cSemiclip], 1);
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdBoostMode(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "TYPE_BOOST", prefix, getUserName(id));
+
+	if (g_iCurrentMode == e_mMatch) {
+		set_cvar_num("mp_freezetime", 15);
+		set_pcvar_num(g_eCvars[e_cFlashNum], 3);
+		set_pcvar_num(g_eCvars[e_cSmokeNum], 1);
+	}
+	set_pcvar_num(g_eCvars[e_cSemiclip], 0);
+	disableSemiclip();
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdAa10(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "AA_10", prefix, getUserName(id));
+
+	set_cvar_num("sv_airaccelerate", 10);
+	set_pcvar_num(g_eCvars[e_cAA], 10);
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdAa100(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "AA_100", prefix, getUserName(id));
+
+	set_cvar_num("sv_airaccelerate", 100);
+	set_pcvar_num(g_eCvars[e_cAA], 100);
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdRestartRound(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "GAME_RESTART", prefix, getUserName(id));
+	restartRound();
+	removeHook(id);
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdSwapTeams(id) {
+	if (~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	client_print_color(0, print_team_blue, "%L", id, "GAME_SWAP", prefix, getUserName(id));
+
+	restartRound();
+	rg_swap_all_players();
+	removeHook(id);
+	g_iCurrentSW = !g_iCurrentSW;
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdStartPause(id) {
+	if (id && ~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	if (g_iCurrentMode == e_mMatch) {
+		g_iCurrentMode = e_mPaused;
+
+		if (g_bGameStarted) {
+			g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
+
+			g_bSurvival = false;
+			g_bGameStarted = false;
+		} else {
+			if (id)
+				client_print_color(id, print_team_blue,  "%L", id, "GAME_NOTSTARTED", prefix);
+		}
+
+		new iPlayers[32], iNum;
+		get_players(iPlayers, iNum, "ac");
+
+		for (new i; i < iNum; i++) {
+			new iPlayer = iPlayers[i];
+			rg_remove_all_items(iPlayer);
+			rg_give_item(iPlayer, "weapon_knife");
+			setUserGodmode(iPlayer, true);
+			rg_reset_maxspeed(iPlayer);
+		}
+
+		set_task(1.0, "taskHudPaused", .flags = "b");
+
+		if (id) {
+			client_print_color(0, print_team_blue, "%L", id, "GAME_PAUSED", prefix, getUserName(id));
+		}
+
+		rg_send_audio(0, "fvox/activated.wav");
+		disableSemiclip();
+	}
+	return PLUGIN_HANDLED;
+}
+
+public taskHudPaused() {
+	if (g_iCurrentMode == e_mPaused) {
+		set_dhudmessage(100, 100, 100, -1.0, 0.75, 0, 0.0, 1.01, 0.0, 0.0);
+		show_dhudmessage(0, "GAME PAUSE");
+	}
+}
+
+public cmdStopPause(id) {
+	if (id && ~get_user_flags(id) & access)
+		return PLUGIN_HANDLED;
+
+	if (g_iCurrentMode == e_mPaused) {
+		g_iCurrentMode = e_mMatch;
+
+		if (id) {
+			client_print_color(0, print_team_blue, "%L", id, "GAME_UNPAUSED", prefix, getUserName(id));
+		}
+
+		rg_send_audio(0, "fvox/deactivated.wav");
+		g_bGameStarted = true;
+
+		setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "Game Unpause^nLive Live Live");
+
+		restartRound();
+		removeHook(id);
+
+		if (get_pcvar_num(g_eCvars[e_cSemiclip]) == 1) {
+			set_cvar_num("mp_freezetime", 5);
+			enableSemiclip(3);
+		} else {
+			set_cvar_num("mp_freezetime", 15);
+			disableSemiclip();
+		}
+		loadMapCFG();
+	}
+	return PLUGIN_HANDLED;
+}
+
+public cmdSurrender(id) {
+	if (!is_user_connected(id))
+		return;
+
+	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused)
+		return;
+
+	if (!getUserInMatch(id))
+		return;
+
+	if (g_eSurrenderData[e_sStarted])
+		return;
+
+	if (g_eSurrenderData[e_sFlDelay] > get_gametime()) {
+		new szTime[24];
+		fnConvertTime(g_eSurrenderData[e_sFlDelay] - get_gametime(), szTime, 23, false);
+		client_print_color(id, print_team_blue, "%L", id, "SUR_WAIT", prefix, szTime);
+		return;
+	}
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ce", getUserTeam(id) == TEAM_TERRORIST ? "TERRORIST" : "CT");
+
+	if (iNum != g_eMatchInfo[e_mTeamSizeTT])
+		return;
+
+	g_eSurrenderData[e_sStarted] = true;
+	g_eSurrenderData[e_sInitiator] = id;
+	g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
+	client_print_color(0, print_team_blue, "%L", id, "SUR_PLAYER", prefix, id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
+
+	for (new i; i < iNum; i++) {
+		new iPlayer = iPlayers[i];
+		surrenderMenu(iPlayer);
+	}
+	set_task(1.0, "taskSurrender", .flags = "b");
+}
+
+public cmdShowTimers(id) {
+	if (g_bGameStarted || g_iCurrentMode == e_mPaused) {
+		new timeToWin[2][24];
+		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
+		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
+
+		new timeDiff[2][24];
+		fnConvertTime(g_flSidesTime[g_iCurrentSW] - g_flSidesTime[!g_iCurrentSW], timeDiff[0], 23, false);
+		fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], timeDiff[1], 23, false);
+
+		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
+		get_players(iPlayers, TTsize, "ce", "TERRORIST");
+		get_players(iPlayers, CTSize, "ce", "CT");
+
+		if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
+			if (!g_iCurrentSW)
+				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME1", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[1]);
+			else
+				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME2", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
+		} else if(g_flSidesTime[!g_iCurrentSW] < g_flSidesTime[g_iCurrentSW]) {
+			if (!g_iCurrentSW)
+				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME3", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
+			else
+				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME4", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[0]);
+		} else {
+			if (!g_iCurrentSW)
+				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME5", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
+			else
+				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME6", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
+		}
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "SCORE_NOT", prefix);
+	}
+}
+
+public cmdPick(id) {
+	if (!is_user_connected(id))
+		return;
+
+	if (g_iCurrentMode != e_mCaptain)
+		return;
+
+	if (id != g_iCaptainPick)
+		return;
+
+	pickMenu(id);
+}
+
+public cmdTeamSpec(id) {
+	if (g_iCurrentMode != e_mPublic)
+		return;
+
+	if (g_iCurrentMode != e_mDM)
+		return;
+
+	g_bSpec[id] = !g_bSpec[id];
+
+	if (g_bSpec[id]) {
+		if (getUserTeam(id) == TEAM_SPECTATOR) {
+			g_bSpec[id] = false;
+			return;
+		}
+		hTeam[id] = getUserTeam(id);
+		transferUserToSpec(id);
+	} else {
+		if (getUserTeam(id) != TEAM_SPECTATOR) {
+			g_bSpec[id] = true;
+			return;
+		}
+		rg_set_user_team(id, hTeam[id]);
+	}
+}
+
+public cmdNoplay(id) {
+	if (!g_bNoplay[id]) {
+		g_bNoplay[id] = true;
+		client_print_color(0, print_team_blue, "%L", id, "STATUS_NOPLAY", prefix, getUserName(id));
+	}
+}
+
+public cmdPlay(id) {
+	if (g_bNoplay[id]) {
+		g_bNoplay[id] = false;
+		client_print_color(0, print_team_blue, "%L", id, "STATUS_PLAY", prefix, getUserName(id));
+	}
+}
+
+stock RegisterSayCmd(const szCmd[], const szShort[], const szFunc[], flags = -1, szInfo[] = "") {
+	new szTemp[65], szInfoLang[65];
+	format(szInfoLang, 64, "%L", LANG_SERVER, szInfo);
+
+	format(szTemp, 64, "say /%s", szCmd);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	format(szTemp, 64, "say .%s", szCmd);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	format(szTemp, 64, "/%s", szCmd);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	format(szTemp, 64, "%s", szCmd);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	format(szTemp, 64, "say /%s", szShort);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	format(szTemp, 64, "say .%s", szShort);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	format(szTemp, 64, "/%s", szShort);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	format(szTemp, 64, "%s", szShort);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+
+	return 1;
+}

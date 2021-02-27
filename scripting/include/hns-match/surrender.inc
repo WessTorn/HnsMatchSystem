@@ -4,8 +4,7 @@
 
 #define _surrender_included
 
-#define surrenderTimeDelay 120
-#define surrenderVoteTime 10
+#define surrenderVoteTime 10 // Добавить в квар
 
 enum _:SurrenderVote {
 	e_sYes,
