@@ -14,6 +14,12 @@ stock getUserName(id) {
 	return szName;
 }
 
+stock getUserKey(id) {
+	new szAuth[24];
+	get_user_authid(id, szAuth, charsmax(szAuth));
+	return szAuth;
+}
+
 stock bool:getUserInMatch(id) {
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused)
 		return false;

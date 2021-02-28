@@ -28,3 +28,4 @@
 #include <hns-match/captain>
 #include <hns-match/hnsmenu>
 #include <hns-match/hud>
+#include <hns-match/showinfo>

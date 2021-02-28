@@ -11,7 +11,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.9.2", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.9.3", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -33,7 +33,7 @@ public plugin_init() {
 	event_init();
 	ham_init();
 	forward_init();
-	message_init();     
+	message_init();
 
 	set_task(0.5, "taskDelayedMode");
 
@@ -41,7 +41,8 @@ public plugin_init() {
 	registerMode();
 	loadPlayers();
 
-	afk_init();
+	g_MsgSync = CreateHudSyncObj();
+	g_tPlayerInfo = TrieCreate();
 
 	register_dictionary("mixsystem.txt");
 }
@@ -134,11 +135,24 @@ public PDS_Save() {
 }
 
 public plugin_end() {
+	TrieDestroy(g_tPlayerInfo);
 	ArrayDestroy(g_aPlayersLoadData);
 }
 
 public client_putinserver(id) {
 	g_bOnOff[id] = false;
+
+	TrieGetArray(g_tPlayerInfo, getUserKey(id), g_ePlayerInfo[id], PlayerInfo_s);
+	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
+		if (g_ePlayerInfo[id][e_plrRetryGameStops] < g_iGameStops) {
+			if (g_ePlayerInfo[id][e_plrRetryTime]) {
+				g_ePlayerInfo[id][e_plrSurviveTime] -= g_ePlayerInfo[id][e_plrRetryTime];
+				g_ePlayerInfo[id][e_plrRetryTime] = 0.0;
+			}
+		}
+	} else {
+		arrayset(g_ePlayerInfo[id], 0, PlayerInfo_s);
+	}
 }
 
 public client_disconnected(id) {
@@ -227,7 +241,15 @@ public taskPrepareMode(mode) {
 
 restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
+		new iPlayers[32], iNum;
+		get_players(iPlayers, iNum, "c");
+
 		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
+
+		for (new i; i < iNum; i++) {
+			new iPlayer = iPlayers[i];
+			ResetPlayerRoundData(iPlayer);
+		}
 	}
 	g_bSurvival = false;
 	rg_round_end(delay, WINSTATUS_DRAW, ROUND_END_DRAW, "Round Restarted", "none");
@@ -246,6 +268,11 @@ stock loadMapCFG() {
 		server_cmd("exec %s", szPath);
 	else
 		server_cmd("mp_roundtime 3.5");
+}
+
+ResetPlayerRoundData(id) {
+	if (getUserTeam(id) == TEAM_TERRORIST)
+	g_ePlayerInfo[id][e_plrSurviveTime] -= g_eRoundInfo[id][e_rndSurviveTime];
 }
 
 fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {

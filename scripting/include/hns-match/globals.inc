@@ -26,6 +26,24 @@ enum _:PlayersLoad_s {
 
 new Array:g_aPlayersLoadData;
 
+enum _:PlayerInfo_s
+{
+	Float:e_plrSurviveTime,
+	e_plrRetryGameStops,
+	Float:e_plrRetryTime
+};
+new Trie:g_tPlayerInfo;
+new g_ePlayerInfo[MAX_PLAYERS + 1][PlayerInfo_s];
+
+enum _:RoundInfo_s
+{
+	Float:e_rndSurviveTime
+};
+
+new g_eRoundInfo[MAX_PLAYERS + 1][RoundInfo_s];
+
+new g_iGameStops;
+
 enum _:CaptainTeam_s {
 	e_cTT,
 	e_cCT
@@ -82,3 +100,7 @@ new g_szBuffer[2048];
 
 new TeamName:hTeam[MAX_PLAYERS + 1];
 new HamHook:playerKilledPre;
+
+new g_MsgSync;
+
+new g_iBestAuth[10][MAX_AUTHID_LENGTH];

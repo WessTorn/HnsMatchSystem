@@ -41,6 +41,7 @@ stock cmds_init() {
 	RegisterSayCmd("back", "spec", "cmdTeamSpec", 0, "Spec/Back player");
 	RegisterSayCmd("np", "noPlay", "cmdNoplay", 0, "No play");
 	RegisterSayCmd("ip", "play", "cmdPlay", 0, "Play play");
+	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
 }
 
 public sayHandle(id) {
@@ -207,12 +208,22 @@ public cmdStartRound(id) {
 
 			client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
 			g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
+			
+			new iPlayers[MAX_PLAYERS], iNum;
+			get_players(iPlayers, iNum, "c");
+			for (new i; i < iNum; i++) {
+				new iPlayer = iPlayers[i];
+				arrayset(g_ePlayerInfo[iPlayer], 0, PlayerInfo_s);
+			}
+			
+
 			pfStartMatch();
 		}
 	}
 }
 
 stock pfStartMatch() {
+	g_iGameStops = 0;
 	rg_send_audio(0, "plats/elevbell1.wav");
 	set_task(2.5, "taskPrepareMode", e_mMatch);
 	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "Going Live in 3 second!");
@@ -399,6 +410,9 @@ public cmdRestartRound(id) {
 	restartRound();
 	removeHook(id);
 
+	if (g_iCurrentMode == e_mMatch)
+	g_iGameStops++;
+
 	return PLUGIN_HANDLED;
 }
 
@@ -413,6 +427,9 @@ public cmdSwapTeams(id) {
 	removeHook(id);
 	g_iCurrentSW = !g_iCurrentSW;
 
+	if (g_iCurrentMode == e_mMatch)
+		g_iGameStops++;
+
 	return PLUGIN_HANDLED;
 }
 
@@ -421,10 +438,23 @@ public cmdStartPause(id) {
 		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode == e_mMatch) {
+
+		if (id)
+			g_iGameStops++;
+
+		new iPlayers[32], iNum;
+
 		g_iCurrentMode = e_mPaused;
 
 		if (g_bGameStarted) {
 			g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
+			
+			get_players(iPlayers, iNum, "c");
+			for (new i; i < iNum; i++) {
+				new iPlayer = iPlayers[i];
+				ResetPlayerRoundData(iPlayer);
+				arrayset(g_eRoundInfo[iPlayer], 0, RoundInfo_s);
+			}
 
 			g_bSurvival = false;
 			g_bGameStarted = false;
@@ -433,9 +463,7 @@ public cmdStartPause(id) {
 				client_print_color(id, print_team_blue,  "%L", id, "GAME_NOTSTARTED", prefix);
 		}
 
-		new iPlayers[32], iNum;
 		get_players(iPlayers, iNum, "ac");
-
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
 			rg_remove_all_items(iPlayer);

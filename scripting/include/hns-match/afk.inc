@@ -13,12 +13,6 @@ new iPlayersAfk;
 
 new Float:flAfkOrigin[MAX_PLAYERS + 1][3];
 
-new g_MsgSync;
-
-stock afk_init() {
-	g_MsgSync = CreateHudSyncObj();
-}
-
 public taskCheckAfk() {
 	if (g_iCurrentMode != e_mMatch) {
 		ResetAfkData();

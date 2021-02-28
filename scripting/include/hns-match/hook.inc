@@ -10,6 +10,7 @@ stock hook_init() {
 	RegisterHookChain(RG_CSGameRules_RestartRound, "rgRestartRound", false);
 	RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "rgOnRoundFreezeEnd", true);
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
+	RegisterHookChain(RH_SV_DropClient, "rgDropClient", true);
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
 	RegisterHookChain(RG_PM_Move, "rgPlayerMovePost", true);
@@ -123,8 +124,14 @@ public rgRestartRound() {
 	EnableHamForward(playerKilledPre);
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ce", "TERRORIST");
 
+	get_players(iPlayers, iNum, "c");
+	for (new j; j < iNum; j++) {
+		new id = iPlayers[j];
+		arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
+	}
+
+	get_players(iPlayers, iNum, "ce", "TERRORIST");
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 		if (g_bLastFlash[iPlayer]) {
@@ -159,6 +166,7 @@ public rgOnRoundFreezeEnd() {
 		g_bSurvival = true;
 
 	set_task(g_eCvars[e_cSemiclip] ? 3.0 : 5.0, "taskCheckAfk");
+	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 
 	set_task(0.25, "taskRoundEnd", .flags = "b");
 }
@@ -168,12 +176,19 @@ public taskRoundEnd() {
 		new iPlayers[32], count;
 		get_players(iPlayers, count, "ce", "TERRORIST");
 
+		for(new i; i < 10; i++) {
+			g_iBestAuth[i] = "";
+		}
+
 		g_flRoundTime += 0.25;
 		g_flSidesTime[g_iCurrentSW] += 0.25;
 		for (new i; i < count; i++) {
 			new id = iPlayers[i];
 			if (!is_user_alive(id))
 				continue;
+			
+			g_ePlayerInfo[id][e_plrSurviveTime] += 0.25;
+			g_eRoundInfo[id][e_rndSurviveTime] += 0.25;
 		}
 
 		if (g_flSidesTime[g_iCurrentSW] >= get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) {
@@ -188,11 +203,13 @@ public taskRoundEnd() {
 			new szTime[24];
 			fnConvertTime(flTimeDiff, szTime, 23, false);
 			client_print_color(0, print_team_blue, "%L", 0, "TT_WIN", prefix, szTime);
+			client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
 
 			setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "Game Over");
 			taskPrepareMode(e_mTraining);
 
 			g_bPlayersListLoaded = false;
+			ShowTop(0);
 		}
 	}
 	if ((g_flRoundTime / 60.0) >= get_pcvar_float(g_eCvars[e_cRoundTime])) {
@@ -218,6 +235,19 @@ public rgPlayerSpawn(id) {
 	}
 
 	setUserRole(id);
+}
+
+public rgDropClient(const id, bool:crash) {
+	if (!is_entity(id))
+	return;
+	
+	if ((getUserTeam(id) == TEAM_TERRORIST || getUserTeam(id) == TEAM_CT) && (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused)) {
+		g_ePlayerInfo[id][e_plrRetryTime] = g_eRoundInfo[id][e_rndSurviveTime];
+		g_ePlayerInfo[id][e_plrRetryGameStops] = g_iGameStops;
+		
+		client_print_color(0, print_team_blue, "%L", 0, "PLR_DISC", prefix, id);
+	}
+	TrieSetArray(g_tPlayerInfo, getUserKey(id), g_ePlayerInfo[id], PlayerInfo_s);
 }
 
 public rgPlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold, const alpha, Float:color[3]) {
