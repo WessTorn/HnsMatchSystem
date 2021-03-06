@@ -74,6 +74,12 @@ public handleNadesMenu(id, szKey) {
 		} else {
 			rg_give_item(id, "weapon_flashbang");
 		}
+
+		/*if (user_has_weapon(id, CSW_HEGRENADE)) {
+			rg_set_user_bpammo(id, WEAPON_HEGRENADE, rg_get_user_bpammo(id, WEAPON_HEGRENADE) + 1);
+		} else {
+			rg_give_item(id, "weapon_hegrenade");
+		}*/
 	}
 
 	g_bLastFlash[id] = false;

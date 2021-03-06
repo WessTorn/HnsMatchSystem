@@ -5,7 +5,7 @@
 #define _hnsmenu_included
 
 public mainMatchMenu(id) {
-	if (!is_user_connected(id))
+	if (!is_user_connected(id) || !getUserInAccess(id))
 		return;
 
 	new iMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
@@ -82,10 +82,10 @@ public mainMatchMenuHandler(id, iMenu, item) {
 				else
 					cmdStop(id);
 			} else {
-				if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) && get_user_flags(id) & access) {
+				if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)) {
 					return 0;
 				}
-				else if (g_iCurrentMode == e_mTraining && get_user_flags(id) & access)
+				else if (g_iCurrentMode == e_mTraining)
 					cmdStartRound(id);
 				else {
 					if (get_user_flags(id) & ADMIN_BAN)
@@ -97,19 +97,19 @@ public mainMatchMenuHandler(id, iMenu, item) {
 		}
 		case 2: {
 			if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
-				if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused && get_user_flags(id) & access) {
-					if (g_iCurrentMode == e_mKnife && get_user_flags(id) & access)
+				if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
+					if (g_iCurrentMode == e_mKnife)
 						cmdStop(id);
 					else
 						cmdKnifeRound(id);
 				}
 			} else {
-				if (g_iCurrentMode == e_mTraining && get_user_flags(id) & access)
+				if (g_iCurrentMode == e_mTraining)
 					customMenu(id);
-				else if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) && get_user_flags(id) & access)
+				else if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM))
 					cmdStop(id);
 				else {
-					if (g_iCurrentMode != e_mPaused && get_user_flags(id) & access)
+					if (g_iCurrentMode != e_mPaused)
 						cmdStartPause(id);
 					else
 						cmdStopPause(id);
@@ -126,10 +126,10 @@ public mainMatchMenuHandler(id, iMenu, item) {
 			cmdSwapTeams(id);
 		}
 		case 6: {
-			amxclient_cmd(id, "amx_teammenu");
+			client_cmd(id, "amx_teammenu");
 		}
 		case 7: {
-			amxclient_cmd(id, "amx_mapmenu");
+			client_cmd(id, "amx_mapmenu");
 		}
 	}
 	return PLUGIN_HANDLED;

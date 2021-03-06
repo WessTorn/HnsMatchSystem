@@ -11,7 +11,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.9.3", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.0.9.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 

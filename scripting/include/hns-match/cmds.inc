@@ -66,7 +66,7 @@ public sayHandle(id) {
 	if (equali(szArgs, "/wintime", 8)) {
 		trim(szTarget);
 
-		if (!(get_user_flags(id) & access))
+		if (!getUserInAccess(id))
 			return PLUGIN_HANDLED;
 
 		if (is_str_num(szTarget)) {
@@ -79,7 +79,7 @@ public sayHandle(id) {
 	if (equali(szArgs, "/Roundtime", 10)) {
 		trim(szTarget);
 
-		if (!(get_user_flags(id) & access))
+		if (!getUserInAccess(id))
 			return PLUGIN_HANDLED;
 
 		if (is_str_num(szTarget)) {
@@ -121,8 +121,8 @@ public cmdShowKnife(id) {
 }
 
 public cmdPubMode(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	if (g_iCurrentMode != e_mPublic) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
@@ -141,12 +141,12 @@ public cmdPubMode(id) {
 
 	removeHook(id);
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdDMMode(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	if (g_iCurrentMode != e_mDM) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
@@ -167,58 +167,58 @@ public cmdDMMode(id) {
 
 	removeHook(id);
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdTransferSpec(id) {
-	if (!(get_user_flags(id) & access))
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_SPEC", prefix, getUserName(id));
 	transferUsers(TEAM_SPECTATOR);
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdTransferTT(id) {
-	if (!(get_user_flags(id) & access))
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_TT", prefix, getUserName(id));
 	transferUsers(TEAM_TERRORIST);
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdTransferCT(id) {
-	if (!(get_user_flags(id) & access))
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_CT", prefix, getUserName(id));
 	transferUsers(TEAM_CT);
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdStartRound(id) {
-	if (get_user_flags(id) & access) {
-		if (g_iCurrentMode != e_mTraining) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_START_MIX", prefix);
+	if (!getUserInAccess(id))
+		return;
+
+	if (g_iCurrentMode != e_mTraining) {
+		client_print_color(id, print_team_blue, "%L", id, "NOT_START_MIX", prefix);
+		return;
+	} else {
+		if (equali(g_eMatchInfo[e_mMapName], knifeMap))
 			return;
-		} else {
-			if (equali(g_eMatchInfo[e_mMapName], knifeMap))
-				return;
 
-			client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
-			g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
+		client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
+		g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
 			
-			new iPlayers[MAX_PLAYERS], iNum;
-			get_players(iPlayers, iNum, "c");
-			for (new i; i < iNum; i++) {
-				new iPlayer = iPlayers[i];
-				arrayset(g_ePlayerInfo[iPlayer], 0, PlayerInfo_s);
-			}
-			
-
-			pfStartMatch();
+		new iPlayers[MAX_PLAYERS], iNum;
+		get_players(iPlayers, iNum, "c");
+		for (new i; i < iNum; i++) {
+			new iPlayer = iPlayers[i];
+			arrayset(g_ePlayerInfo[iPlayer], 0, PlayerInfo_s);
 		}
+
+		pfStartMatch();
 	}
 }
 
@@ -231,14 +231,15 @@ stock pfStartMatch() {
 }
 
 public cmdKnifeRound(id) {
-	if (get_user_flags(id) & access) {
-		if (g_iCurrentMode != e_mTraining) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_START_KNIFE", prefix);
-			return;
-		} else {
-			pfKnifeRound(id);
-			removeHook(id);
-		}
+	if (!getUserInAccess(id))
+		return;
+	
+	if (g_iCurrentMode != e_mTraining) {
+		client_print_color(id, print_team_blue, "%L", id, "NOT_START_KNIFE", prefix);
+		return;
+	} else {
+		pfKnifeRound(id);
+		removeHook(id);
 	}
 }
 
@@ -249,11 +250,11 @@ stock pfKnifeRound(id) {
 	if (id)
 		client_print_color(0, print_team_blue, "%L", id, "START_KNIFE", prefix, getUserName(id));
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdCaptain(id) {
-	if (~get_user_flags(id) & access)
+	if (!getUserInAccess(id))
 		return;
 
 	if (!equali(g_eMatchInfo[e_mMapName], knifeMap))
@@ -261,23 +262,8 @@ public cmdCaptain(id) {
 
 	if (g_iCurrentMode != e_mTraining)
 		return;
-
-	resetCaptainData();
-	g_iCurrentMode = e_mCaptain;
-
-	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "c");
-
-	for (new i; i < iNum; i++) {
-		new iPlayer = iPlayers[i];
-
-		if (getUserTeam(iPlayer) == TEAM_SPECTATOR)
-			continue;
-
-		transferUserToSpec(iPlayer);
-	}
-	chooseCapsMenu(id);
-	client_print_color(0, print_team_blue, "%L", id, "CAP_CHOOSE", prefix, id);
+	
+	captainStart(id);
 }
 
 public cmdStopMode(id) {
@@ -289,7 +275,7 @@ public cmdStopMode(id) {
 }
 
 public cmdStop(id) {
-	if (id && ~get_user_flags(id) & access)
+	if (id && !getUserInAccess(id))
 		return;
 
 	if (!g_iCurrentMode)
@@ -336,8 +322,8 @@ public cmdStop(id) {
 }
 
 public cmdSkillMode(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "TYPE_SKILL", prefix, getUserName(id));
 
@@ -358,12 +344,12 @@ public cmdSkillMode(id) {
 
 	set_pcvar_num(g_eCvars[e_cSemiclip], 1);
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdBoostMode(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "TYPE_BOOST", prefix, getUserName(id));
 
@@ -375,36 +361,36 @@ public cmdBoostMode(id) {
 	set_pcvar_num(g_eCvars[e_cSemiclip], 0);
 	disableSemiclip();
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdAa10(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "AA_10", prefix, getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 10);
 	set_pcvar_num(g_eCvars[e_cAA], 10);
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdAa100(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "AA_100", prefix, getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 100);
 	set_pcvar_num(g_eCvars[e_cAA], 100);
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdRestartRound(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "GAME_RESTART", prefix, getUserName(id));
 	restartRound();
@@ -413,12 +399,12 @@ public cmdRestartRound(id) {
 	if (g_iCurrentMode == e_mMatch)
 	g_iGameStops++;
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdSwapTeams(id) {
-	if (~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	client_print_color(0, print_team_blue, "%L", id, "GAME_SWAP", prefix, getUserName(id));
 
@@ -430,12 +416,12 @@ public cmdSwapTeams(id) {
 	if (g_iCurrentMode == e_mMatch)
 		g_iGameStops++;
 
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdStartPause(id) {
-	if (id && ~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (!getUserInAccess(id))
+		return;
 
 	if (g_iCurrentMode == e_mMatch) {
 
@@ -481,7 +467,7 @@ public cmdStartPause(id) {
 		rg_send_audio(0, "fvox/activated.wav");
 		disableSemiclip();
 	}
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public taskHudPaused() {
@@ -492,8 +478,8 @@ public taskHudPaused() {
 }
 
 public cmdStopPause(id) {
-	if (id && ~get_user_flags(id) & access)
-		return PLUGIN_HANDLED;
+	if (id && !getUserInAccess(id))
+		return;
 
 	if (g_iCurrentMode == e_mPaused) {
 		g_iCurrentMode = e_mMatch;
@@ -519,7 +505,7 @@ public cmdStopPause(id) {
 		}
 		loadMapCFG();
 	}
-	return PLUGIN_HANDLED;
+	return;
 }
 
 public cmdSurrender(id) {

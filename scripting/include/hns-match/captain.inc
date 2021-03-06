@@ -4,11 +4,30 @@
 
 #define _captain_included
 
+stock captainStart(id) {
+	resetCaptainData();
+	g_iCurrentMode = e_mCaptain;
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "c");
+
+	for (new i; i < iNum; i++) {
+		new iPlayer = iPlayers[i];
+
+		if (getUserTeam(iPlayer) == TEAM_SPECTATOR)
+			continue;
+
+		transferUserToSpec(iPlayer);
+	}
+	chooseCapsMenu(id);
+	client_print_color(0, print_team_blue, "%L", id, "CAP_CHOOSE", prefix, id);
+}
+
 stock chooseCapsMenu(id) {
 	if (!is_user_connected(id))
 		return;
 
-	if (~get_user_flags(id) & access)
+	if (!getUserInAccess(id))
 		return;
 
 	if (g_iCurrentMode != e_mCaptain)

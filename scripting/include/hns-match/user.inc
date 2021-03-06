@@ -39,6 +39,13 @@ stock bool:getUserInMatch(id) {
 	return false;
 }
 
+stock bool:getUserInAccess(id) {
+	if (get_user_flags(id) & access)
+		return true;
+	else
+		return false;
+}
+
 stock setUserGodmode(index, godmode = 0) {
 	set_entvar(index, var_takedamage, godmode == 1 ? DAMAGE_NO : DAMAGE_AIM);
 

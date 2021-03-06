@@ -63,7 +63,7 @@ public fwdEmitSoundPre(id, iChannel, szSample[], Float:volume, Float:attenuation
 	return FMRES_IGNORED;
 }
 
-public fwdGameNameDesc() { // Надо убрать
+public fwdGameNameDesc() {
 	static gameName[32];
 	get_pcvar_string(g_eCvars[e_cGameName], gameName, 31);
 	forward_return(FMV_STRING, gameName);
