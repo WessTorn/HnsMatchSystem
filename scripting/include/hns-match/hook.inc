@@ -9,7 +9,9 @@ stock hook_init() {
 	RegisterHookChain(RG_CBasePlayer_ResetMaxSpeed, "rgResetMaxSpeed", false);
 	RegisterHookChain(RG_CSGameRules_RestartRound, "rgRestartRound", false);
 	RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "rgOnRoundFreezeEnd", true);
+	RegisterHookChain(RG_CSGameRules_FlPlayerFallDamage, "rgFlPlayerFallDamage", true);
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
+	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
 	RegisterHookChain(RH_SV_DropClient, "rgDropClient", true);
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
@@ -17,6 +19,12 @@ stock hook_init() {
 }
 
 public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
+	if (g_iCurrentMode == e_mMatch) {
+		if (!g_bFreezePeriod) {
+			statsApply();
+		}
+	}
+	
 	if (event == ROUND_TARGET_SAVED || event == ROUND_HOSTAGE_NOT_RESCUED) {
 		SetHookChainArg(1, ATYPE_INTEGER, WINSTATUS_TERRORISTS);
 		SetHookChainArg(2, ATYPE_INTEGER, ROUND_TERRORISTS_ESCAPED);
@@ -116,6 +124,7 @@ public rgResetMaxSpeed(id) {
 
 public rgRestartRound() {
 	remove_task();
+	g_bFreezePeriod = true;
 
 	if (g_bGameStarted)
 		cmdShowTimers(0);
@@ -159,6 +168,7 @@ public taskDestroyBreakables() {
 }
 
 public rgOnRoundFreezeEnd() {
+	g_bFreezePeriod = false;
 	if (g_iCurrentMode != e_mMatch)
 		return;
 
@@ -167,8 +177,15 @@ public rgOnRoundFreezeEnd() {
 
 	set_task(g_eCvars[e_cSemiclip] ? 3.0 : 5.0, "taskCheckAfk");
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
+	set_task(2.5, "task_MainThink", .flags = "b");
 
 	set_task(0.25, "taskRoundEnd", .flags = "b");
+}
+
+public rgFlPlayerFallDamage(id) {
+	if (g_iCurrentMode == e_mMatch) {
+			statsDmg(id);
+	}
 }
 
 public taskRoundEnd() {
@@ -188,7 +205,7 @@ public taskRoundEnd() {
 				continue;
 			
 			g_ePlayerInfo[id][e_plrSurviveTime] += 0.25;
-			g_eRoundInfo[id][e_rndSurviveTime] += 0.25;
+			g_eRoundInfo[id][e_flSurviveTime] += 0.25;
 		}
 
 		if (g_flSidesTime[g_iCurrentSW] >= get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) {
@@ -221,6 +238,7 @@ public taskRoundEnd() {
 }
 
 public rgPlayerSpawn(id) {
+	lastOrigin(id);
 
 	if (!is_user_alive(id))
 		return;
@@ -237,12 +255,20 @@ public rgPlayerSpawn(id) {
 	setUserRole(id);
 }
 
+public rgTakeDamage(victim, inflictor, attacker, Float:damage) {
+	if (g_iCurrentMode == e_mMatch) {
+		if (is_user_connected(attacker) && 1 <= attacker <= MAX_PLAYERS && getUserTeam(victim) != getUserTeam(attacker)) {
+			statsStabs(attacker);
+		}
+	}
+}
+
 public rgDropClient(const id, bool:crash) {
 	if (!is_entity(id))
 	return;
 	
 	if ((getUserTeam(id) == TEAM_TERRORIST || getUserTeam(id) == TEAM_CT) && (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused)) {
-		g_ePlayerInfo[id][e_plrRetryTime] = g_eRoundInfo[id][e_rndSurviveTime];
+		g_ePlayerInfo[id][e_plrRetryTime] = g_eRoundInfo[id][e_flSurviveTime];
 		g_ePlayerInfo[id][e_plrRetryGameStops] = g_iGameStops;
 		
 		client_print_color(0, print_team_blue, "%L", 0, "PLR_DISC", prefix, id);
@@ -251,6 +277,11 @@ public rgDropClient(const id, bool:crash) {
 }
 
 public rgPlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold, const alpha, Float:color[3]) {
+	if (g_iCurrentMode == e_mMatch) {
+		if (getUserTeam(index) != getUserTeam(attacker))
+			statsFlashedTime(attacker, fadeHold);
+	}
+
 	if (getUserTeam(index) == TEAM_TERRORIST || getUserTeam(index) == TEAM_SPECTATOR)
 		return HC_SUPERCEDE;
 

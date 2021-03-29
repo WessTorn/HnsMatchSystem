@@ -4,6 +4,121 @@
 
 #define _showinfo_included
 
+new Float:flLastOrigin[MAX_PLAYERS + 1][3];
+new bool:bHiding[MAX_PLAYERS + 1];
+new iStats[MAX_PLAYERS + 1][RoundInfo_s];
+
+stock statsDmg(id) {
+	new Float:flDamage = GetHookChainReturn(ATYPE_FLOAT);
+	g_eRoundInfo[id][e_flDmg] += flDamage;
+}
+
+stock statsFlashedTime(attacker, Float:fadeHold) {
+	g_eRoundInfo[attacker][e_flFlashedTime] += fadeHold;
+}
+
+stock statsStabs(attacker) {
+	g_eRoundInfo[attacker][e_iStabs]++;
+}
+
+stock lastOrigin(id) {
+	get_entvar(id, var_origin, flLastOrigin[id]);
+}
+
+public task_MainThink() {
+	if(g_iCurrentMode != e_mMatch)
+		return;
+
+	if (g_bFreezePeriod)
+		return;
+	
+	new tt_players[32], tt_num;
+	get_players(tt_players, tt_num, "ae", "TERRORIST");
+	new ct_players[32], ct_num;
+	get_players(ct_players, ct_num, "ae", "CT");
+	for (new i = 0; i < tt_num; i++) {
+		new tt = tt_players[i];
+		new Float:origin[3];
+		get_entvar(tt, var_origin, origin);
+		g_eRoundInfo[tt][e_flRunDistance] += get_distance_f(origin, flLastOrigin[tt]);
+		flLastOrigin[tt] = origin;
+		new bool:found	= false;
+		for (new j = 0; j < ct_num; j++) {
+			new ct = ct_players[j];
+			if (fm_is_ent_visible(ct, tt) && fm_is_in_viewcone(ct, origin)) {
+				if (bHiding[tt]) {
+					g_eRoundInfo[ct][e_iFound]++;
+				}
+				found = true;
+				bHiding[tt]	= false;
+				break;
+			}
+		}
+		if (!found)
+			bHiding[tt] = true;
+
+		if (bHiding[tt]) {
+			g_eRoundInfo[tt][e_flHideTime] += 2.5;
+		}
+	}
+}
+
+statsGetArray(id) {
+	TrieGetArray(g_tPlayerInfo, getUserKey(id), iStats[id], RoundInfo_s);
+}
+
+statsSetArray(id) {
+	TrieSetArray(g_tPlayerInfo, getUserKey(id), iStats[id], RoundInfo_s);
+}
+
+statsApply() {
+	apply_stats();
+}
+
+addStats() {
+	for (new i = 1; i <= MaxClients; i++) {
+		arrayset(iStats[i], 0, RoundInfo_s);
+	}
+
+	for(new i; i < 10; i++) {
+		g_iBestAuth[i] = "";
+	}
+}
+
+resetStats(id) {
+	arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
+}
+
+public apply_stats() {
+	new tt_players[32], tt_num;
+	get_players(tt_players, tt_num, "ce", "TERRORIST");
+	new ct_players[32], ct_num;
+	get_players(ct_players, ct_num, "ce", "CT");
+	for (new i = 0; i < tt_num; i++) {
+		new id = tt_players[i];
+		iStats[id][e_flSurviveTime]	= g_ePlayerInfo[id][e_plrSurviveTime];
+		iStats[id][e_flDmg] += g_eRoundInfo[id][e_flDmg];
+		iStats[id][e_flRunDistance] += g_eRoundInfo[id][e_flRunDistance];
+		iStats[id][e_flFlashedTime] += g_eRoundInfo[id][e_flFlashedTime];
+		iStats[id][e_flHideTime] += g_eRoundInfo[id][e_flHideTime];
+		iStats[id][e_iFound] += g_eRoundInfo[id][e_iFound];
+		iStats[id][e_iStabs] += g_eRoundInfo[id][e_iStabs];
+		arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
+	}
+
+	for (new i = 0; i < ct_num; i++) {
+		new id = ct_players[i];
+		iStats[id][e_flSurviveTime]	= g_ePlayerInfo[id][e_plrSurviveTime];
+		iStats[id][e_flDmg] += g_eRoundInfo[id][e_flDmg];
+		iStats[id][e_flRunDistance] += g_eRoundInfo[id][e_flRunDistance];
+		iStats[id][e_flFlashedTime] += g_eRoundInfo[id][e_flFlashedTime];
+		iStats[id][e_flHideTime] += g_eRoundInfo[id][e_flHideTime];
+		iStats[id][e_iFound] += g_eRoundInfo[id][e_iFound];
+		iStats[id][e_iStabs] += g_eRoundInfo[id][e_iStabs];
+		arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
+	}
+}
+
 public task_ShowPlayerInfo() {
 	if(g_iCurrentMode != e_mMatch)
 		return;
@@ -17,7 +132,6 @@ public task_ShowPlayerInfo() {
 		if(is_user_alive(iPlayer)) {
 			if(g_iCurrentMode == e_mMatch) {
 				new szTime[24];
-
 				fnConvertTime(g_ePlayerInfo[iPlayer][e_plrSurviveTime], szTime, charsmax(szTime), false);
 				set_hudmessage( .red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
 				ShowSyncHudMsg(iPlayer, g_MsgSync, "Survive time: %s", szTime);
@@ -33,11 +147,32 @@ public task_ShowPlayerInfo() {
 			
 			if(get_entvar(iPlayer, var_iuser2) == id) {
 				new szTime[24], szBuffer[64];
-				
+				new szTimeFlash[24], szBuffer2[64];
+
 				if(g_iCurrentMode == e_mMatch) {
 					fnConvertTime(g_ePlayerInfo[id][e_plrSurviveTime], szTime, charsmax(szTime), false);
 					formatex(szBuffer, charsmax(szBuffer), "Survive time: %s", szTime);
+
+					fnConvertTime(iStats[iPlayer][e_flFlashedTime], szTimeFlash, charsmax(szTimeFlash), false);
+					formatex(szBuffer2, charsmax(szBuffer2), "Damaged: %.0fHP^n\
+						Flashed: %s^n\
+						Found TT: %d^n\
+						Stabs: %d^n\
+						Run: %.1fK",
+						iStats[iPlayer][e_flDmg],
+						szTimeFlash,
+						iStats[iPlayer][e_iFound],
+						iStats[iPlayer][e_iStabs],
+						iStats[iPlayer][e_flRunDistance] / 1000);
 				}
+
+				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
+				ShowSyncHudMsg(iPlayer, g_MsgSync, "Игрок: %n^n\
+					%s^n\
+					%s",
+					id,
+					g_iCurrentMode == e_mMatch ? szBuffer : "",
+					g_iCurrentMode == e_mMatch ? szBuffer2 : "");
 			}
 		}
 	}
@@ -45,6 +180,7 @@ public task_ShowPlayerInfo() {
 
 public ShowTop(player) {
 	if (!player) {
+		apply_stats();
 		new Float:flBestTime[10];
 		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "c");
@@ -127,18 +263,28 @@ public ShowTop(player) {
 								<tr>\
 									<th>Player</th>\
 									<th>Survive time</th>\
+									<th>Damaged</th>\
+									<th>Hide time</th>\
+									<th>Flashed</th>\
+									<th>Found TT</th>\
+									<th>Stabs</th>\
+									<th>Run</th>\
 								</tr>\
 							</thead>\
 						<tbody>");
 	new szSurvTime[24];
+	new szTimeFlash[24];
+	new szHideTime[24];
 	for (new i = 0; i < 10; i++) {
 		new id = find_player_ex(FindPlayer_MatchAuthId, g_iBestAuth[i]);
 
 		if (!is_user_connected(id))
 			continue;
 
-		fnConvertTime(g_ePlayerInfo[id][e_plrSurviveTime], szSurvTime, 23);
-		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr><td>%n</td><td>%s</td></tr>", id, szSurvTime);
+		fnConvertTime(iStats[id][e_plrSurviveTime], szSurvTime, charsmax(szSurvTime), false);
+		fnConvertTime(iStats[id][e_flFlashedTime], szTimeFlash, charsmax(szTimeFlash), false);
+		fnConvertTime(iStats[id][e_flHideTime], szHideTime, charsmax(szHideTime), false);
+		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr><td>%n</td><td>%s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%d</td><td>%d</td><td>%.1fK</td></tr>", id, szSurvTime, iStats[id][e_flDmg],szHideTime, szTimeFlash, iStats[id][e_iFound], iStats[id][e_iStabs], iStats[id][e_flRunDistance] / 1000);
 	}
 	iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "</tbody>\
 								</table>\
@@ -146,5 +292,5 @@ public ShowTop(player) {
 						</body>\
 						</html>");
 	show_motd(player, szMotd);
-	//log_to_file("motd.txt", szMotd);
+	log_to_file("motd.txt", szMotd);
 }

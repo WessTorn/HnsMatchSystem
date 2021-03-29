@@ -37,7 +37,13 @@ new g_ePlayerInfo[MAX_PLAYERS + 1][PlayerInfo_s];
 
 enum _:RoundInfo_s
 {
-	Float:e_rndSurviveTime
+	Float:e_flSurviveTime,
+	Float:e_flDmg,
+	Float:e_flRunDistance,
+	Float:e_flFlashedTime,
+	Float:e_flHideTime,
+	e_iFound,
+	e_iStabs
 };
 
 new g_eRoundInfo[MAX_PLAYERS + 1][RoundInfo_s];
@@ -88,7 +94,7 @@ new bool:g_bSpec[MAX_PLAYERS + 1];
 new bool:g_bPlayersListLoaded;
 new bool:g_bLastFlash[MAX_PLAYERS + 1];
 new bool:g_bOnOff[33];
-
+new bool:g_bFreezePeriod = false;
 
 new Float:g_flRoundTime;
 new Float:g_flSidesTime[2];

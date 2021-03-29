@@ -11,7 +11,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.0.9.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.1.0", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -44,6 +44,7 @@ public plugin_init() {
 	g_MsgSync = CreateHudSyncObj();
 	g_tPlayerInfo = TrieCreate();
 
+	g_bFreezePeriod = true;
 	register_dictionary("mixsystem.txt");
 }
 
@@ -142,6 +143,8 @@ public plugin_end() {
 public client_putinserver(id) {
 	g_bOnOff[id] = false;
 
+	statsGetArray(id);
+
 	TrieGetArray(g_tPlayerInfo, getUserKey(id), g_ePlayerInfo[id], PlayerInfo_s);
 	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
 		if (g_ePlayerInfo[id][e_plrRetryGameStops] < g_iGameStops) {
@@ -157,6 +160,7 @@ public client_putinserver(id) {
 
 public client_disconnected(id) {
 	g_bHooked[id] = false;
+	statsSetArray(id);
 }
 
 public is_hooked(id) {
@@ -237,6 +241,7 @@ public taskPrepareMode(mode) {
 		}
 	}
 	restartRound();
+	addStats();
 }
 
 restartRound(Float:delay = 0.5) {
@@ -271,8 +276,9 @@ stock loadMapCFG() {
 }
 
 ResetPlayerRoundData(id) {
+	resetStats(id);
 	if (getUserTeam(id) == TEAM_TERRORIST)
-	g_ePlayerInfo[id][e_plrSurviveTime] -= g_eRoundInfo[id][e_rndSurviveTime];
+		g_ePlayerInfo[id][e_plrSurviveTime] -= g_eRoundInfo[id][e_flSurviveTime];
 }
 
 fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
