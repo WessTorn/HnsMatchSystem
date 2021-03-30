@@ -122,7 +122,7 @@ public cmdShowKnife(id) {
 
 public cmdPubMode(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode != e_mPublic) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
@@ -141,12 +141,12 @@ public cmdPubMode(id) {
 
 	removeHook(id);
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdDMMode(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode != e_mDM) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
@@ -167,34 +167,34 @@ public cmdDMMode(id) {
 
 	removeHook(id);
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdTransferSpec(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_SPEC", prefix, getUserName(id));
 	transferUsers(TEAM_SPECTATOR);
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdTransferTT(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_TT", prefix, getUserName(id));
 	transferUsers(TEAM_TERRORIST);
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdTransferCT(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "TRANSF_CT", prefix, getUserName(id));
 	transferUsers(TEAM_CT);
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdStartRound(id) {
@@ -323,7 +323,7 @@ public cmdStop(id) {
 
 public cmdSkillMode(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "TYPE_SKILL", prefix, getUserName(id));
 
@@ -344,12 +344,12 @@ public cmdSkillMode(id) {
 
 	set_pcvar_num(g_eCvars[e_cSemiclip], 1);
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdBoostMode(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "TYPE_BOOST", prefix, getUserName(id));
 
@@ -361,36 +361,36 @@ public cmdBoostMode(id) {
 	set_pcvar_num(g_eCvars[e_cSemiclip], 0);
 	disableSemiclip();
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdAa10(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "AA_10", prefix, getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 10);
 	set_pcvar_num(g_eCvars[e_cAA], 10);
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdAa100(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "AA_100", prefix, getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 100);
 	set_pcvar_num(g_eCvars[e_cAA], 100);
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdRestartRound(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "GAME_RESTART", prefix, getUserName(id));
 	restartRound();
@@ -399,12 +399,12 @@ public cmdRestartRound(id) {
 	if (g_iCurrentMode == e_mMatch)
 	g_iGameStops++;
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdSwapTeams(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	client_print_color(0, print_team_blue, "%L", id, "GAME_SWAP", prefix, getUserName(id));
 
@@ -416,12 +416,12 @@ public cmdSwapTeams(id) {
 	if (g_iCurrentMode == e_mMatch)
 		g_iGameStops++;
 
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdStartPause(id) {
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode == e_mMatch) {
 
@@ -467,7 +467,7 @@ public cmdStartPause(id) {
 		rg_send_audio(0, "fvox/activated.wav");
 		disableSemiclip();
 	}
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public taskHudPaused() {
@@ -479,7 +479,7 @@ public taskHudPaused() {
 
 public cmdStopPause(id) {
 	if (id && !getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode == e_mPaused) {
 		g_iCurrentMode = e_mMatch;
@@ -505,7 +505,7 @@ public cmdStopPause(id) {
 		}
 		loadMapCFG();
 	}
-	return;
+	return PLUGIN_HANDLED;
 }
 
 public cmdSurrender(id) {
@@ -595,27 +595,23 @@ public cmdPick(id) {
 }
 
 public cmdTeamSpec(id) {
-	if (g_iCurrentMode != e_mPublic)
-		return;
+	if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) { // Переделать
+		g_bSpec[id] = !g_bSpec[id];
 
-	if (g_iCurrentMode != e_mDM)
-		return;
-
-	g_bSpec[id] = !g_bSpec[id];
-
-	if (g_bSpec[id]) {
-		if (getUserTeam(id) == TEAM_SPECTATOR) {
-			g_bSpec[id] = false;
-			return;
+		if (g_bSpec[id]) {
+			if (getUserTeam(id) == TEAM_SPECTATOR) {
+				g_bSpec[id] = false;
+				return;
+			}
+			hTeam[id] = getUserTeam(id);
+			transferUserToSpec(id);
+		} else {
+			if (getUserTeam(id) != TEAM_SPECTATOR) {
+				g_bSpec[id] = true;
+				return;
+			}
+			rg_set_user_team(id, hTeam[id]);
 		}
-		hTeam[id] = getUserTeam(id);
-		transferUserToSpec(id);
-	} else {
-		if (getUserTeam(id) != TEAM_SPECTATOR) {
-			g_bSpec[id] = true;
-			return;
-		}
-		rg_set_user_team(id, hTeam[id]);
 	}
 }
 
