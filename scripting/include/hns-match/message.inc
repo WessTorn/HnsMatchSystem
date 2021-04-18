@@ -90,10 +90,12 @@ public taskSetPlayerTeam(id) {
 	}
 
 	if (g_iCurrentMode == e_mTraining) {
-		if (equali(g_eMatchInfo[e_mMapName], knifeMap)) {
+		if (equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap])) {
 			rg_round_respawn(id);
-			g_bNoplay[id] = true;
-			set_task(2.0, "taskPlay", id);
+			if (get_pcvar_num(g_eCvars[e_cCheckPlayNoPlay]) == 1) {
+				g_bNoplay[id] = true;
+				set_task(2.0, "taskPlay", id);
+			}
 			return;
 		}
 

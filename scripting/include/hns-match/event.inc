@@ -46,7 +46,7 @@ public RespawnPlayer(id) {
 
 GetRandomCT() {
 	static iPlayers[32], iCTNum
-	get_players(iPlayers, iCTNum, "ae", "CT");
+	get_players(iPlayers, iCTNum, "ache", "CT");
 		
 	if(!iCTNum)
 		return 0

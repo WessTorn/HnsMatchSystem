@@ -25,7 +25,7 @@ stock bool:getUserInMatch(id) {
 		return false;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];

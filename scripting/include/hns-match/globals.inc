@@ -6,7 +6,6 @@
 
 #define prefix "^1>"
 #define access ADMIN_MAP
-#define knifeMap "35hp_2"
 
 enum {
 	e_mTraining,
@@ -82,7 +81,10 @@ enum _:Cvars_s {
 	e_cLastMode,
 	e_cSemiclip,
 	e_cHpMode,
-	e_cDMRespawn
+	e_cDMRespawn,
+	e_cKnifeMap[25],
+	e_cSurVoteTime,
+	e_cCheckPlayNoPlay
 };
 new g_eCvars[Cvars_s];
 

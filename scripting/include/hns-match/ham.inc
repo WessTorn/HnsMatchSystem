@@ -46,7 +46,7 @@ public fwdPlayerKilledPre(id) {
 
 	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPublic) {
 		new iPlayers[32], iNum, index;
-		get_players(iPlayers, iNum, "ace", "TERRORIST");
+		get_players(iPlayers, iNum, "ache", "TERRORIST");
 
 		if (iNum == 1) {
 			index = iPlayers[0];

@@ -17,6 +17,9 @@ stock cmds_init() {
 	RegisterSayCmd("showknife", "knife", "cmdShowKnife");
 	RegisterSayCmd("hideknife", "hknife", "cmdShowKnife");
 
+	RegisterSayCmd("mix", "mix", "mainMatchMenu", access, "Main menu admin");
+	RegisterSayCmd("training", "training", "trainingMenu", 0, "Public mode");
+
 	RegisterSayCmd("pub", "public", "cmdPubMode", access, "Public mode");
 	RegisterSayCmd("dm", "DM", "cmdDMMode", access, "Public mode");
 	RegisterSayCmd("specall", "specall", "cmdTransferSpec", access, "Spec Transfer");
@@ -32,7 +35,6 @@ stock cmds_init() {
 	RegisterSayCmd("aa100", "100aa", "cmdAa100", access, "100aa");
 	RegisterSayCmd("rr", "restart", "cmdRestartRound", access, "Restart round");
 	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "Swap Teams");
-	RegisterSayCmd("mix", "mix", "mainMatchMenu", access, "Main menu admin");
 	RegisterSayCmd("pause", "ps", "cmdStartPause", access, "Start pause");
 	RegisterSayCmd("live", "unpause", "cmdStopPause", access, "Unpause");
 	RegisterSayCmd("surrender", "sur", "cmdSurrender", 0, "Surrender vote");
@@ -41,6 +43,12 @@ stock cmds_init() {
 	RegisterSayCmd("back", "spec", "cmdTeamSpec", 0, "Spec/Back player");
 	RegisterSayCmd("np", "noPlay", "cmdNoplay", 0, "No play");
 	RegisterSayCmd("ip", "play", "cmdPlay", 0, "Play play");
+	RegisterSayCmd("checkpoint", "cp", "cmdCheckpoint", 0, "Respawn player");
+	RegisterSayCmd("teleport", "tp", "cmdGoCheck", 0, "Respawn player");
+	RegisterSayCmd("gocheck", "gc", "cmdGoCheck", 0, "Respawn player");
+	RegisterSayCmd("damage", "showdamade", "cmdShowDamage", 0, "Show damage");
+	RegisterSayCmd("noclip", "clip", "cmdClipMode", 0, "No clip mode");
+	RegisterSayCmd("respawn", "resp", "cmdRespawn", 0, "Respawn player");
 	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
 }
 
@@ -205,7 +213,7 @@ public cmdStartRound(id) {
 		client_print_color(id, print_team_blue, "%L", id, "NOT_START_MIX", prefix);
 		return;
 	} else {
-		if (equali(g_eMatchInfo[e_mMapName], knifeMap))
+		if (equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap]))
 			return;
 
 		client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
@@ -257,7 +265,7 @@ public cmdCaptain(id) {
 	if (!getUserInAccess(id))
 		return;
 
-	if (!equali(g_eMatchInfo[e_mMapName], knifeMap))
+	if (!equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap]))
 		return;
 
 	if (g_iCurrentMode != e_mTraining)
@@ -327,7 +335,7 @@ public cmdSkillMode(id) {
 
 	client_print_color(0, print_team_blue, "%L", id, "TYPE_SKILL", prefix, getUserName(id));
 
-	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
+	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 		enableSemiclip(0);
 	} else {
 		if (g_iCurrentMode == e_mTraining)
@@ -626,6 +634,53 @@ public cmdPlay(id) {
 	if (g_bNoplay[id]) {
 		g_bNoplay[id] = false;
 		client_print_color(0, print_team_blue, "%L", id, "STATUS_PLAY", prefix, getUserName(id));
+	}
+}
+
+public cmdShowDamage(id) {
+	if (g_iCurrentMode == e_mTraining) {
+		cmdDamade(id);
+	}
+}
+
+public cmdClipMode(id) {
+	if (g_iCurrentMode != e_mTraining) {
+		return PLUGIN_HANDLED
+	}
+	if(!is_user_alive(id))  {
+		client_print_color(id, print_team_blue, "%L", id, "TRAINING_NOTALIVE", prefix)
+		return PLUGIN_HANDLED
+	} else {
+		if(!get_user_noclip(id))
+			set_user_noclip(id, 1);
+		else
+			set_user_noclip(id, 0);
+		client_print_color(id, print_team_blue, "%s No Clip ^3%sabled!", prefix, get_user_noclip(id) ? "en" : "dis");
+	}
+	return PLUGIN_HANDLED;
+}
+
+public cmdRespawn(id) {
+	if (g_iCurrentMode == e_mTraining) {
+		rg_round_respawn(id);
+	}
+}
+
+public cmdCheckpoint(id) {
+	if (g_iCurrentMode == e_mTraining) {
+		checkPoint(id);
+	}
+}
+
+public cmdGoCheck(id) {
+	if (g_iCurrentMode == e_mTraining) {
+		goCheck(id);
+	}
+}
+
+public cmdStuck(id) {
+	if (g_iCurrentMode == e_mTraining) {
+		stuck(id);
 	}
 }
 

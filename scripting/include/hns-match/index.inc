@@ -29,3 +29,4 @@
 #include <hns-match/hnsmenu>
 #include <hns-match/hud>
 #include <hns-match/showinfo>
+#include <hns-match/training>

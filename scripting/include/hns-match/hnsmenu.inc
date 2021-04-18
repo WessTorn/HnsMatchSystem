@@ -10,7 +10,7 @@ public mainMatchMenu(id) {
 
 	new iMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
 
-	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
+	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
 			menu_additem(iMenu, "Start captain mod", "1");
 		else if (g_iCurrentMode == e_mKnife)
@@ -31,7 +31,7 @@ public mainMatchMenu(id) {
 	}
 
 
-	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
+	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 			if (g_iCurrentMode == e_mKnife)
 				menu_additem(iMenu, "\rStop Kniferound^n", "2");
@@ -74,7 +74,7 @@ public mainMatchMenuHandler(id, iMenu, item) {
 
 	switch (iKey) {
 		case 1: {
-			if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
+			if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 				if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
 					cmdCaptain(id);
 				else if (g_iCurrentMode == e_mKnife)
@@ -96,7 +96,7 @@ public mainMatchMenuHandler(id, iMenu, item) {
 			}
 		}
 		case 2: {
-			if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
+			if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 				if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 					if (g_iCurrentMode == e_mKnife)
 						cmdStop(id);
@@ -306,7 +306,7 @@ public verifMenu(id) {
 	if (!is_user_connected(id))
 		return;
 
-	new iMenu = menu_create("\yVerification iMenu^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
+	new iMenu = menu_create("\yVerification^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
 
 	menu_additem(iMenu, "No");
 	menu_additem(iMenu, "Yes");
@@ -330,4 +330,53 @@ public verifMenuHandler(id, iMenu, item) {
 			cmdStop(id);
 		}
 	}
+}
+
+public trainingMenu(id) {
+	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
+		return;
+	
+	new iMenu = menu_create("\yTrainig menu:", "trainingMenuHandler");
+
+	menu_additem(iMenu, "Checkpoint", "1");
+	menu_additem(iMenu, "Teleport", "2");
+	menu_additem(iMenu, "No Clip", "3");
+	menu_additem(iMenu, "Respawn", "4");
+	menu_additem(iMenu, "Damage", "5");
+
+	menu_display(id, iMenu);
+}
+
+public trainingMenuHandler(id, iMenu, item) {
+	if (item == MENU_EXIT) {
+		return PLUGIN_HANDLED;
+	}
+
+	new szData[6], szName[64], iAccess, iCallback;
+	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	new iKey = str_to_num(szData);
+
+	switch (iKey) {
+		case 1: {
+			cmdCheckpoint(id);
+			trainingMenu(id);
+		}
+		case 2: {
+			cmdGoCheck(id);
+			trainingMenu(id);
+		}
+		case 3: {
+			cmdClipMode(id);
+			trainingMenu(id);
+		}
+		case 4: {
+			cmdRespawn(id);
+			trainingMenu(id);
+		}
+		case 5: {
+			cmdShowDamage(id);
+			trainingMenu(id);
+		}
+	}
+	return PLUGIN_HANDLED;
 }

@@ -33,9 +33,9 @@ public task_MainThink() {
 		return;
 	
 	new tt_players[32], tt_num;
-	get_players(tt_players, tt_num, "ae", "TERRORIST");
+	get_players(tt_players, tt_num, "ache", "TERRORIST");
 	new ct_players[32], ct_num;
-	get_players(ct_players, ct_num, "ae", "CT");
+	get_players(ct_players, ct_num, "ache", "CT");
 	for (new i = 0; i < tt_num; i++) {
 		new tt = tt_players[i];
 		new Float:origin[3];
@@ -63,11 +63,11 @@ public task_MainThink() {
 	}
 }
 
-statsGetArray(id) {
+public statsGetArray(id) {
 	TrieGetArray(g_tPlayerInfo, getUserKey(id), iStats[id], RoundInfo_s);
 }
 
-statsSetArray(id) {
+public statsSetArray(id) {
 	TrieSetArray(g_tPlayerInfo, getUserKey(id), iStats[id], RoundInfo_s);
 }
 
@@ -85,15 +85,11 @@ addStats() {
 	}
 }
 
-resetStats(id) {
-	arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
-}
-
 public apply_stats() {
 	new tt_players[32], tt_num;
-	get_players(tt_players, tt_num, "ce", "TERRORIST");
+	get_players(tt_players, tt_num, "che", "TERRORIST");
 	new ct_players[32], ct_num;
-	get_players(ct_players, ct_num, "ce", "CT");
+	get_players(ct_players, ct_num, "che", "CT");
 	for (new i = 0; i < tt_num; i++) {
 		new id = tt_players[i];
 		iStats[id][e_flSurviveTime]	= g_ePlayerInfo[id][e_plrSurviveTime];
@@ -167,7 +163,7 @@ public task_ShowPlayerInfo() {
 				}
 
 				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
-				ShowSyncHudMsg(iPlayer, g_MsgSync, "Игрок: %n^n\
+				ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n^n\
 					%s^n\
 					%s",
 					id,
@@ -183,7 +179,7 @@ public ShowTop(player) {
 		apply_stats();
 		new Float:flBestTime[10];
 		new iPlayers[MAX_PLAYERS], iNum;
-		get_players(iPlayers, iNum, "c");
+		get_players(iPlayers, iNum, "ch");
 		new iBid = 0;
 		for (new i; i < iNum; i++) {
 			new id = iPlayers[i];

@@ -1,7 +1,3 @@
-/*
-	1.0.9.n - Рефакторинг кода
-*/
-
 #include <hns-match/index>
 
 public plugin_precache() {
@@ -11,21 +7,24 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.1", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.1.5", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
 	g_eCvars[e_cRoundTime] = get_cvar_pointer("mp_roundtime");
 	
-	g_eCvars[e_cCapTime]	= register_cvar("hns_wintime", "15");
-	g_eCvars[e_cFlashNum]	= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cSmokeNum]	= register_cvar("hns_smoke", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cLastMode]	= register_cvar("hns_lastmode", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cAA]			= register_cvar("hns_aa", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cSemiclip]	= register_cvar("hns_semiclip", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cHpMode]		= register_cvar("hns_hpmode", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cDMRespawn] 	= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cGameName]	= register_cvar("hns_gamename", "Hide'n'Seek");
+	g_eCvars[e_cCapTime]			= register_cvar("hns_wintime", "15");
+	g_eCvars[e_cFlashNum]			= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cSmokeNum]			= register_cvar("hns_smoke", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cLastMode]			= register_cvar("hns_lastmode", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cAA]					= register_cvar("hns_aa", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cSemiclip]			= register_cvar("hns_semiclip", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cHpMode]				= register_cvar("hns_hpmode", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cDMRespawn] 			= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cSurVoteTime] 		= register_cvar("hns_survotetime", "10", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cCheckPlayNoPlay] 	= register_cvar("hns_checkplay", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cGameName]			= register_cvar("hns_gamename", "Hide'n'Seek");
+	get_pcvar_string(register_cvar("hns_knifemap", "32hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24)
 
 	hookOnOff_init();
 	cmds_init();
@@ -49,7 +48,7 @@ public plugin_init() {
 }
 
 public taskDelayedMode() {
-	if (equali(knifeMap, g_eMatchInfo[e_mMapName])) {
+	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 		taskPrepareMode(e_mTraining);
 	} else if (get_pcvar_num(g_eCvars[e_cLastMode]) == 0) {
 		taskPrepareMode(e_mTraining);
@@ -70,7 +69,7 @@ public registerMode() {
 }
 
 loadPlayers() {
-	if (!equali(g_eMatchInfo[e_mMapName], knifeMap))
+	if (!equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap]))
 		g_bPlayersListLoaded = PDS_GetString("playerslist", g_szBuffer, charsmax(g_szBuffer));
 
 	if (g_bPlayersListLoaded) {
@@ -129,7 +128,7 @@ decodeObject(&JSON:object) {
 }
 
 public PDS_Save() {
-	if (equali(g_eMatchInfo[e_mMapName], knifeMap)) {
+	if (equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap])) {
 		if (g_szBuffer[0])
 			PDS_SetString("playerslist", g_szBuffer);
 	}
@@ -144,6 +143,7 @@ public client_putinserver(id) {
 	g_bOnOff[id] = false;
 
 	statsGetArray(id);
+	training_putin(id);
 
 	TrieGetArray(g_tPlayerInfo, getUserKey(id), g_ePlayerInfo[id], PlayerInfo_s);
 	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
@@ -276,7 +276,6 @@ stock loadMapCFG() {
 }
 
 ResetPlayerRoundData(id) {
-	resetStats(id);
 	if (getUserTeam(id) == TEAM_TERRORIST)
 		g_ePlayerInfo[id][e_plrSurviveTime] -= g_eRoundInfo[id][e_flSurviveTime];
 }

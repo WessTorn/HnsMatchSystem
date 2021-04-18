@@ -20,7 +20,7 @@ public taskCheckAfk() {
 	}
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ace", "TERRORIST");
+	get_players(iPlayers, iNum, "ache", "TERRORIST");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -45,7 +45,7 @@ public taskAfk() {
 	}
 
 	new iPlayers[MAX_PLAYERS], iNum, szBuffer[512];
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	add(szBuffer, charsmax(szBuffer), "AFK Players [wait time]:^n");
 
@@ -87,7 +87,7 @@ ResetAfkData() {
 	iPlayersAfk = 0;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -107,7 +107,7 @@ stock bool:PlayerIsAfk(id) {
 
 public taskSaveAfk() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ace", "TERRORIST");
+	get_players(iPlayers, iNum, "ache", "TERRORIST");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];

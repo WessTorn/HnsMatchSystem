@@ -78,7 +78,7 @@ stock savePlayers(TeamName:team_winners) {
 	new JSON:arrayRoot = json_init_array();
 
 	new iPlayers[MAX_PLAYERS], iNum, szAuth[24];
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -134,13 +134,13 @@ public rgRestartRound() {
 
 	new iPlayers[MAX_PLAYERS], iNum;
 
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 	for (new j; j < iNum; j++) {
 		new id = iPlayers[j];
 		arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
 	}
 
-	get_players(iPlayers, iNum, "ce", "TERRORIST");
+	get_players(iPlayers, iNum, "che", "TERRORIST");
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 		if (g_bLastFlash[iPlayer]) {
@@ -191,7 +191,7 @@ public rgFlPlayerFallDamage(id) {
 public taskRoundEnd() {
 	if (g_bSurvival) {
 		new iPlayers[32], count;
-		get_players(iPlayers, count, "ce", "TERRORIST");
+		get_players(iPlayers, count, "che", "TERRORIST");
 
 		for(new i; i < 10; i++) {
 			g_iBestAuth[i] = "";
@@ -255,10 +255,14 @@ public rgPlayerSpawn(id) {
 	setUserRole(id);
 }
 
-public rgTakeDamage(victim, inflictor, attacker, Float:damage) {
+public rgTakeDamage(victim, inflictor, attacker, Float:damage, damage_bits) {
 	if (g_iCurrentMode == e_mMatch) {
 		if (is_user_connected(attacker) && 1 <= attacker <= MAX_PLAYERS && getUserTeam(victim) != getUserTeam(attacker)) {
 			statsStabs(attacker);
+		}
+	} else if (g_iCurrentMode == e_mTraining) {
+		if(damage_bits & DMG_FALL) {
+			damageHit(victim, damage);
 		}
 	}
 }

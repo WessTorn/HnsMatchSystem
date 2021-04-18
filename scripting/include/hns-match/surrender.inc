@@ -4,8 +4,6 @@
 
 #define _surrender_included
 
-#define surrenderVoteTime 10 // Добавить в квар
-
 enum _:SurrenderVote {
 	e_sYes,
 	e_sNo
@@ -16,7 +14,7 @@ new bool:g_bSurrenderVoted[MAX_PLAYERS + 1];
 public taskSurrender() {
 	new id = g_eSurrenderData[e_sInitiator];
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ce", getUserTeam(id) == TEAM_TERRORIST ? "TERRORIST" : "CT");
+	get_players(iPlayers, iNum, "che", getUserTeam(id) == TEAM_TERRORIST ? "TERRORIST" : "CT");
 
 	if (!is_user_connected(id)) {
 		resetSurrenderData();
@@ -49,7 +47,7 @@ public taskSurrender() {
 		return;
 	}
 
-	if (g_eSurrenderData[e_sFlTime] == surrenderVoteTime) {
+	if (g_eSurrenderData[e_sFlTime] == get_pcvar_num(g_eCvars[e_cSurVoteTime])) {
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
 			client_print_color(iPlayer, print_team_blue, "%L", id, "SUR_NEED", prefix, g_eMatchInfo[e_mTeamSizeTT], g_eMatchInfo[e_mTeamSizeTT]);
@@ -110,7 +108,7 @@ public surrenderMenuHandler(id, iMenu, item) {
 
 resetSurrenderData() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];

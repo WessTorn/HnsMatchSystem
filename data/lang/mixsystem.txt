@@ -74,3 +74,10 @@ CAP_HAS_LEFT    = %s One of the captains has left, the captain's mode is disable
 TEAM_FULL       = %s The teams are full!
 
 PLAYER_CHOOSE   = %s ^3%n^1 choose the player --> ^3%n
+
+TRAINING_NOTALIVE  = %s You must be alive to use this command!
+CP_NOTALIVE        = %s You must be alive to use checkpoints!
+CP_SAVE            = %s Checkpoint saved!
+CP_NOT             = %s You haven't got any checkpoints!
+CP_NOTSTUCK        = %s You must have another checkpoint to use stuck!
+DAMAGE_INFO        = %s You have taken ^3%i^1 damage.

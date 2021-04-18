@@ -9,7 +9,7 @@ stock captainStart(id) {
 	g_iCurrentMode = e_mCaptain;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -36,7 +36,7 @@ stock chooseCapsMenu(id) {
 	new iMenu = menu_create("\yChoose captains", "chooseCapsHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	new szBuffer[256];
 	for (new i; i < iNum; i++) {
@@ -119,7 +119,7 @@ stock pickMenu(id) {
 	new iMenu = menu_create("\yPick player", "pickHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
-	get_players(iPlayers, iNum, "ce", "SPECTATOR");
+	get_players(iPlayers, iNum, "che", "SPECTATOR");
 
 	new szBuffer[256];
 	for (new i; i < iNum; i++) {
@@ -192,7 +192,7 @@ public pickHandler(id, iMenu, item) {
 	pickMenu(g_iCaptainPick);
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "c");
+	get_players(iPlayers, iNum, "ch");
 
 	new iTotalPlayers;
 	for (new i; i < iNum; i++) {

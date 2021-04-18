@@ -19,7 +19,7 @@ new const szDefaultEntities[][] = {
 }
 
 stock forward_init() {
-	register_forward(FM_Voice_SetClientListening, "fwdSetClientListening");
+	//register_forward(FM_Voice_SetClientListening, "fwdSetClientListening");
 	register_forward(FM_EmitSound, "fwdEmitSoundPre", 0);
 	register_forward(FM_ClientKill, "fwdClientKill");
 	register_forward(FM_GetGameDescription, "fwdGameNameDesc");
@@ -27,7 +27,7 @@ stock forward_init() {
 	unregister_forward(FM_Spawn, g_iRegisterSpawn, 1);
 }
 
-public fwdSetClientListening(iReceiver, iSender, bool:bListen) {
+/*public fwdSetClientListening(iReceiver, iSender, bool:bListen) {
 	if (g_iCurrentMode <= e_mPaused || g_iCurrentMode == e_mCaptain || g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) {
 		engfunc(EngFunc_SetClientListening, iReceiver, iSender, true);
 		forward_return(FMV_CELL, true);
@@ -49,7 +49,7 @@ public fwdSetClientListening(iReceiver, iSender, bool:bListen) {
 	engfunc(EngFunc_SetClientListening, iReceiver, iSender, false);
 	forward_return(FMV_CELL, false);
 	return FMRES_SUPERCEDE;
-}
+}*/
 
 public fwdEmitSoundPre(id, iChannel, szSample[], Float:volume, Float:attenuation, fFlags, pitch) {
 	if (equal(szSample, "weapons/knife_deploy1.wav")) {
