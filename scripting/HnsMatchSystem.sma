@@ -7,7 +7,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.5", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.1.6", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -24,7 +24,7 @@ public plugin_init() {
 	g_eCvars[e_cSurVoteTime] 		= register_cvar("hns_survotetime", "10", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cCheckPlayNoPlay] 	= register_cvar("hns_checkplay", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cGameName]			= register_cvar("hns_gamename", "Hide'n'Seek");
-	get_pcvar_string(register_cvar("hns_knifemap", "32hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24)
+	get_pcvar_string(register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24)
 
 	hookOnOff_init();
 	cmds_init();
@@ -218,6 +218,8 @@ public taskPrepareMode(mode) {
 
 			fnConvertTime(get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
 			rg_send_audio(0, "sound/barney/ba_bring.wav");
+
+			addStats();
 		}
 		case e_mPublic: {
 			g_iCurrentMode = e_mPublic;
@@ -241,7 +243,6 @@ public taskPrepareMode(mode) {
 		}
 	}
 	restartRound();
-	addStats();
 }
 
 restartRound(Float:delay = 0.5) {

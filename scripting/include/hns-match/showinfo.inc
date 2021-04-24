@@ -18,7 +18,7 @@ stock statsFlashedTime(attacker, Float:fadeHold) {
 }
 
 stock statsStabs(attacker) {
-	g_eRoundInfo[attacker][e_iStabs]++;
+	iStats[attacker][e_iStabs]++;
 }
 
 stock lastOrigin(id) {
@@ -98,7 +98,6 @@ public apply_stats() {
 		iStats[id][e_flFlashedTime] += g_eRoundInfo[id][e_flFlashedTime];
 		iStats[id][e_flHideTime] += g_eRoundInfo[id][e_flHideTime];
 		iStats[id][e_iFound] += g_eRoundInfo[id][e_iFound];
-		iStats[id][e_iStabs] += g_eRoundInfo[id][e_iStabs];
 		arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
 	}
 
@@ -110,7 +109,6 @@ public apply_stats() {
 		iStats[id][e_flFlashedTime] += g_eRoundInfo[id][e_flFlashedTime];
 		iStats[id][e_flHideTime] += g_eRoundInfo[id][e_flHideTime];
 		iStats[id][e_iFound] += g_eRoundInfo[id][e_iFound];
-		iStats[id][e_iStabs] += g_eRoundInfo[id][e_iStabs];
 		arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
 	}
 }

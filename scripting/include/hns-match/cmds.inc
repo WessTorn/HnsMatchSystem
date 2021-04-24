@@ -472,7 +472,8 @@ public cmdStartPause(id) {
 			client_print_color(0, print_team_blue, "%L", id, "GAME_PAUSED", prefix, getUserName(id));
 		}
 
-		rg_send_audio(0, "fvox/activated.wav");
+		rg_send_audio(0, "fvox/deactivated.wav");
+		server_cmd("sv_alltalk 1"); //  Переделать!
 		disableSemiclip();
 	}
 	return PLUGIN_HANDLED;
@@ -496,7 +497,7 @@ public cmdStopPause(id) {
 			client_print_color(0, print_team_blue, "%L", id, "GAME_UNPAUSED", prefix, getUserName(id));
 		}
 
-		rg_send_audio(0, "fvox/deactivated.wav");
+		rg_send_audio(0, "fvox/activated.wav");
 		g_bGameStarted = true;
 
 		setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "Game Unpause^nLive Live Live");
@@ -513,6 +514,8 @@ public cmdStopPause(id) {
 		}
 		loadMapCFG();
 	}
+
+	server_cmd("sv_alltalk 3"); //  Переделать!
 	return PLUGIN_HANDLED;
 }
 

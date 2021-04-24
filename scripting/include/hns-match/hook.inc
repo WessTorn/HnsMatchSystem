@@ -257,7 +257,7 @@ public rgPlayerSpawn(id) {
 
 public rgTakeDamage(victim, inflictor, attacker, Float:damage, damage_bits) {
 	if (g_iCurrentMode == e_mMatch) {
-		if (is_user_connected(attacker) && 1 <= attacker <= MAX_PLAYERS && getUserTeam(victim) != getUserTeam(attacker)) {
+		if (is_user_connected(attacker) && getUserTeam(victim) != getUserTeam(attacker)) {
 			statsStabs(attacker);
 		}
 	} else if (g_iCurrentMode == e_mTraining) {
