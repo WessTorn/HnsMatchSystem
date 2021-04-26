@@ -32,19 +32,19 @@ public task_MainThink() {
 	if (g_bFreezePeriod)
 		return;
 	
-	new tt_players[32], tt_num;
-	get_players(tt_players, tt_num, "ache", "TERRORIST");
-	new ct_players[32], ct_num;
-	get_players(ct_players, ct_num, "ache", "CT");
-	for (new i = 0; i < tt_num; i++) {
-		new tt = tt_players[i];
+	new TTPlayers[32], iTTNum;
+	get_players(TTPlayers, iTTNum, "ache", "TERRORIST");
+	new CTPlayers[32], iCTNum;
+	get_players(CTPlayers, iCTNum, "ache", "CT");
+	for (new i = 0; i < iTTNum; i++) {
+		new tt = TTPlayers[i];
 		new Float:origin[3];
 		get_entvar(tt, var_origin, origin);
 		g_eRoundInfo[tt][e_flRunDistance] += get_distance_f(origin, flLastOrigin[tt]);
 		flLastOrigin[tt] = origin;
 		new bool:found	= false;
-		for (new j = 0; j < ct_num; j++) {
-			new ct = ct_players[j];
+		for (new j = 0; j < iCTNum; j++) {
+			new ct = CTPlayers[j];
 			if (fm_is_ent_visible(ct, tt) && fm_is_in_viewcone(ct, origin)) {
 				if (bHiding[tt]) {
 					g_eRoundInfo[ct][e_iFound]++;
@@ -86,12 +86,12 @@ addStats() {
 }
 
 public apply_stats() {
-	new tt_players[32], tt_num;
-	get_players(tt_players, tt_num, "che", "TERRORIST");
-	new ct_players[32], ct_num;
-	get_players(ct_players, ct_num, "che", "CT");
-	for (new i = 0; i < tt_num; i++) {
-		new id = tt_players[i];
+	new TTPlayers[32], iTTNum;
+	get_players(TTPlayers, iTTNum, "che", "TERRORIST");
+	new CTPlayers[32], iCTNum;
+	get_players(CTPlayers, iCTNum, "che", "CT");
+	for (new i = 0; i < iTTNum; i++) {
+		new id = TTPlayers[i];
 		iStats[id][e_flSurviveTime]	= g_ePlayerInfo[id][e_plrSurviveTime];
 		iStats[id][e_flDmg] += g_eRoundInfo[id][e_flDmg];
 		iStats[id][e_flRunDistance] += g_eRoundInfo[id][e_flRunDistance];
@@ -101,8 +101,8 @@ public apply_stats() {
 		arrayset(g_eRoundInfo[id], 0, RoundInfo_s);
 	}
 
-	for (new i = 0; i < ct_num; i++) {
-		new id = ct_players[i];
+	for (new i = 0; i < iCTNum; i++) {
+		new id = CTPlayers[i];
 		iStats[id][e_flSurviveTime]	= g_ePlayerInfo[id][e_plrSurviveTime];
 		iStats[id][e_flDmg] += g_eRoundInfo[id][e_flDmg];
 		iStats[id][e_flRunDistance] += g_eRoundInfo[id][e_flRunDistance];
@@ -127,7 +127,7 @@ public task_ShowPlayerInfo() {
 			if(g_iCurrentMode == e_mMatch) {
 				new szTime[24];
 				fnConvertTime(g_ePlayerInfo[iPlayer][e_plrSurviveTime], szTime, charsmax(szTime), false);
-				set_hudmessage( .red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
+				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
 				ShowSyncHudMsg(iPlayer, g_MsgSync, "Survive time: %s", szTime);
 			}
 			continue;
@@ -147,17 +147,17 @@ public task_ShowPlayerInfo() {
 					fnConvertTime(g_ePlayerInfo[id][e_plrSurviveTime], szTime, charsmax(szTime), false);
 					formatex(szBuffer, charsmax(szBuffer), "Survive time: %s", szTime);
 
-					fnConvertTime(iStats[iPlayer][e_flFlashedTime], szTimeFlash, charsmax(szTimeFlash), false);
+					fnConvertTime(iStats[id][e_flFlashedTime], szTimeFlash, charsmax(szTimeFlash), false);
 					formatex(szBuffer2, charsmax(szBuffer2), "Damaged: %.0fHP^n\
 						Flashed: %s^n\
 						Found TT: %d^n\
 						Stabs: %d^n\
 						Run: %.1fK",
-						iStats[iPlayer][e_flDmg],
+						iStats[id][e_flDmg],
 						szTimeFlash,
-						iStats[iPlayer][e_iFound],
-						iStats[iPlayer][e_iStabs],
-						iStats[iPlayer][e_flRunDistance] / 1000);
+						iStats[id][e_iFound],
+						iStats[id][e_iStabs],
+						iStats[id][e_flRunDistance] / 1000);
 				}
 
 				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
