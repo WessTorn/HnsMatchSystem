@@ -7,13 +7,14 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.7", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.1.8.1", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
 	g_eCvars[e_cRoundTime] = get_cvar_pointer("mp_roundtime");
 	
 	g_eCvars[e_cCapTime]			= register_cvar("hns_wintime", "15");
+	g_eCvars[e_cMaxRounds]			= register_cvar("hns_rounds", "7");
 	g_eCvars[e_cFlashNum]			= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cSmokeNum]			= register_cvar("hns_smoke", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cLastMode]			= register_cvar("hns_lastmode", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
@@ -23,6 +24,7 @@ public plugin_init() {
 	g_eCvars[e_cDMRespawn] 			= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cSurVoteTime] 		= register_cvar("hns_survotetime", "10", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cCheckPlayNoPlay] 	= register_cvar("hns_checkplay", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cRules] 				= register_cvar("hns_rules", "0");
 	g_eCvars[e_cGameName]			= register_cvar("hns_gamename", "Hide'n'Seek");
 	get_pcvar_string(register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24)
 
@@ -39,6 +41,16 @@ public plugin_init() {
 	g_aPlayersLoadData = ArrayCreate(PlayersLoad_s);
 	registerMode();
 	loadPlayers();
+
+	set_pcvar_num(g_eCvars[e_cMaxRounds], 7);
+	if(get_pcvar_num(g_eCvars[e_cRules]) == 1)
+	{
+		g_iCurrentRules = e_mMR;
+	}
+	else
+	{
+		g_iCurrentRules = e_mTimer;		
+	}
 
 	g_MsgSync = CreateHudSyncObj();
 	g_tPlayerInfo = TrieCreate();
@@ -188,6 +200,8 @@ public taskPrepareMode(mode) {
 			g_iCurrentMode = e_mMatch;
 			g_flSidesTime[0] = 0.0;
 			g_flSidesTime[1] = 0.0;
+			g_iRoundsPlayed[0] = 0;
+			g_iRoundsPlayed[1] = 0;
 			g_iCurrentSW = 1;
 			g_bGameStarted = true;
 

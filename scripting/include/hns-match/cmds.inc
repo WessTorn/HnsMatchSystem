@@ -37,6 +37,7 @@ stock cmds_init() {
 	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "Swap Teams");
 	RegisterSayCmd("pause", "ps", "cmdStartPause", access, "Start pause");
 	RegisterSayCmd("live", "unpause", "cmdStopPause", access, "Unpause");
+	RegisterSayCmd("mode", "type", "MenuSelectMode", access, "Mode menu");
 	RegisterSayCmd("surrender", "sur", "cmdSurrender", 0, "Surrender vote");
 	RegisterSayCmd("score", "s", "cmdShowTimers", 0, "Score");
 	RegisterSayCmd("pick", "pick", "cmdPick", 0, "Pick player");
@@ -309,6 +310,7 @@ public cmdStop(id) {
 			g_bGameStarted = false;
 			g_bSurvival = false;
 			g_bPlayersListLoaded = false;
+			g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
 		}
 		case e_mKnife: {
 			client_print_color(0, print_team_blue, "%L", id, "STOP_KNIFE", prefix, getUserName(id));
@@ -562,30 +564,44 @@ public cmdShowTimers(id) {
 		new timeToWin[2][24];
 		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
 		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
-
-		new timeDiff[2][24];
-		fnConvertTime(g_flSidesTime[g_iCurrentSW] - g_flSidesTime[!g_iCurrentSW], timeDiff[0], 23, false);
-		fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], timeDiff[1], 23, false);
-
+		
 		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
 		get_players(iPlayers, TTsize, "ce", "TERRORIST");
 		get_players(iPlayers, CTSize, "ce", "CT");
 
-		if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
-			if (!g_iCurrentSW)
-				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME1", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[1]);
-			else
-				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME2", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
-		} else if(g_flSidesTime[!g_iCurrentSW] < g_flSidesTime[g_iCurrentSW]) {
-			if (!g_iCurrentSW)
-				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME3", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
-			else
-				client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME4", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[0]);
+		if (g_iCurrentRules == e_mTimer) {
+			new timeDiff[2][24];
+			fnConvertTime(g_flSidesTime[g_iCurrentSW] - g_flSidesTime[!g_iCurrentSW], timeDiff[0], 23, false);
+			fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], timeDiff[1], 23, false);
+
+			if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
+				if (!g_iCurrentSW)
+					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME1", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[1]);
+				else
+					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME2", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
+			} else if(g_flSidesTime[!g_iCurrentSW] < g_flSidesTime[g_iCurrentSW]) {
+				if (!g_iCurrentSW)
+					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME3", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
+				else
+					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME4", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[0]);
+			} else {
+				if (!g_iCurrentSW)
+					client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME5", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
+				else
+					client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME6", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
+			}
 		} else {
-			if (!g_iCurrentSW)
-				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME5", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
-			else
-				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME6", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
+			fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
+			fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
+			if (!g_iCurrentSW) {
+				client_print_color(id, print_team_blue, "%s Hiders ^3%s^1 | ^3%s^1 Seekers [^3%d^1x^3%d^1] [^3%d^1/^3%d^1]",
+					prefix, timeToWin[0], timeToWin[1], TTsize, CTSize,
+					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
+			} else {
+				client_print_color(id, print_team_blue, "%s Hiders ^3%s^1 | ^3%s^1 Seekers [^3%d^1x^3%d^1] [^3%d^1/^3%d^1]",
+					prefix, timeToWin[1], timeToWin[0], TTsize, CTSize,
+					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
+			}
 		}
 	} else {
 		client_print_color(id, print_team_blue, "%L", id, "SCORE_NOT", prefix);

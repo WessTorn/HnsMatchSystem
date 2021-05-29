@@ -380,3 +380,39 @@ public trainingMenuHandler(id, iMenu, item) {
 	}
 	return PLUGIN_HANDLED;
 }
+
+public MenuSelectMode(id) {
+	if (g_iCurrentMode != e_mTraining)
+		return;
+
+	new menu = menu_create("\rChoose game mode", "HandlerSelectMode");
+
+	menu_additem(menu, "MR System", "1");
+	menu_additem(menu, "Timer", "2");
+
+	menu_setprop(menu, MPROP_EXIT, MEXIT_ALL);
+
+	menu_display(id, menu, 0);
+}
+
+public HandlerSelectMode(id, menu, item) {
+	if (item == MENU_EXIT) {
+		menu_destroy(menu);
+		return;
+	}
+	new s_Data[6], s_Name[64], i_Access, i_Callback;
+	menu_item_getinfo(menu, item, i_Access, s_Data, charsmax(s_Data), s_Name, charsmax(s_Name), i_Callback);
+	menu_destroy(menu);
+
+	new index = str_to_num(s_Data);
+
+	if (index == 1) {
+		client_print_color(0, print_team_blue, "%s ^3%n^1 change mode to ^3MR^1!", prefix, id);
+		set_pcvar_num(g_eCvars[e_cRules], 1);
+		g_iCurrentRules = e_mMR;
+	} else {
+		client_print_color(0, print_team_blue, "%s ^3%n^1 change mode to ^3Timer^1!", prefix, id);
+		set_pcvar_num(g_eCvars[e_cRules], 2);
+		g_iCurrentRules = e_mTimer;
+	}
+}

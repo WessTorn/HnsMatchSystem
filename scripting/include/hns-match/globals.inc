@@ -18,6 +18,12 @@ enum {
 }
 new g_iCurrentMode;
 
+enum MatchMode {
+	e_mTimer,
+	e_mMR
+}
+new MatchMode:g_iCurrentRules = e_mTimer;
+
 enum _:PlayersLoad_s {
 	e_pAuth[24],
 	e_pTeam
@@ -73,6 +79,7 @@ new g_eSurrenderData[SurrenderData_s];
 
 enum _:Cvars_s {
 	e_cCapTime,
+	e_cMaxRounds,
 	e_cRoundTime,
 	e_cGameName,
 	e_cFlashNum,
@@ -82,6 +89,7 @@ enum _:Cvars_s {
 	e_cSemiclip,
 	e_cHpMode,
 	e_cDMRespawn,
+	e_cRules,
 	e_cKnifeMap[25],
 	e_cSurVoteTime,
 	e_cCheckPlayNoPlay
@@ -102,6 +110,7 @@ new Float:g_flRoundTime;
 new Float:g_flSidesTime[2];
 
 new g_iCurrentSW;
+new g_iRoundsPlayed[2];
 new g_iRegisterSpawn;
 new g_iHostageEnt;
 new g_szBuffer[2048];
