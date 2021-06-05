@@ -698,7 +698,7 @@ stock RegisterSayCmd(const szCmd[], const szShort[], const szFunc[], flags = -1,
 	register_clcmd(szTemp, szFunc, flags, szInfoLang);
 
 	format(szTemp, 64, "say .%s", szCmd);
-	register_clcmd(szTemp, szFunc, flags, szInfoLang);`
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);
 
 	format(szTemp, 64, "/%s", szCmd);
 	register_clcmd(szTemp, szFunc, flags, szInfoLang);

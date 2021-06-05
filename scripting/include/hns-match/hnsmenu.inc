@@ -8,25 +8,25 @@ public mainMatchMenu(id) {
 	if (!is_user_connected(id) || !getUserInAccess(id))
 		return;
 
-	new iMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
+	new hMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
 
 	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
-			menu_additem(iMenu, "Start captain mod", "1");
+			menu_additem(hMenu, "Start captain mod", "1");
 		else if (g_iCurrentMode == e_mKnife)
-			menu_additem(iMenu, "\dStart captain mod", "1");
+			menu_additem(hMenu, "\dStart captain mod", "1");
 		else
-			menu_additem(iMenu, "\rStop captain mod", "1");
+			menu_additem(hMenu, "\rStop captain mod", "1");
 	} else {
 		if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
-			menu_additem(iMenu, "\dStart mix match", "1");
+			menu_additem(hMenu, "\dStart mix match", "1");
 		else if (g_iCurrentMode == e_mTraining)
-			menu_additem(iMenu, "Start mix match", "1");
+			menu_additem(hMenu, "Start mix match", "1");
 		else {
 			if (get_user_flags(id) & ADMIN_BAN)
-				menu_additem(iMenu, "\rStop mix match", "1");
+				menu_additem(hMenu, "\rStop mix match", "1");
 			else
-				menu_additem(iMenu, "\dStop mix match", "1");
+				menu_additem(hMenu, "\dStop mix match", "1");
 		}
 	}
 
@@ -34,42 +34,42 @@ public mainMatchMenu(id) {
 	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 			if (g_iCurrentMode == e_mKnife)
-				menu_additem(iMenu, "\rStop Kniferound^n", "2");
+				menu_additem(hMenu, "\rStop Kniferound^n", "2");
 			else if (g_iCurrentMode == e_mCaptain)
-				menu_additem(iMenu, "\dStart Kniferound^n", "2");
+				menu_additem(hMenu, "\dStart Kniferound^n", "2");
 			else
-				menu_additem(iMenu, "Start Kniferound^n", "2");
+				menu_additem(hMenu, "Start Kniferound^n", "2");
 		}
 	} else {
 		if (g_iCurrentMode == e_mTraining)
-			menu_additem(iMenu, "Start custom mode^n", "2");
+			menu_additem(hMenu, "Start custom mode^n", "2");
 		else if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
-			menu_additem(iMenu, "\rStop custom mode^n", "2");
+			menu_additem(hMenu, "\rStop custom mode^n", "2");
 		else {
 			if (g_iCurrentMode != e_mPaused)
-				menu_additem(iMenu, "Pause match^n", "2");
+				menu_additem(hMenu, "Pause match^n", "2");
 			else
-				menu_additem(iMenu, "Unpause match^n", "2");
+				menu_additem(hMenu, "Unpause match^n", "2");
 		}
 	}
 
-	menu_additem(iMenu, "Mix system settings^n", "3");
+	menu_additem(hMenu, "Mix system settings^n", "3");
 
-	menu_additem(iMenu, "Restart round", "4");
-	menu_additem(iMenu, "Swap teams^n", "5");
-	menu_additem(iMenu, "Team Transfer Player", "6");
-	menu_additem(iMenu, "Change map", "7");
+	menu_additem(hMenu, "Restart round", "4");
+	menu_additem(hMenu, "Swap teams^n", "5");
+	menu_additem(hMenu, "Team Transfer Player", "6");
+	menu_additem(hMenu, "Change map", "7");
 
-	menu_display(id, iMenu);
+	menu_display(id, hMenu);
 }
 
-public mainMatchMenuHandler(id, iMenu, item) {
+public mainMatchMenuHandler(id, hMenu, item) {
 	if (item == MENU_EXIT) {
 		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
@@ -139,25 +139,25 @@ public customMenu(id) {
 	if (!is_user_connected(id))
 		return;
 
-	new iMenu = menu_create("\yHide'n'Seek mix system", "customMenuHandler");
+	new hMenu = menu_create("\yHide'n'Seek mix system", "customMenuHandler");
 
-	menu_additem(iMenu, "Publick", "1");
+	menu_additem(hMenu, "Publick", "1");
 
-	menu_additem(iMenu, "DeathMatch", "2");
+	menu_additem(hMenu, "DeathMatch", "2");
 
 
-	menu_display(id, iMenu, 0);
+	menu_display(id, hMenu, 0);
 }
 
-public customMenuHandler(id, iMenu, item) {
+public customMenuHandler(id, hMenu, item) {
 	if (item == MENU_EXIT) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(iMenu);
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
@@ -180,7 +180,7 @@ public settingsMatchMenu(id) {
 
 	new title[64];
 	formatex(title, 63, "\yMix system settings");
-	new iMenu = menu_create(title, "settingsMatchMenuHandler");
+	new hMenu = menu_create(title, "settingsMatchMenuHandler");
 	new titleRoundtime[64];
 	if (g_iCurrentMode == e_mTraining)
 		formatex(titleRoundtime, 63, "Roundtime: \dcannot changed in training");
@@ -206,26 +206,26 @@ public settingsMatchMenu(id) {
 	new titleSmoke[64]; formatex(titleSmoke, 63, "Smoke: \y%d^n", get_pcvar_num(g_eCvars[e_cSmokeNum]));
 	new titleAA[64]; formatex(titleAA, 63, "Airaccelerate \y%d^n", get_pcvar_num(g_eCvars[e_cAA]));
 
-	menu_additem(iMenu, titleRoundtime, "1");
-	menu_additem(iMenu, titleFreeztime, "2");
-	menu_additem(iMenu, titleTimeRound, "3");
-	menu_additem(iMenu, titleHP, "4");
+	menu_additem(hMenu, titleRoundtime, "1");
+	menu_additem(hMenu, titleFreeztime, "2");
+	menu_additem(hMenu, titleTimeRound, "3");
+	menu_additem(hMenu, titleHP, "4");
 
-	menu_additem(iMenu, titleFlahs, "5");
-	menu_additem(iMenu, titleSmoke, "6");
+	menu_additem(hMenu, titleFlahs, "5");
+	menu_additem(hMenu, titleSmoke, "6");
 
-	menu_additem(iMenu, titleAA, "7");
-	menu_display(id, iMenu, 0);
+	menu_additem(hMenu, titleAA, "7");
+	menu_display(id, hMenu, 0);
 }
 
-public settingsMatchMenuHandler(id, iMenu, item) {
+public settingsMatchMenuHandler(id, hMenu, item) {
 	if (item == MENU_EXIT) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		mainMatchMenu(id);
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
@@ -314,7 +314,7 @@ public settingsMatchMenuHandler(id, iMenu, item) {
 		}
 	}
 
-	menu_destroy(iMenu);
+	menu_destroy(hMenu);
 	return PLUGIN_HANDLED;
 }
 
@@ -323,24 +323,24 @@ public verifMenu(id) {
 	if (!is_user_connected(id))
 		return;
 
-	new iMenu = menu_create("\yVerification^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
+	new hMenu = menu_create("\yVerification^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
 
-	menu_additem(iMenu, "No");
-	menu_additem(iMenu, "Yes");
+	menu_additem(hMenu, "No");
+	menu_additem(hMenu, "Yes");
 
-	menu_setprop(iMenu, MPROP_EXIT, MEXIT_NEVER);
-	menu_display(id, iMenu);
+	menu_setprop(hMenu, MPROP_EXIT, MEXIT_NEVER);
+	menu_display(id, hMenu);
 }
 
-public verifMenuHandler(id, iMenu, item) {
-	menu_destroy(iMenu);
+public verifMenuHandler(id, hMenu, item) {
+	menu_destroy(hMenu);
 
 	if (item == MENU_EXIT)
 		return;
 
 	switch (item) {
 		case 0: {
-			menu_destroy(iMenu);
+			menu_destroy(hMenu);
 			return;
 		}
 		case 1: {
@@ -353,24 +353,24 @@ public trainingMenu(id) {
 	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
 		return;
 	
-	new iMenu = menu_create("\yTrainig menu:", "trainingMenuHandler");
+	new hMenu = menu_create("\yTrainig menu:", "trainingMenuHandler");
 
-	menu_additem(iMenu, "Checkpoint", "1");
-	menu_additem(iMenu, "Teleport", "2");
-	menu_additem(iMenu, "No Clip", "3");
-	menu_additem(iMenu, "Respawn", "4");
-	menu_additem(iMenu, "Damage", "5");
+	menu_additem(hMenu, "Checkpoint", "1");
+	menu_additem(hMenu, "Teleport", "2");
+	menu_additem(hMenu, "No Clip", "3");
+	menu_additem(hMenu, "Respawn", "4");
+	menu_additem(hMenu, "Damage", "5");
 
-	menu_display(id, iMenu);
+	menu_display(id, hMenu);
 }
 
-public trainingMenuHandler(id, iMenu, item) {
+public trainingMenuHandler(id, hMenu, item) {
 	if (item == MENU_EXIT) {
 		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
@@ -400,24 +400,24 @@ public trainingMenuHandler(id, iMenu, item) {
 
 public modeSelectMenu(id) {
 	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
-		return PLUGIN_HANDLED;
+		return;
 
-	new menu = menu_create("\yChoose game mode", "HandlerSelectMode");
+	new hMenu = menu_create("\yChoose game mode", "HandlerSelectMode");
 
-	menu_additem(menu, "MR System", "1");
-	menu_additem(menu, "Timer", "2");
+	menu_additem(hMenu, "MR System", "1");
+	menu_additem(hMenu, "Timer", "2");
 
-	menu_setprop(menu, MPROP_EXIT, MEXIT_ALL);
-	menu_display(id, menu, 0);
+	menu_setprop(hMenu, MPROP_EXIT, MEXIT_ALL);
+	menu_display(id, hMenu, 0);
 }
 
-public HandlerSelectMode(id, menu, item) {
+public HandlerSelectMode(id, hMenu, item) {
 	if (item == MENU_EXIT) {
-		menu_destroy(menu);
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
 	new iKey = str_to_num(szData);
 
 	switch (iKey) {
