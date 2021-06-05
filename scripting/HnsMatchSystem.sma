@@ -7,14 +7,14 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.8.1", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.1.8.3", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
 	g_eCvars[e_cRoundTime] = get_cvar_pointer("mp_roundtime");
 	
 	g_eCvars[e_cCapTime]			= register_cvar("hns_wintime", "15");
-	g_eCvars[e_cMaxRounds]			= register_cvar("hns_rounds", "7");
+	g_eCvars[e_cMaxRounds]			= register_cvar("hns_rounds", "6");
 	g_eCvars[e_cFlashNum]			= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cSmokeNum]			= register_cvar("hns_smoke", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cLastMode]			= register_cvar("hns_lastmode", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
@@ -26,7 +26,9 @@ public plugin_init() {
 	g_eCvars[e_cCheckPlayNoPlay] 	= register_cvar("hns_checkplay", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cRules] 				= register_cvar("hns_rules", "0");
 	g_eCvars[e_cGameName]			= register_cvar("hns_gamename", "Hide'n'Seek");
-	get_pcvar_string(register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24)
+	get_pcvar_string(register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24);
+
+	register_clcmd("say", "sayHandle");
 
 	hookOnOff_init();
 	cmds_init();
@@ -41,16 +43,6 @@ public plugin_init() {
 	g_aPlayersLoadData = ArrayCreate(PlayersLoad_s);
 	registerMode();
 	loadPlayers();
-
-	set_pcvar_num(g_eCvars[e_cMaxRounds], 7);
-	if(get_pcvar_num(g_eCvars[e_cRules]) == 1)
-	{
-		g_iCurrentRules = e_mMR;
-	}
-	else
-	{
-		g_iCurrentRules = e_mTimer;		
-	}
 
 	g_MsgSync = CreateHudSyncObj();
 	g_tPlayerInfo = TrieCreate();
@@ -71,12 +63,21 @@ public taskDelayedMode() {
 	} else {
 		taskPrepareMode(e_mTraining);
 	}
+
+	if(get_pcvar_num(g_eCvars[e_cRules]) == 1)
+	{
+		g_iCurrentRules = e_mMR;
+	}
+	else
+	{
+		g_iCurrentRules = e_mTimer;		
+	}
 }
 
 public registerMode() {
 	g_iHostageEnt = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "hostage_entity"));
-	set_pev(g_iHostageEnt, pev_origin, Float:{ 0.0, 0.0, -55000.0 });
-	set_pev(g_iHostageEnt, pev_size, Float:{ -1.0, -1.0, -1.0 }, Float:{ 1.0, 1.0, 1.0 });
+	set_entvar(g_iHostageEnt, var_origin, Float:{ 0.0, 0.0, -55000.0 });
+	set_entvar(g_iHostageEnt, var_size, Float:{ -1.0, -1.0, -1.0 }, Float:{ 1.0, 1.0, 1.0 });
 	dllfunc(DLLFunc_Spawn, g_iHostageEnt);
 }
 
@@ -204,6 +205,7 @@ public taskPrepareMode(mode) {
 			g_iRoundsPlayed[1] = 0;
 			g_iCurrentSW = 1;
 			g_bGameStarted = true;
+			g_bLastRound = false;
 
 			server_cmd("exec %s/match.cfg", szPath);
 			set_pcvar_num(g_eCvars[e_cLastMode], 0);
@@ -227,7 +229,7 @@ public taskPrepareMode(mode) {
 			loadMapCFG();
 
 			new iPlayers[MAX_PLAYERS], iNum;
-			get_players(iPlayers, iNum, "ce", "TERRORIST");
+			get_players(iPlayers, iNum, "e", "TERRORIST");
 			g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
 			fnConvertTime(get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
@@ -262,7 +264,7 @@ public taskPrepareMode(mode) {
 restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
 		new iPlayers[32], iNum;
-		get_players(iPlayers, iNum, "c");
+		get_players(iPlayers, iNum);
 
 		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 

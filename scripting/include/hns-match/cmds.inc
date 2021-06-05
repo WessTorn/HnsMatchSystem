@@ -7,7 +7,6 @@
 #define surrenderTimeDelay 120 // Добавить в квар
 
 stock cmds_init() {
-	register_clcmd("say", "sayHandle");
 	register_clcmd("nightvision", "mainMatchMenu");
 
 	register_clcmd("chooseteam", "blockCmd");
@@ -18,17 +17,18 @@ stock cmds_init() {
 	RegisterSayCmd("hideknife", "hknife", "cmdShowKnife");
 
 	RegisterSayCmd("mix", "mix", "mainMatchMenu", access, "Main menu admin");
-	RegisterSayCmd("training", "training", "trainingMenu", 0, "Public mode");
+	RegisterSayCmd("mode", "type", "modeSelectMenu", access, "Mode menu");
+	RegisterSayCmd("training", "training", "trainingMenu", 0, "Training menu");
 
 	RegisterSayCmd("pub", "public", "cmdPubMode", access, "Public mode");
-	RegisterSayCmd("dm", "DM", "cmdDMMode", access, "Public mode");
+	RegisterSayCmd("dm", "deathmatch", "cmdDMMode", access, "DeathMatch mode");
 	RegisterSayCmd("specall", "specall", "cmdTransferSpec", access, "Spec Transfer");
 	RegisterSayCmd("ttall", "ttall", "cmdTransferTT", access, "TT Transfer");
 	RegisterSayCmd("ctall", "ctall", "cmdTransferCT", access, "CT Transfer");
 	RegisterSayCmd("startmix", "start", "cmdStartRound", access, "Starts Round");
 	RegisterSayCmd("kniferound", "kf", "cmdKnifeRound", access, "Knife Round");
 	RegisterSayCmd("captain", "cap", "cmdCaptain", access, "Captain Mode");
-	RegisterSayCmd("stop", "st", "cmdStopMode", access, "Stop Current Mode");
+	RegisterSayCmd("stop", "cancel", "cmdStopMode", access, "Stop Current Mode");
 	RegisterSayCmd("skill", "skill", "cmdSkillMode", access, "Skill mode");
 	RegisterSayCmd("boost", "boost", "cmdBoostMode", access, "Boost mode");
 	RegisterSayCmd("aa10", "10aa", "cmdAa10", access, "10aa");
@@ -37,68 +37,21 @@ stock cmds_init() {
 	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "Swap Teams");
 	RegisterSayCmd("pause", "ps", "cmdStartPause", access, "Start pause");
 	RegisterSayCmd("live", "unpause", "cmdStopPause", access, "Unpause");
-	RegisterSayCmd("mode", "type", "MenuSelectMode", access, "Mode menu");
+	RegisterSayCmd("mr", "maxround", "cmdMrMode", access, "Max Rounds mode");
+	RegisterSayCmd("timer", "timer", "cmdTimerMode", access, "Timer mode");
 	RegisterSayCmd("surrender", "sur", "cmdSurrender", 0, "Surrender vote");
 	RegisterSayCmd("score", "s", "cmdShowTimers", 0, "Score");
 	RegisterSayCmd("pick", "pick", "cmdPick", 0, "Pick player");
 	RegisterSayCmd("back", "spec", "cmdTeamSpec", 0, "Spec/Back player");
-	RegisterSayCmd("np", "noPlay", "cmdNoplay", 0, "No play");
-	RegisterSayCmd("ip", "play", "cmdPlay", 0, "Play play");
-	RegisterSayCmd("checkpoint", "cp", "cmdCheckpoint", 0, "Respawn player");
-	RegisterSayCmd("teleport", "tp", "cmdGoCheck", 0, "Respawn player");
-	RegisterSayCmd("gocheck", "gc", "cmdGoCheck", 0, "Respawn player");
+	RegisterSayCmd("np", "noplay", "cmdNoplay", 0, "No play");
+	RegisterSayCmd("ip", "play", "cmdPlay", 0, "Play");
+	RegisterSayCmd("checkpoint", "cp", "cmdCheckpoint", 0, "Сheckpoint");
+	RegisterSayCmd("teleport", "tp", "cmdGoCheck", 0, "Teleport to checkpoint");
+	RegisterSayCmd("gocheck", "gc", "cmdGoCheck", 0, "Сheckpoint");
 	RegisterSayCmd("damage", "showdamade", "cmdShowDamage", 0, "Show damage");
 	RegisterSayCmd("noclip", "clip", "cmdClipMode", 0, "No clip mode");
 	RegisterSayCmd("respawn", "resp", "cmdRespawn", 0, "Respawn player");
 	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
-}
-
-public sayHandle(id) {
-	new szArgs[64];
-
-	read_args(szArgs, charsmax(szArgs));
-	remove_quotes(szArgs);
-	trim(szArgs);
-
-	if (!szArgs[0])
-		return PLUGIN_HANDLED;
-
-	if (szArgs[0] != '/')
-		return PLUGIN_CONTINUE;
-
-	new szTarget[32];
-
-	parse(szArgs, \
-		  szArgs, charsmax(szArgs), \
-		  szTarget, charsmax(szTarget));
-
-	if (equali(szArgs, "/wintime", 8)) {
-		trim(szTarget);
-
-		if (!getUserInAccess(id))
-			return PLUGIN_HANDLED;
-
-		if (is_str_num(szTarget)) {
-			set_pcvar_num(g_eCvars[e_cCapTime], str_to_num(szTarget));
-			client_print_color(0, print_team_blue, "%L", id, "SET_WINTIME", prefix, getUserName(id), str_to_num(szTarget));
-		}
-		return PLUGIN_CONTINUE;
-	}
-
-	if (equali(szArgs, "/Roundtime", 10)) {
-		trim(szTarget);
-
-		if (!getUserInAccess(id))
-			return PLUGIN_HANDLED;
-
-		if (is_str_num(szTarget)) {
-			set_pcvar_float(g_eCvars[e_cRoundTime], str_to_float(szTarget));
-			client_print_color(0, print_team_blue, "%L", id, "SET_ROUNDTIME", prefix, getUserName(id), str_to_float(szTarget));
-		}
-		return PLUGIN_CONTINUE;
-	}
-
-	return PLUGIN_CONTINUE;
 }
 
 public blockCmd(id) {
@@ -295,6 +248,7 @@ public cmdStop(id) {
 			g_bGameStarted = false;
 			g_bSurvival = false;
 			g_bPlayersListLoaded = false;
+			g_bLastRound = false;
 			taskPrepareMode(e_mTraining);
 			return;
 		}
@@ -308,6 +262,7 @@ public cmdStop(id) {
 		case e_mPaused, e_mMatch: {
 			client_print_color(0, print_team_blue, "%L", id, "STOP_MIX", prefix, getUserName(id));
 			g_bGameStarted = false;
+			g_bLastRound = false;
 			g_bSurvival = false;
 			g_bPlayersListLoaded = false;
 			g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
@@ -521,6 +476,38 @@ public cmdStopPause(id) {
 	return PLUGIN_HANDLED;
 }
 
+public cmdMrMode(id) {
+	if (!getUserInAccess(id))
+		return PLUGIN_HANDLED;
+
+	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
+		if (g_iCurrentRules != e_mMR) {
+			client_print_color(0, print_team_blue, "%L", id, "MR_ACTIVATED", prefix, id);
+			set_pcvar_num(g_eCvars[e_cRules], 1);
+			g_iCurrentRules = e_mMR;
+		} else {
+			client_print_color(id, print_team_blue, "%L", id, "MR_ALREADY", prefix, id);
+		}
+	}
+	return PLUGIN_HANDLED
+}
+
+public cmdTimerMode(id) {
+	if (!getUserInAccess(id))
+		return PLUGIN_HANDLED;
+
+	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
+		if (g_iCurrentRules != e_mTimer) {
+			client_print_color(0, print_team_blue, "%L", id, "TIMER_ACTIVATED", prefix, id);
+			set_pcvar_num(g_eCvars[e_cRules], 2);
+			g_iCurrentRules = e_mTimer;
+		} else {
+			client_print_color(id, print_team_blue, "%L", id, "TIMER_ALREADY", prefix, id);
+		}
+	}
+	return PLUGIN_HANDLED
+}
+
 public cmdSurrender(id) {
 	if (!is_user_connected(id))
 		return;
@@ -594,12 +581,12 @@ public cmdShowTimers(id) {
 			fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
 			fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
 			if (!g_iCurrentSW) {
-				client_print_color(id, print_team_blue, "%s Hiders ^3%s^1 | ^3%s^1 Seekers [^3%d^1x^3%d^1] [^3%d^1/^3%d^1]",
-					prefix, timeToWin[0], timeToWin[1], TTsize, CTSize,
+				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR1",
+					timeToWin[0], timeToWin[1], TTsize, CTSize,
 					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
 			} else {
-				client_print_color(id, print_team_blue, "%s Hiders ^3%s^1 | ^3%s^1 Seekers [^3%d^1x^3%d^1] [^3%d^1/^3%d^1]",
-					prefix, timeToWin[1], timeToWin[0], TTsize, CTSize,
+				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR2",
+					timeToWin[1], TTsize, CTSize, timeToWin[0],
 					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
 			}
 		}
@@ -711,7 +698,7 @@ stock RegisterSayCmd(const szCmd[], const szShort[], const szFunc[], flags = -1,
 	register_clcmd(szTemp, szFunc, flags, szInfoLang);
 
 	format(szTemp, 64, "say .%s", szCmd);
-	register_clcmd(szTemp, szFunc, flags, szInfoLang);
+	register_clcmd(szTemp, szFunc, flags, szInfoLang);`
 
 	format(szTemp, 64, "/%s", szCmd);
 	register_clcmd(szTemp, szFunc, flags, szInfoLang);

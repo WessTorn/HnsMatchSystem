@@ -188,7 +188,13 @@ public settingsMatchMenu(id) {
 		formatex(titleRoundtime, 63, "Roundtime: \y%.1f", get_cvar_float("mp_roundtime"));
 
 	new titleFreeztime[64]; formatex(titleFreeztime, 63, "Freezetime: \y%d", get_cvar_num("mp_freezetime"));
-	new titleWintime[64]; formatex(titleWintime, 63, "Wintime: \y%d", get_pcvar_num(g_eCvars[e_cCapTime]));
+
+	new titleTimeRound[64]; 
+	
+	if (g_iCurrentRules == e_mTimer) 
+		formatex(titleTimeRound, 63, "Wintime: \y%d", get_pcvar_num(g_eCvars[e_cCapTime]));
+	else 
+		formatex(titleTimeRound, 63, "Maxrounds: \y%d", get_pcvar_num(g_eCvars[e_cMaxRounds]));
 
 	new titleHP[64];
 	if (get_pcvar_num(g_eCvars[e_cHpMode]) == 100)
@@ -202,7 +208,7 @@ public settingsMatchMenu(id) {
 
 	menu_additem(iMenu, titleRoundtime, "1");
 	menu_additem(iMenu, titleFreeztime, "2");
-	menu_additem(iMenu, titleWintime, "3");
+	menu_additem(iMenu, titleTimeRound, "3");
 	menu_additem(iMenu, titleHP, "4");
 
 	menu_additem(iMenu, titleFlahs, "5");
@@ -248,14 +254,25 @@ public settingsMatchMenuHandler(id, iMenu, item) {
 			settingsMatchMenu(id);
 		}
 		case 3: {
-			if (get_pcvar_num(g_eCvars[e_cCapTime]) == 5)
-				set_pcvar_num(g_eCvars[e_cCapTime], 10);
-			else if (get_pcvar_num(g_eCvars[e_cCapTime]) == 10)
-				set_pcvar_num(g_eCvars[e_cCapTime], 15);
-			else if (get_pcvar_num(g_eCvars[e_cCapTime]) == 15)
-				set_pcvar_num(g_eCvars[e_cCapTime], 20);
-			else if (get_pcvar_num(g_eCvars[e_cCapTime]) >= 20)
-				set_pcvar_num(g_eCvars[e_cCapTime], 5);
+			if (g_iCurrentRules == e_mTimer) {
+				if (get_pcvar_num(g_eCvars[e_cCapTime]) == 5)
+					set_pcvar_num(g_eCvars[e_cCapTime], 10);
+				else if (get_pcvar_num(g_eCvars[e_cCapTime]) == 10)
+					set_pcvar_num(g_eCvars[e_cCapTime], 15);
+				else if (get_pcvar_num(g_eCvars[e_cCapTime]) == 15)
+					set_pcvar_num(g_eCvars[e_cCapTime], 20);
+				else if (get_pcvar_num(g_eCvars[e_cCapTime]) >= 20)
+					set_pcvar_num(g_eCvars[e_cCapTime], 5);
+			} else {
+				if (get_pcvar_num(g_eCvars[e_cMaxRounds]) == 4)
+					set_pcvar_num(g_eCvars[e_cMaxRounds], 5);
+				else if (get_pcvar_num(g_eCvars[e_cMaxRounds]) == 5)
+					set_pcvar_num(g_eCvars[e_cMaxRounds], 6);
+				else if (get_pcvar_num(g_eCvars[e_cMaxRounds]) == 6)
+					set_pcvar_num(g_eCvars[e_cMaxRounds], 7);
+				else if (get_pcvar_num(g_eCvars[e_cMaxRounds]) >= 7)
+					set_pcvar_num(g_eCvars[e_cMaxRounds], 4);
+			}
 
 			settingsMatchMenu(id);
 		}
@@ -381,38 +398,35 @@ public trainingMenuHandler(id, iMenu, item) {
 	return PLUGIN_HANDLED;
 }
 
-public MenuSelectMode(id) {
-	if (g_iCurrentMode != e_mTraining)
-		return;
+public modeSelectMenu(id) {
+	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
+		return PLUGIN_HANDLED;
 
-	new menu = menu_create("\rChoose game mode", "HandlerSelectMode");
+	new menu = menu_create("\yChoose game mode", "HandlerSelectMode");
 
 	menu_additem(menu, "MR System", "1");
 	menu_additem(menu, "Timer", "2");
 
 	menu_setprop(menu, MPROP_EXIT, MEXIT_ALL);
-
 	menu_display(id, menu, 0);
 }
 
 public HandlerSelectMode(id, menu, item) {
 	if (item == MENU_EXIT) {
 		menu_destroy(menu);
-		return;
+		return PLUGIN_HANDLED;
 	}
-	new s_Data[6], s_Name[64], i_Access, i_Callback;
-	menu_item_getinfo(menu, item, i_Access, s_Data, charsmax(s_Data), s_Name, charsmax(s_Name), i_Callback);
-	menu_destroy(menu);
+	new szData[6], szName[64], iAccess, iCallback;
+	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	new iKey = str_to_num(szData);
 
-	new index = str_to_num(s_Data);
-
-	if (index == 1) {
-		client_print_color(0, print_team_blue, "%s ^3%n^1 change mode to ^3MR^1!", prefix, id);
-		set_pcvar_num(g_eCvars[e_cRules], 1);
-		g_iCurrentRules = e_mMR;
-	} else {
-		client_print_color(0, print_team_blue, "%s ^3%n^1 change mode to ^3Timer^1!", prefix, id);
-		set_pcvar_num(g_eCvars[e_cRules], 2);
-		g_iCurrentRules = e_mTimer;
+	switch (iKey) {
+		case 1: {
+			cmdMrMode(id);
+		}
+		case 2: {
+			cmdTimerMode(id);
+		}
 	}
+	return PLUGIN_HANDLED;
 }

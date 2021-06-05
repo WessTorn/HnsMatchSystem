@@ -98,6 +98,7 @@ new g_eCvars[Cvars_s];
 
 new bool:g_bSurvival;
 new bool:g_bGameStarted;
+new bool:g_bLastRound;
 new bool:g_bHooked[MAX_PLAYERS + 1];
 new bool:g_bNoplay[MAX_PLAYERS + 1];
 new bool:g_bSpec[MAX_PLAYERS + 1];

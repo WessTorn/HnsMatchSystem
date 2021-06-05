@@ -15,6 +15,7 @@
 
 #include <hns-match/globals>
 #include <hns-match/cmds>
+#include <hns-match/say>
 #include <hns-match/hook>
 #include <hns-match/ham>
 #include <hns-match/forward>

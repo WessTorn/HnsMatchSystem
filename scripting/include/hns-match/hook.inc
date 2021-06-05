@@ -43,56 +43,49 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 			}
 		}
 		case e_mMatch: {
-			if (status == WINSTATUS_TERRORISTS) {
-				new players[MAX_PLAYERS], pnum;
-				get_players(players, pnum, "ace", "CT");
-				if (!pnum) {
-					new Float:roundtime = get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0;
-					g_flSidesTime[g_iCurrentSW] += roundtime - g_flRoundTime;
-				}
-			}
-
+			g_bSurvival = false;
 			if (g_iCurrentRules == e_mTimer && status == WINSTATUS_CTS) {
-				g_bSurvival = false;
 				g_iCurrentSW = !g_iCurrentSW;
 				rg_swap_all_players();
 			}
-			g_bSurvival = false;
 			if (g_iCurrentRules == e_mMR) {
-				new win_team = -1;
-				new sTime[24];
-				//if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2)		
-				new Float:need_time_to_win_hiders = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[g_iCurrentSW]);
-				new Float:need_time_to_win_seekers = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[!g_iCurrentSW]);
-				if (g_flSidesTime[g_iCurrentSW] + need_time_to_win_hiders < g_flSidesTime[!g_iCurrentSW]) {
-					win_team = !g_iCurrentSW;
-				} else if (g_flSidesTime[!g_iCurrentSW] + need_time_to_win_seekers < g_flSidesTime[g_iCurrentSW]) {
-					win_team = g_iCurrentSW;
+				if (status == WINSTATUS_TERRORISTS) {
+					new players[MAX_PLAYERS], pnum;
+					get_players(players, pnum, "ae", "CT");
+					if (!pnum) {
+						new Float:roundtime = get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0;
+						g_flSidesTime[g_iCurrentSW] += roundtime - g_flRoundTime;
+					}
 				}
-				g_iRoundsPlayed[g_iCurrentSW]++;
-				if (win_team != -1) {
-					fnConvertTime(floatabs(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW]), sTime, charsmax(sTime));
-					setTaskHud(0, 5.0, 1, 255, 153, 0, 5.0, fmt("%s Win!^n %s Need %s Time to Win! ^n(More than roundtime)", win_team == g_iCurrentSW ? "TT" : "CT", win_team == g_iCurrentSW ? "CT" : "TT", sTime));
-					MixFinishedMR(win_team == g_iCurrentSW ? 1 : 2);
-				} else if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= (get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2)) {
-					// OVERTIME, SAME TIMERES					
-					if (floatabs(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW]) <= 1.0) {
-						g_iCurrentSW = !g_iCurrentSW;
-						rg_swap_all_players();
-						client_print_color(0, print_team_blue, "%s Same Timers! OVERTIME! Playing +2 Rounds", prefix);
-						set_pcvar_num(g_eCvars[e_cMaxRounds], get_pcvar_num(g_eCvars[e_cMaxRounds]) + 2);
+				if (g_bGameStarted) {
+					new iWinTeam = -1;
+					new szTime[24];		
+					new Float:flTimeToWinTT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[g_iCurrentSW]);
+					new Float:flTimeToWinCT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[!g_iCurrentSW]);
+					if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
+						iWinTeam = !g_iCurrentSW;
+					} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {
+						iWinTeam = g_iCurrentSW;
 					}
-				} else if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= (get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2) - 1) {
-					g_iCurrentSW = !g_iCurrentSW;
-					rg_swap_all_players();
-					if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
-						// samii default variant
-						fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], sTime, charsmax(sTime));
-						setTaskHud(0, 5.0, 1, 255, 153, 0, 5.0, fmt("Last Round!^n TT Need %s Time to Win!", sTime));
+					g_iRoundsPlayed[g_iCurrentSW]++;
+					if (iWinTeam != -1) {
+						MixFinishedMR(iWinTeam == g_iCurrentSW ? 1 : 2);
+					} else if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= (get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2) - 1) {
+						if (!g_bLastRound) {
+							g_iCurrentSW = !g_iCurrentSW;
+							rg_swap_all_players();
+						}
+						if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
+							fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], szTime, charsmax(szTime));
+							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("Last Round!^n TT Need %s Time to Win!", szTime));
+							g_bLastRound = true;
+						}
+					} else {
+						if (!g_bLastRound) {
+							g_iCurrentSW = !g_iCurrentSW;
+							rg_swap_all_players();
+						}
 					}
-				} else {
-					g_iCurrentSW = !g_iCurrentSW;
-					rg_swap_all_players();
 				}
 			}
 		}
@@ -225,7 +218,7 @@ public rgOnRoundFreezeEnd() {
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 	set_task(2.5, "task_MainThink", .flags = "b");
 
-	set_task(0.25, "taskRoundEnd", .flags = "b");
+	set_task(0.25, "taskRoundEvent", .flags = "b");
 }
 
 public rgFlPlayerFallDamage(id) {
@@ -234,10 +227,10 @@ public rgFlPlayerFallDamage(id) {
 	}
 }
 
-public taskRoundEnd() {
+public taskRoundEvent() {
 	if (g_bSurvival) {
 		new iPlayers[32], count;
-		get_players(iPlayers, count, "che", "TERRORIST");
+		get_players(iPlayers, count, "he", "TERRORIST");
 
 		for(new i; i < 10; i++) {
 			g_iBestAuth[i] = "";
@@ -284,39 +277,37 @@ public taskRoundEnd() {
 		remove_task();
 	}
 	if (g_iCurrentRules == e_mMR) {
-		new win_team = -1;
-		new sTime[24];
-		//if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2)		
-		new Float:need_time_to_win_hiders = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[g_iCurrentSW]);
-		new Float:need_time_to_win_seekers = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[!g_iCurrentSW]);
-		if (g_flSidesTime[g_iCurrentSW] + need_time_to_win_hiders < g_flSidesTime[!g_iCurrentSW]) {
-			win_team = !g_iCurrentSW;
-		} else if (g_flSidesTime[!g_iCurrentSW] + need_time_to_win_seekers < g_flSidesTime[g_iCurrentSW]) {
-			win_team = g_iCurrentSW;
+		new iWinTeam = -1;
+		new Float:flTimeToWinTT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[g_iCurrentSW]);
+		new Float:flTimeToWinCT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[!g_iCurrentSW]);
+		if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
+			iWinTeam = !g_iCurrentSW;
+		} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {
+			iWinTeam = g_iCurrentSW;
 		}
-		if (win_team != -1) {
-			fnConvertTime(floatabs(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW]), sTime, charsmax(sTime));
-			setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("%s Win!^n", win_team == g_iCurrentSW ? "TT" : "CT", win_team == g_iCurrentSW ? "CT" : "TT", sTime));
-			MixFinishedMR(win_team == g_iCurrentSW ? 1 : 2);
+		if (iWinTeam != -1) {
+			MixFinishedMR(iWinTeam == g_iCurrentSW ? 1 : 2);
 		}
 	}
 }
 
-public MixFinishedMR(win_team) {
+public MixFinishedMR(iWinTeam) {
 	g_bGameStarted = false;
 	g_bSurvival = false;
+	g_bLastRound = false;
 	new Float:TimeDiff = floatabs(g_flSidesTime[g_iCurrentSW] - g_flSidesTime[!g_iCurrentSW]);
-	new sTime[24];
-	fnConvertTime(TimeDiff, sTime, 23);
-	client_print_color(0, print_team_blue, "%s %s win the match! (^3%s ^1difference)", prefix, win_team == 1 ? "TT" : "CT", sTime);
+	new szTime[24];
+	fnConvertTime(TimeDiff, szTime, 23);
+	client_print_color(0, print_team_blue, "%L", 0, "MR_WIN", prefix, iWinTeam == 1 ? "TT" : "CT", szTime);
+	client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
 
-	setTaskHud(0, 0.0, 1, 100, 100, 100, 4.0, "Game Over");
+	setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "Game Over");
 	taskPrepareMode(e_mTraining);
 
 	g_bPlayersListLoaded = false;
 	g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
 	g_flSidesTime[!g_iCurrentSW] = g_flSidesTime[g_iCurrentSW] = 0.0;
-	set_pcvar_num(g_eCvars[e_cMaxRounds], 7);
+	ShowTop(0);
 }
 
 public rgPlayerSpawn(id) {

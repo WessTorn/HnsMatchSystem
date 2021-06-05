@@ -3,7 +3,10 @@ STATUS_NOPLAY   = %s ^3%s^1 is ^3not available^1 for pick [^3NOPLAY^1]
 STATUS_PLAY     = %s ^3%s^1 is now ^3available^1 for pick [^3PLAY^1]
 
 SET_WINTIME     = %s ^3%s^1 set ^3wintime^1 to ^3%d^1 minutes.
+NOT_SET_TIME    = %s Disable mr mode, before changing wintimer.
 SET_ROUNDTIME   = %s ^3%s ^1 set ^3roundtime^1 to ^3%.2f^1 minutes.
+SET_MAXROUNDS   = %s ^3%s ^1 set ^3maxrounds^1 to ^3%d^1 rounds.
+NOT_SET_MR      = %s Disable timer mode, before changing maxrounds.
 
 KILL_HIMSELF    = %s ^3%s ^1killed himself
 PLR_DISC        = %s Player ^3%n^1 was disconnected..
@@ -40,6 +43,12 @@ TYPE_BOOST      = %s ^3%s^1 has activated ^3boost^1 mode
 AA_10           = %s ^3%s^1 changed ^3airaccelerate^1 to ^310
 AA_100          = %s ^3%s^1 changed ^3airaccelerate^1 to ^3100
 
+MR_ACTIVATED    = %s ^3%n^1 change mode to ^3MR^1!
+MR_ALREADY      = %s ^3MR^1 mode is already running!
+
+TIMER_ACTIVATED = %s ^3%n^1 change mode to ^3Timer^1!
+TIMER_ALREADY   = %s ^3Timer^1 mode is already running!
+
 HAS_NOT_STOP    = %s has no access to stop the game!
 
 SHOW_KNIFE      = %s Knife is now set ^3%svisible
@@ -62,9 +71,12 @@ SCORE_TIME3    = TT [^4%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
 SCORE_TIME4    = TT [^4%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
 SCORE_TIME5    = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
 SCORE_TIME6    = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%s^1 difference)
+SCORE_TIME_MR1 = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds)
+SCORE_TIME_MR2 = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds)
 SCORE_NOT       = %s Sorry, but game ain't started atm
 
 TT_WIN          = %s TT win the match! (^3%s^1 difference)
+MR_WIN          = %s %s win the match! (^3%s ^1difference)
 SHOW_TOP        = %s Show top (^3/top^1)
 
 CAP_CHOOSE      = %s ^3%n^1 choosing captains...
