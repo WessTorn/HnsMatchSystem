@@ -580,7 +580,7 @@ public cmdShowTimers(id) {
 			fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
 			if (!g_iCurrentSW) {
 				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR1",
-					timeToWin[1], TTsize, CTSize, timeToWin[0],
+					timeToWin[0], TTsize, CTSize, timeToWin[1],
 					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
 			} else {
 				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR2",

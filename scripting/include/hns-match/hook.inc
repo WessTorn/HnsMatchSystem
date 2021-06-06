@@ -76,9 +76,11 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 							rg_swap_all_players();
 						}
 						if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
-							fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], szTime, charsmax(szTime));
-							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("Last Round!^n TT Need %s Time to Win!", szTime));
-							g_bLastRound = true;
+							if (!g_bLastRound) {
+								fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], szTime, charsmax(szTime));
+								setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("Last Round!^n TT Need %s Time to Win!", szTime));
+								g_bLastRound = true;
+							}
 						}
 					} else {
 						if (!g_bLastRound) {
