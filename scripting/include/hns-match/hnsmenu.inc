@@ -192,9 +192,9 @@ public settingsMatchMenu(id) {
 	new titleTimeRound[64]; 
 	
 	if (g_iCurrentRules == e_mTimer) 
-		formatex(titleTimeRound, 63, "Wintime: \y%d", get_pcvar_num(g_eCvars[e_cCapTime]));
+		formatex(titleTimeRound, 63, "Wintime: \y%d^n", get_pcvar_num(g_eCvars[e_cCapTime]));
 	else 
-		formatex(titleTimeRound, 63, "Maxrounds: \y%d", get_pcvar_num(g_eCvars[e_cMaxRounds]));
+		formatex(titleTimeRound, 63, "Maxrounds: \y%d^n", get_pcvar_num(g_eCvars[e_cMaxRounds]));
 
 	new titleHP[64];
 	if (get_pcvar_num(g_eCvars[e_cHpMode]) == 100)

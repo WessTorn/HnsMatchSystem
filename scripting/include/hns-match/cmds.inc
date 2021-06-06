@@ -4,8 +4,6 @@
 
 #define _cmds_included
 
-#define surrenderTimeDelay 120 // Добавить в квар
-
 stock cmds_init() {
 	register_clcmd("nightvision", "mainMatchMenu");
 
@@ -171,7 +169,7 @@ public cmdStartRound(id) {
 			return;
 
 		client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
-		g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
+		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_pcvar_num(g_eCvars[e_cSurTimeDelay]);
 			
 		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "c");
@@ -536,7 +534,7 @@ public cmdSurrender(id) {
 
 	g_eSurrenderData[e_sStarted] = true;
 	g_eSurrenderData[e_sInitiator] = id;
-	g_eSurrenderData[e_sFlDelay] = get_gametime() + surrenderTimeDelay;
+	g_eSurrenderData[e_sFlDelay] = get_gametime() + get_pcvar_num(g_eCvars[e_cSurTimeDelay]);
 	client_print_color(0, print_team_blue, "%L", id, "SUR_PLAYER", prefix, id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 
 	for (new i; i < iNum; i++) {
@@ -582,7 +580,7 @@ public cmdShowTimers(id) {
 			fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
 			if (!g_iCurrentSW) {
 				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR1",
-					timeToWin[0], timeToWin[1], TTsize, CTSize,
+					timeToWin[1], TTsize, CTSize, timeToWin[0],
 					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
 			} else {
 				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR2",

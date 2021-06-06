@@ -7,7 +7,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.8.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+	register_plugin("Hide'n'Seek Match System", "1.1.8.5", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -23,7 +23,8 @@ public plugin_init() {
 	g_eCvars[e_cHpMode]				= register_cvar("hns_hpmode", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cDMRespawn] 			= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cSurVoteTime] 		= register_cvar("hns_survotetime", "10", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cCheckPlayNoPlay] 	= register_cvar("hns_checkplay", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cSurTimeDelay] 		= register_cvar("hns_surtimedelay", "120", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_eCvars[e_cCheckPlayNoPlay] 	= register_cvar("hns_checkplay", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_eCvars[e_cRules] 				= register_cvar("hns_rules", "0");
 	g_eCvars[e_cGameName]			= register_cvar("hns_gamename", "Hide'n'Seek");
 	get_pcvar_string(register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24);
@@ -259,6 +260,13 @@ public taskPrepareMode(mode) {
 		}
 	}
 	restartRound();
+}
+
+public plugin_cfg() {
+	new szPath[PLATFORM_MAX_PATH];
+	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
+	formatex(szPath, charsmax(szPath), "%s/mixsystem/%s", szPath, "matchsystem.cfg");
+	server_cmd("exec %s", szPath);
 }
 
 restartRound(Float:delay = 0.5) {

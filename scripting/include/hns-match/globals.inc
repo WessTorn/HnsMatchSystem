@@ -92,6 +92,7 @@ enum _:Cvars_s {
 	e_cRules,
 	e_cKnifeMap[25],
 	e_cSurVoteTime,
+	e_cSurTimeDelay,
 	e_cCheckPlayNoPlay
 };
 new g_eCvars[Cvars_s];
