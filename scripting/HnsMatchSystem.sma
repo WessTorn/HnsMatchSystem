@@ -7,7 +7,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.8.7", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.1.8.8", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -65,20 +65,17 @@ public taskDelayedMode() {
 		taskPrepareMode(e_mTraining);
 	}
 
-	if(get_pcvar_num(g_eCvars[e_cRules]) == 1)
-	{
+	if(get_pcvar_num(g_eCvars[e_cRules]) == 1) {
 		g_iCurrentRules = e_mMR;
-	}
-	else
-	{
+	} else {
 		g_iCurrentRules = e_mTimer;		
 	}
 }
 
 public registerMode() {
 	g_iHostageEnt = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "hostage_entity"));
-	set_entvar(g_iHostageEnt, var_origin, Float:{ 0.0, 0.0, -55000.0 });
-	set_entvar(g_iHostageEnt, var_size, Float:{ -1.0, -1.0, -1.0 }, Float:{ 1.0, 1.0, 1.0 });
+	set_pev(g_iHostageEnt, pev_origin, Float:{ 0.0, 0.0, -55000.0 });
+	set_pev(g_iHostageEnt, pev_size, Float:{ -1.0, -1.0, -1.0 }, Float:{ 1.0, 1.0, 1.0 });
 	dllfunc(DLLFunc_Spawn, g_iHostageEnt);
 }
 
@@ -230,7 +227,7 @@ public taskPrepareMode(mode) {
 			loadMapCFG();
 
 			new iPlayers[MAX_PLAYERS], iNum;
-			get_players(iPlayers, iNum, "e", "TERRORIST");
+			get_players(iPlayers, iNum, "ce", "TERRORIST");
 			g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
 			fnConvertTime(get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
@@ -272,7 +269,7 @@ public plugin_cfg() {
 restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
 		new iPlayers[32], iNum;
-		get_players(iPlayers, iNum);
+		get_players(iPlayers, iNum, "c");
 
 		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 

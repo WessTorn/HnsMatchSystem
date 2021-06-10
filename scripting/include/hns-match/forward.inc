@@ -73,7 +73,7 @@ public fwdGameNameDesc() {
 
 public fwdClientKill(id) {
 	if (g_iCurrentMode == e_mDM) {
-		client_print_color(0, print_team_blue, "%s Kill during deathmatch is not available.", hns_tag);
+		client_print_color(0, print_team_blue, "%L", id, "KILL_NOT", prefix);
 		return FMRES_SUPERCEDE;
 	} else {
 		client_print_color(0, print_team_blue, "%L", id, "KILL_HIMSELF", prefix, getUserName(id));

@@ -51,7 +51,7 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 			if (g_iCurrentRules == e_mMR) {
 				if (status == WINSTATUS_TERRORISTS) {
 					new players[MAX_PLAYERS], pnum;
-					get_players(players, pnum, "ae", "CT");
+					get_players(players, pnum, "ace", "CT");
 					if (!pnum) {
 						new Float:roundtime = get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0;
 						g_flSidesTime[g_iCurrentSW] += roundtime - g_flRoundTime;
@@ -225,14 +225,14 @@ public rgOnRoundFreezeEnd() {
 
 public rgFlPlayerFallDamage(id) {
 	if (g_iCurrentMode == e_mMatch) {
-			statsDmg(id);
+		statsDmg(id);
 	}
 }
 
 public taskRoundEvent() {
 	if (g_bSurvival) {
 		new iPlayers[32], count;
-		get_players(iPlayers, count, "he", "TERRORIST");
+		get_players(iPlayers, count, "che", "TERRORIST");
 
 		for(new i; i < 10; i++) {
 			g_iBestAuth[i] = "";

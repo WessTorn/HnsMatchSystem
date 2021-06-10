@@ -9,6 +9,7 @@ SET_MAXROUNDS   = %s ^3%s ^1 set ^3maxrounds^1 to ^3%d^1 rounds.
 NOT_SET_MR      = %s Disable timer mode, before changing maxrounds.
 
 KILL_HIMSELF    = %s ^3%s ^1killed himself
+KILL_NOT        = %s Kill during deathmatch is not available.
 PLR_DISC        = %s Player ^3%n^1 was disconnected..
 
 SUR_WAIT        = %s Wait ^3%s^1 for surrender!
