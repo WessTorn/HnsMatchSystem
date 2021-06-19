@@ -12,7 +12,6 @@ stock hook_init() {
 	RegisterHookChain(RG_CSGameRules_FlPlayerFallDamage, "rgFlPlayerFallDamage", true);
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
 	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
-	RegisterHookChain(RH_SV_DropClient, "rgDropClient", true);
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
 	RegisterHookChain(RG_PM_Move, "rgPlayerMovePost", true);
@@ -340,19 +339,6 @@ public rgTakeDamage(victim, inflictor, attacker, Float:damage, damage_bits) {
 			damageHit(victim, damage);
 		}
 	}
-}
-
-public rgDropClient(const id, bool:crash) {
-	if (!is_entity(id))
-	return;
-	
-	if ((getUserTeam(id) == TEAM_TERRORIST || getUserTeam(id) == TEAM_CT) && (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused)) {
-		g_ePlayerInfo[id][e_plrRetryTime] = g_eRoundInfo[id][e_flSurviveTime];
-		g_ePlayerInfo[id][e_plrRetryGameStops] = g_iGameStops;
-		
-		client_print_color(0, print_team_blue, "%L", 0, "PLR_DISC", prefix, id);
-	}
-	TrieSetArray(g_tPlayerInfo, getUserKey(id), g_ePlayerInfo[id], PlayerInfo_s);
 }
 
 public rgPlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold, const alpha, Float:color[3]) {

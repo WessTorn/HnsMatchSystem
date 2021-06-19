@@ -209,63 +209,19 @@ public ShowTop(player) {
 	}
 
 	new szMotd[MAX_MOTD_LENGTH], iLen;
-	iLen = formatex(szMotd, charsmax(szMotd), "<html>\
-						<head>\
-							<meta charset=^"utf-8^"> \
-							<style type=^"text/css^"> \
-							table { \
-								width:600px; \
-								font-family:Arial, Helvetica, sans-serif; \
-								color:#666; \
-								font-size:12px; \
-								text-shadow: 1px 1px 0px #fff; \
-								margin:0 auto; \
-								border:#ccc 1px solid; \
-								-webkit-box-shadow: 2px 2px 3px -1px rgba(0,0,0,0.35); \
-							} \
-							table th { \
-								padding:21px 25px 22px 25px; \
-								border-top:1px solid #fafafa; \
-								border-bottom:1px solid #e0e0e0; \
-								background: #ededed; \
-							} \
-							table th:first-child{ \
-								text-align: left; \
-								padding-left:20px; \
-							} \
-							table tr{ \
-								text-align: center; \
-								padding-left:20px; \
-							} \
-							table tr td:first-child{ \
-								text-align: left; \
-								padding-left:20px; \
-							} \
-							table tr td { \
-								padding:18px; \
-								border-top: 1px solid #ffffff; \
-								border-bottom:1px solid #e0e0e0; \
-								border-left: 1px solid #e0e0e0; \
-								background: #fafafa; \
-							} \
-						</style> \
-						</head>\
-						<body>\
-							<div>\
-							<table cellspacing=^"0^">\
-							<thead>\
-								<tr>\
-									<th>Player</th>\
-									<th>Survive time</th>\
-									<th>Damaged</th>\
-									<th>Hide time</th>\
-									<th>Flashed</th>\
-									<th>Found TT</th>\
-									<th>Stabs</th>\
-									<th>Run</th>\
-								</tr>\
-							</thead>\
-						<tbody>");
+	iLen = formatex(szMotd, charsmax(szMotd), "<html><head><style> \
+							table {	width:600px } \
+							table tr{ text-align: center } \
+						</style></head><body><div><table><thead><tr>\
+							<th>Player</th>\
+							<th>Survive time</th>\
+							<th>Damaged</th>\
+							<th>Hide time</th>\
+							<th>Flashed</th>\
+							<th>Found TT</th>\
+							<th>Stabs</th>\
+							<th>Run</th>\
+						</tr></thead><tbody>");
 	new szSurvTime[24];
 	new szTimeFlash[24];
 	new szHideTime[24];

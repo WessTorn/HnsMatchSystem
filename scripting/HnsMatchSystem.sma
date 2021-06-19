@@ -7,7 +7,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.8.8", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.1.8.9", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -227,7 +227,7 @@ public taskPrepareMode(mode) {
 			loadMapCFG();
 
 			new iPlayers[MAX_PLAYERS], iNum;
-			get_players(iPlayers, iNum, "ce", "TERRORIST");
+			get_players(iPlayers, iNum, "e", "TERRORIST");
 			g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
 			fnConvertTime(get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
@@ -269,7 +269,7 @@ public plugin_cfg() {
 restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
 		new iPlayers[32], iNum;
-		get_players(iPlayers, iNum, "c");
+		get_players(iPlayers, iNum);
 
 		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 

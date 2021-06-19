@@ -20,7 +20,7 @@ public taskCheckAfk() {
 	}
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ache", "TERRORIST");
+	get_players(iPlayers, iNum, "ach");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -107,7 +107,7 @@ stock bool:PlayerIsAfk(id) {
 
 public taskSaveAfk() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ache", "TERRORIST");
+	get_players(iPlayers, iNum, "ach");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];

@@ -53,6 +53,9 @@ stock setUserGodmode(index, godmode = 0) {
 }
 
 stock setUserRole(id) {
+	if (!is_user_connected(id))
+		return;
+		
 	new TeamName:team = getUserTeam(id);
 	rg_remove_all_items(id);
 	if (g_iCurrentMode > e_mKnife && g_iCurrentMode != e_mCaptain) {

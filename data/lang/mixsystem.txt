@@ -10,7 +10,6 @@ NOT_SET_MR      = %s Disable timer mode, before changing maxrounds.
 
 KILL_HIMSELF    = %s ^3%s ^1killed himself
 KILL_NOT        = %s Kill during deathmatch is not available.
-PLR_DISC        = %s Player ^3%n^1 was disconnected..
 
 SUR_WAIT        = %s Wait ^3%s^1 for surrender!
 SUR_PLAYER      = %s Player ^3%n^1 (^3%s^1) started vote for surrender!

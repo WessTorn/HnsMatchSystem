@@ -120,6 +120,7 @@ Counter-Strike Hide'n'Seek Match System plugins
 - Новый pts
 - Captain на всех картах
 - Инклуд для взаимодействия с другими плагинами
+- Переделать motd top players
 
 ## Благодарности / Aвторы других плагинов
 [Garey - Мixsystem](https://github.com/Garey27)

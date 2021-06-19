@@ -60,7 +60,7 @@ public mainMatchMenu(id) {
 	menu_additem(hMenu, "Team Transfer Player", "6");
 	menu_additem(hMenu, "Change map", "7");
 
-	menu_display(id, hMenu);
+	menu_display(id, hMenu, 0);
 }
 
 public mainMatchMenuHandler(id, hMenu, item) {
@@ -172,10 +172,7 @@ public customMenuHandler(id, hMenu, item) {
 }
 
 public settingsMatchMenu(id) {
-	if (~get_user_flags(id) & access)
-		return;
-
-	if (!is_user_connected(id))
+	if (!is_user_connected(id) || !getUserInAccess(id))
 		return;
 
 	new title[64];
@@ -329,7 +326,7 @@ public verifMenu(id) {
 	menu_additem(hMenu, "Yes");
 
 	menu_setprop(hMenu, MPROP_EXIT, MEXIT_NEVER);
-	menu_display(id, hMenu);
+	menu_display(id, hMenu, 0);
 }
 
 public verifMenuHandler(id, hMenu, item) {
@@ -361,7 +358,7 @@ public trainingMenu(id) {
 	menu_additem(hMenu, "Respawn", "4");
 	menu_additem(hMenu, "Damage", "5");
 
-	menu_display(id, hMenu);
+	menu_display(id, hMenu, 0);
 }
 
 public trainingMenuHandler(id, hMenu, item) {
@@ -399,7 +396,7 @@ public trainingMenuHandler(id, hMenu, item) {
 }
 
 public modeSelectMenu(id) {
-	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
+	if (!is_user_connected(id) || !getUserInAccess(id) || g_iCurrentMode != e_mTraining)
 		return;
 
 	new hMenu = menu_create("\yChoose game mode", "HandlerSelectMode");
