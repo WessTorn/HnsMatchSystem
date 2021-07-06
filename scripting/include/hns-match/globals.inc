@@ -4,8 +4,9 @@
 
 #define _globals_included
 
-#define prefix "^1>"
 #define access ADMIN_MAP
+
+new prefix[24] = "^1>";
 
 enum {
 	e_mTraining,
@@ -123,3 +124,7 @@ new HamHook:playerKilledPre;
 new g_MsgSync;
 
 new g_iBestAuth[10][MAX_AUTHID_LENGTH];
+
+#if defined USE_PTS
+	new Float:g_flMatchDelay;
+#endif

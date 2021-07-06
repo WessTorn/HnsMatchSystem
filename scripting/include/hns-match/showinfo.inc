@@ -209,10 +209,16 @@ public ShowTop(player) {
 	}
 
 	new szMotd[MAX_MOTD_LENGTH], iLen;
-	iLen = formatex(szMotd, charsmax(szMotd), "<html><head><style> \
-							table {	width:600px } \
-							table tr{ text-align: center } \
-						</style></head><body><div><table><thead><tr>\
+	iLen = formatex(szMotd, charsmax(szMotd), "<html><head> \
+							<meta charset=UTF-8> \
+							<style> \
+							body { font-family: sans-serif } \
+							table { margin: auto; text-align: center; border: 2px solid #007bff!important; border-radius: .88rem; } \
+							.table td { padding: .75rem; vertical-align: top; border-top: 1px solid #dee2e6; } \
+							.table th { padding: .75rem; } \
+							</style></head><body><div class=^"card border-primary^">\
+           					<table class=^"table table-hover^">\
+                			<thead class=^"text-center^"><tr>\
 							<th>Player</th>\
 							<th>Survive time</th>\
 							<th>Damaged</th>\
@@ -242,5 +248,4 @@ public ShowTop(player) {
 						</body>\
 						</html>");
 	show_motd(player, szMotd);
-	log_to_file("motd.txt", szMotd);
 }

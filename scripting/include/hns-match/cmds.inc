@@ -170,6 +170,10 @@ public cmdStartRound(id) {
 
 		client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
 		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_pcvar_num(g_eCvars[e_cSurTimeDelay]);
+
+		#if defined USE_PTS
+			g_flMatchDelay = get_gametime() + 600; // Сделать кваром
+		#endif
 			
 		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "c");

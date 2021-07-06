@@ -1,3 +1,5 @@
+// #define USE_PTS
+
 #include <hns-match/index>
 
 public plugin_precache() {
@@ -7,7 +9,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.1.8.9", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.2.0", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -266,6 +268,28 @@ public plugin_cfg() {
 	server_cmd("exec %s", szPath);
 }
 
+public plugin_natives() {
+	register_native("hns_get_prefix", "native_get_prefix");
+
+	register_native("hns_get_mode", "native_get_mode");
+	register_native("hns_set_mode", "native_set_mode");
+}
+
+public native_get_prefix(amxx, params) {
+	enum { argPrefix = 1, argLen };
+	set_string(argPrefix, prefix, get_param(argLen));
+}
+
+public native_get_mode(amxx, params) {
+	return g_iCurrentMode;
+}
+
+public native_set_mode(amxx, params) {
+	enum { argMode = 1 };
+	g_iCurrentMode = get_param(argMode);
+	taskPrepareMode(argMode);
+}
+
 restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
 		new iPlayers[32], iNum;
@@ -336,3 +360,15 @@ disableSemiclip() {
 }
 
 // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
+
+/*stock get_num_players_in_mix() {
+	new iPlayer;
+	for(new id = 1; id <= MaxClients; id++) {
+		if (!is_user_connected(id)) continue;
+
+		if (get_member(id, m_iTeam) == TEAM_SPECTATOR) continue;
+
+		iPlayer++;
+	}
+	return iPlayer;
+}*/

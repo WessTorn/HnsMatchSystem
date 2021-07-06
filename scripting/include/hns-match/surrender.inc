@@ -123,6 +123,11 @@ resetSurrenderData() {
 autoLose(TeamName:iTeam) {
 	client_print_color(0, print_team_blue, "%L", 0, "SUR_END", prefix, iTeam == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 	client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
+
+	#if defined USE_PTS
+		hns_set_pts(iTeam == TEAM_TERRORIST ? TEAM_CT : TEAM_TERRORIST);
+	#endif
+
 	setTaskHud(0, 0.0, 1, 255, 255, 0, 4.0, "Game Over");
 	cmdStop(0);
 	ShowTop(0);

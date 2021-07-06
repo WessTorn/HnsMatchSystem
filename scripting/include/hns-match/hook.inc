@@ -263,6 +263,18 @@ public taskRoundEvent() {
 				client_print_color(0, print_team_blue, "%L", 0, "TT_WIN", prefix, szTime);
 				client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
 
+				#if defined USE_PTS
+					if (g_flMatchDelay > get_gametime()) {
+						client_print_color(0, print_team_blue, "^3Not pts (mix time < 10 min)");
+					} else {
+						if (get_num_players_in_match() < 5) {
+							client_print_color(0, print_team_blue, "^3Not pts (Players <= 5");
+						} else {
+							hns_set_pts(TEAM_TERRORIST);
+						}
+					}
+				#endif
+
 				setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "Game Over");
 				taskPrepareMode(e_mTraining);
 
@@ -302,6 +314,18 @@ public MixFinishedMR(iWinTeam) {
 	client_print_color(0, print_team_blue, "%L", 0, "MR_WIN", prefix, iWinTeam == 1 ? "TT" : "CT", szTime);
 	client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
 
+	#if defined USE_PTS
+		if (g_flMatchDelay > get_gametime()) {
+			client_print_color(0, print_team_blue, "^3Not pts (mix time < 10 min)");
+		} else {
+			if (get_num_players_in_match() < 5) {
+				client_print_color(0, print_team_blue, "^3Not pts (Players <= 5");
+			} else {
+				hns_set_pts(iWinTeam == 1 ? TEAM_TERRORIST : TEAM_CT);
+			}
+		}
+	#endif
+
 	setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "Game Over");
 	taskPrepareMode(e_mTraining);
 
@@ -309,6 +333,18 @@ public MixFinishedMR(iWinTeam) {
 	g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
 	g_flSidesTime[!g_iCurrentSW] = g_flSidesTime[g_iCurrentSW] = 0.0;
 	ShowTop(0);
+}
+
+stock get_num_players_in_match() {
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+	new numGameplr;
+	for (new i; i < iNum; i++) {
+		new tempid = iPlayers[i];
+		if (getUserTeam(tempid) == TEAM_SPECTATOR) continue;
+		numGameplr++;
+	}
+	return numGameplr;
 }
 
 public rgPlayerSpawn(id) {
