@@ -1,6 +1,8 @@
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
+https://github.com/OpenHNS/HnsMatchSystem-additions PTS (Test)
+
 ## Требование | Requirements
 - [ReHLDS](https://dev-cs.ru/resources/64/)
 - [Amxmodx 1.9.0](https://dev-cs.ru/resources/405/)
