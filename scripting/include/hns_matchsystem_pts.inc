@@ -19,4 +19,5 @@ enum _:SKILL_INFO
 };
 
 native hns_pts_get_player_info(id, info);
-native hns_set_pts(TeamName:team_winners);
+native hns_set_pts_tt();
+native hns_set_pts_ct();
