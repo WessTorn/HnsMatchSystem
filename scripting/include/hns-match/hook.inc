@@ -270,7 +270,7 @@ public taskRoundEvent() {
 						if (get_num_players_in_match() < 5) {
 							client_print_color(0, print_team_blue, "^3Not pts (Players <= 5");
 						} else {
-							hns_set_pts(TEAM_TERRORIST);
+							hns_set_pts_tt();
 						}
 					}
 				#endif
@@ -321,7 +321,10 @@ public MixFinishedMR(iWinTeam) {
 			if (get_num_players_in_match() < 5) {
 				client_print_color(0, print_team_blue, "^3Not pts (Players <= 5");
 			} else {
-				hns_set_pts(iWinTeam == 1 ? TEAM_TERRORIST : TEAM_CT);
+				if (iWinTeam == 1)
+					hns_set_pts_tt();
+				else
+					hns_set_pts_ct()
 			}
 		}
 	#endif

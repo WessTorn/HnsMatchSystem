@@ -1,6 +1,7 @@
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
+## Add ptssadasd
 https://github.com/OpenHNS/HnsMatchSystem-additions PTS (Test)
 
 ## Требование | Requirements
