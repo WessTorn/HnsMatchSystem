@@ -1,8 +1,15 @@
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
-## Add ptssadasd
-https://github.com/OpenHNS/HnsMatchSystem-additions PTS (Test)
+## Add pts
+https://github.com/OpenHNS/HnsMatchSystem-additions PTS
+
+In order to use PTS you need:
+1. Install and enable these 2 plugins on the server:
+- [HnsMatch-sql.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-sql.sma)
+- [HnsMatch-pts.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-pts.sma)
+
+2.uncomment 1 line (remove //) in [HnsMatchSystem.sma] https://github.com/WessTorn/HnsMatchSystem/blob/main/scripting/HnsMatchSystem.sma
 
 ## Требование | Requirements
 - [ReHLDS](https://dev-cs.ru/resources/64/)
