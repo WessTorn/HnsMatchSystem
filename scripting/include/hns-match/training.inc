@@ -28,7 +28,7 @@ stock goCheck(id) {
 		engfunc(EngFunc_SetOrigin, id, flCheckpoints[id][!flCheckpointAlternate[id]]);
 		if(g_bSaveAngles[id]) {
 			set_entvar(id, var_angles, flCheckpointAngles[id]);
-			//set_entvar(id, var_v_angle, flCheckpointAngles[id]);
+			set_entvar(id, var_v_angle, flCheckpointAngles[id]);
 			set_entvar(id, var_fixangle, 1);
 		}
 	}

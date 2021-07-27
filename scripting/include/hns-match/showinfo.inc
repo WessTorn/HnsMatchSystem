@@ -148,10 +148,10 @@ public task_ShowPlayerInfo() {
 					formatex(szBuffer, charsmax(szBuffer), "Survive time: %s", szTime);
 
 					fnConvertTime(iStats[id][e_flFlashedTime], szTimeFlash, charsmax(szTimeFlash), false);
-					formatex(szBuffer2, charsmax(szBuffer2), "Damaged: %.0fHP^n\
+					formatex(szBuffer2, charsmax(szBuffer2), "Stabs: %d^n\
+						Damaged: %.0fHP^n\
 						Flashed: %s^n\
 						Found TT: %d^n\
-						Stabs: %d^n\
 						Run: %.1fK",
 						iStats[id][e_flDmg],
 						szTimeFlash,
@@ -161,12 +161,26 @@ public task_ShowPlayerInfo() {
 				}
 
 				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
-				ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n^n\
-					%s^n\
-					%s",
-					id,
-					g_iCurrentMode == e_mMatch ? szBuffer : "",
-					g_iCurrentMode == e_mMatch ? szBuffer2 : "");
+				#if defined USE_PTS
+					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n (#%d)^n\
+						%s^n\
+						PTS: %d^n\
+						Wins: %d / Loss: %d^n\
+						%s",
+						id, hns_pts_get_player_info(id, rank),
+						g_iCurrentMode == e_mMatch ? szBuffer : "",
+						hns_pts_get_player_info(id, pts),
+						hns_pts_get_player_info(id, wins), hns_pts_get_player_info(id, loss),
+						g_iCurrentMode == e_mMatch ? szBuffer2 : "");
+				#else
+					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n^n\
+						%s^n\
+						%s",
+						id,
+						g_iCurrentMode == e_mMatch ? szBuffer : "",
+						g_iCurrentMode == e_mMatch ? szBuffer2 : "");
+				#endif
+
 			}
 		}
 	}
@@ -221,11 +235,11 @@ public ShowTop(player) {
                 			<thead class=^"text-center^"><tr>\
 							<th>Player</th>\
 							<th>Survive time</th>\
+							<th>Stabs</th>\
 							<th>Damaged</th>\
 							<th>Hide time</th>\
 							<th>Flashed</th>\
 							<th>Found TT</th>\
-							<th>Stabs</th>\
 							<th>Run</th>\
 						</tr></thead><tbody>");
 	new szSurvTime[24];
@@ -240,7 +254,7 @@ public ShowTop(player) {
 		fnConvertTime(iStats[id][e_plrSurviveTime], szSurvTime, charsmax(szSurvTime), false);
 		fnConvertTime(iStats[id][e_flFlashedTime], szTimeFlash, charsmax(szTimeFlash), false);
 		fnConvertTime(iStats[id][e_flHideTime], szHideTime, charsmax(szHideTime), false);
-		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr><td>%n</td><td>%s</td><td>%.0f</td><td>%s</td><td>%s</td><td>%d</td><td>%d</td><td>%.1fK</td></tr>", id, szSurvTime, iStats[id][e_flDmg],szHideTime, szTimeFlash, iStats[id][e_iFound], iStats[id][e_iStabs], iStats[id][e_flRunDistance] / 1000);
+		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr><td>%n</td><td>%s</td><td>%d</td><td>%.0f</td><td>%s</td><td>%s</td><td>%d</td><td>%.1fK</td></tr>", id, szSurvTime, iStats[id][e_iStabs], iStats[id][e_flDmg],szHideTime, szTimeFlash, iStats[id][e_iFound], iStats[id][e_flRunDistance] / 1000);
 	}
 	iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "</tbody>\
 								</table>\
