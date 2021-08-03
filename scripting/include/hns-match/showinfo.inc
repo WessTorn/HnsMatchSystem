@@ -150,10 +150,10 @@ public task_ShowPlayerInfo() {
 						Flashed: %s^n\
 						Found TT: %d^n\
 						Run: %.1fK",
+						iStats[id][e_iStabs],
 						iStats[id][e_flDmg],
 						szTimeFlash,
 						iStats[id][e_iFound],
-						iStats[id][e_iStabs],
 						iStats[id][e_flRunDistance] / 1000);
 				}
 
