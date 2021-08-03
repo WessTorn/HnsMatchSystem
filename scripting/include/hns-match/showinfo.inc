@@ -114,9 +114,6 @@ public apply_stats() {
 }
 
 public task_ShowPlayerInfo() {
-	if(g_iCurrentMode != e_mMatch)
-		return;
-	
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum);
 	

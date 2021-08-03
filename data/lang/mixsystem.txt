@@ -3,9 +3,13 @@ STATUS_NOPLAY   = %s ^3%s^1 is ^3not available^1 for pick [^3NOPLAY^1]
 STATUS_PLAY     = %s ^3%s^1 is now ^3available^1 for pick [^3PLAY^1]
 
 SET_WINTIME     = %s ^3%s^1 set ^3wintime^1 to ^3%d^1 minutes.
-NOT_SET_TIME    = %s Disable mr mode, before changing wintimer.
 SET_ROUNDTIME   = %s ^3%s ^1 set ^3roundtime^1 to ^3%.2f^1 minutes.
 SET_MAXROUNDS   = %s ^3%s ^1 set ^3maxrounds^1 to ^3%d^1 rounds.
+SER_TIME_TT     = %s ^3%n^1 set timer for team TT to ^3%s:%s^1.
+SER_TIME_CT     = %s ^3%n^1 set timer for team CT to ^3%s:%s^1.
+NOT_SET_TT      = %s Invalid syntax. Example: ^3/tt 15:43^1.
+NOT_SET_СT      = %s Invalid syntax. Example: ^3/ct 15:43^1.
+NOT_SET_TIME    = %s Disable mr mode, before changing wintimer.
 NOT_SET_MR      = %s Disable timer mode, before changing maxrounds.
 
 KILL_HIMSELF    = %s ^3%s ^1killed himself
