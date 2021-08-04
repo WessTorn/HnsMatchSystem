@@ -10,7 +10,7 @@ public mainMatchMenu(id) {
 
 	new hMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
 
-	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
+	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
 			menu_additem(hMenu, "Start captain mod", "1");
 		else if (g_iCurrentMode == e_mKnife)
@@ -31,14 +31,14 @@ public mainMatchMenu(id) {
 	}
 
 
-	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
+	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 			if (g_iCurrentMode == e_mKnife)
-				menu_additem(hMenu, "\rStop Kniferound^n", "2");
+				menu_additem(hMenu, "\rStop knife round^n", "2");
 			else if (g_iCurrentMode == e_mCaptain)
-				menu_additem(hMenu, "\dStart Kniferound^n", "2");
+				menu_additem(hMenu, "\dStart knife round^n", "2");
 			else
-				menu_additem(hMenu, "Start Kniferound^n", "2");
+				menu_additem(hMenu, "Start knife round^n", "2");
 		}
 	} else {
 		if (g_iCurrentMode == e_mTraining)
@@ -74,7 +74,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 
 	switch (iKey) {
 		case 1: {
-			if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
+			if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 				if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
 					cmdCaptain(id);
 				else if (g_iCurrentMode == e_mKnife)
@@ -96,7 +96,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 			}
 		}
 		case 2: {
-			if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
+			if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 				if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 					if (g_iCurrentMode == e_mKnife)
 						cmdStop(id);
@@ -189,19 +189,19 @@ public settingsMatchMenu(id) {
 	new titleTimeRound[64]; 
 	
 	if (g_iCurrentRules == e_mTimer) 
-		formatex(titleTimeRound, 63, "Wintime: \y%d^n", get_pcvar_num(g_eCvars[e_cCapTime]));
+		formatex(titleTimeRound, 63, "Wintime: \y%d^n", get_cap_time());
 	else 
-		formatex(titleTimeRound, 63, "Maxrounds: \y%d^n", get_pcvar_num(g_eCvars[e_cMaxRounds]));
+		formatex(titleTimeRound, 63, "Maxrounds: \y%d^n", get_max_rounds());
 
 	new titleHP[64];
-	if (get_pcvar_num(g_eCvars[e_cHpMode]) == 100)
+	if (get_hp_mode() == 100)
 		formatex(titleHP, 63, "1 HP Mode (Skill): \yOff^n");
 	else
 		formatex(titleHP, 63, "1 HP Mode (Skill): \yOn^n");
 
-	new titleFlahs[64]; formatex(titleFlahs, 63, "Flash: \y%d", get_pcvar_num(g_eCvars[e_cFlashNum]));
-	new titleSmoke[64]; formatex(titleSmoke, 63, "Smoke: \y%d^n", get_pcvar_num(g_eCvars[e_cSmokeNum]));
-	new titleAA[64]; formatex(titleAA, 63, "Airaccelerate \y%d^n", get_pcvar_num(g_eCvars[e_cAA]));
+	new titleFlahs[64]; formatex(titleFlahs, 63, "Flash: \y%d", get_flash_num());
+	new titleSmoke[64]; formatex(titleSmoke, 63, "Smoke: \y%d^n", get_smoke_num());
+	new titleAA[64]; formatex(titleAA, 63, "Airaccelerate \y%d^n", get_aa_mode());
 
 	menu_additem(hMenu, titleRoundtime, "1");
 	menu_additem(hMenu, titleFreeztime, "2");
@@ -252,57 +252,57 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 		}
 		case 3: {
 			if (g_iCurrentRules == e_mTimer) {
-				if (get_pcvar_num(g_eCvars[e_cCapTime]) == 5)
-					set_pcvar_num(g_eCvars[e_cCapTime], 10);
-				else if (get_pcvar_num(g_eCvars[e_cCapTime]) == 10)
-					set_pcvar_num(g_eCvars[e_cCapTime], 15);
-				else if (get_pcvar_num(g_eCvars[e_cCapTime]) == 15)
-					set_pcvar_num(g_eCvars[e_cCapTime], 20);
-				else if (get_pcvar_num(g_eCvars[e_cCapTime]) >= 20)
-					set_pcvar_num(g_eCvars[e_cCapTime], 5);
+				if (get_cap_time() == 5)
+					set_cap_time(10);
+				else if (get_cap_time() == 10)
+					set_cap_time(15);
+				else if (get_cap_time() == 15)
+					set_cap_time(20);
+				else if (get_cap_time() >= 20)
+					set_cap_time(5);
 			} else {
-				if (get_pcvar_num(g_eCvars[e_cMaxRounds]) == 4)
-					set_pcvar_num(g_eCvars[e_cMaxRounds], 5);
-				else if (get_pcvar_num(g_eCvars[e_cMaxRounds]) == 5)
-					set_pcvar_num(g_eCvars[e_cMaxRounds], 6);
-				else if (get_pcvar_num(g_eCvars[e_cMaxRounds]) == 6)
-					set_pcvar_num(g_eCvars[e_cMaxRounds], 7);
-				else if (get_pcvar_num(g_eCvars[e_cMaxRounds]) >= 7)
-					set_pcvar_num(g_eCvars[e_cMaxRounds], 4);
+				if (get_max_rounds() == 4)
+					set_max_rounds(5);
+				else if (get_max_rounds() == 5)
+					set_max_rounds(6);
+				else if (get_max_rounds() == 6)
+					set_max_rounds(7);
+				else if (get_max_rounds() >= 7)
+					set_max_rounds(4);
 			}
 
 			settingsMatchMenu(id);
 		}
 		case 4: {
-			if (get_pcvar_num(g_eCvars[e_cHpMode]) == 100)
-				set_pcvar_num(g_eCvars[e_cHpMode], 1);
+			if (get_hp_mode() == 100)
+				set_hp_mode(1);
 			else 
-				set_pcvar_num(g_eCvars[e_cHpMode], 100);
+				set_hp_mode(100);
 
 			settingsMatchMenu(id);
 		}
 		case 5: {
-			if (get_pcvar_num(g_eCvars[e_cFlashNum]) == 0)
-				set_pcvar_num(g_eCvars[e_cFlashNum], 1);
-			else if (get_pcvar_num(g_eCvars[e_cFlashNum]) == 1)
-				set_pcvar_num(g_eCvars[e_cFlashNum], 2);
-			else if (get_pcvar_num(g_eCvars[e_cFlashNum]) == 2)
-				set_pcvar_num(g_eCvars[e_cFlashNum], 3);
-			else if (get_pcvar_num(g_eCvars[e_cFlashNum]) >= 3)
-				set_pcvar_num(g_eCvars[e_cFlashNum], 0);
+			if (get_flash_num() == 0)
+				set_flash_num(1);
+			else if (get_flash_num() == 1)
+				set_flash_num(2);
+			else if (get_flash_num() == 2)
+				set_flash_num(3);
+			else if (get_flash_num() >= 3)
+				set_flash_num(0);
 
 			settingsMatchMenu(id);
 		}
 		case 6: {
-			if (get_pcvar_num(g_eCvars[e_cSmokeNum]) == 1)
-				set_pcvar_num(g_eCvars[e_cSmokeNum], 2);
-			else if (get_pcvar_num(g_eCvars[e_cSmokeNum]) >= 2)
-				set_pcvar_num(g_eCvars[e_cSmokeNum], 1);
+			if (get_smoke_num() == 1)
+				set_smoke_num(2);
+			else if (get_smoke_num() >= 2)
+				set_smoke_num(1);
 
 			settingsMatchMenu(id);
 		}
 		case 7: {
-			if (get_pcvar_num(g_eCvars[e_cAA]) < 100)
+			if (get_aa_mode() < 100)
 				cmdAa100(id);
 			else
 				cmdAa10(id);

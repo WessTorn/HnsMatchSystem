@@ -9,7 +9,11 @@ In order to use PTS you need:
 - [HnsMatch-sql.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-sql.sma)
 - [HnsMatch-pts.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-pts.sma)
 
-2.uncomment 1 line (remove //) in [HnsMatchSystem.sma] https://github.com/WessTorn/HnsMatchSystem/blob/main/scripting/HnsMatchSystem.sma
+2. Uncomment 1 line (remove //) in [HnsMatchSystem.sma] https://github.com/WessTorn/HnsMatchSystem/blob/main/scripting/HnsMatchSystem.sma
+
+3. After the second step, you need to compile HnsMatchSystem.sma again, put it on the server and restart the server.
+
+4. Next, the config file with the database configuration will appear (/addons/amxmodx/configs/plugins/hnsmatch-sql.cfg), enter the data from the database and restart the server.
 
 ## Requirements
 - [ReHLDS](https://dev-cs.ru/resources/64/)
@@ -58,6 +62,7 @@ In order to use PTS you need:
 | hns_survotetime      | 10         | Time (in seconds) during which the vote is in progress (surrender) |
 | hns_checkplay        | 1          | Play / nolay menu at the entrance to the knife map `0` off `1` on |
 | hns_knifemap         | 35hp_2     | Knife map |
+| hns_prefix         | ^1>     | System prefix (^1 - yellow, ^3 - blue, ^4 - green) |
 | hns_rules         | 0     | Game Mode `0` Timer `1` MR |
 
 ## Commands

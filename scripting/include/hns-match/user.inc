@@ -64,18 +64,18 @@ stock setUserRole(id) {
 				set_user_footsteps(id, 1);
 				rg_give_item(id, "weapon_knife");
 
-				if (get_pcvar_num(g_eCvars[e_cFlashNum]) >= 1) {
+				if (get_flash_num() >= 1) {
 					rg_give_item(id, "weapon_flashbang");
-					rg_set_user_bpammo(id, WEAPON_FLASHBANG, get_pcvar_num(g_eCvars[e_cFlashNum]));
+					rg_set_user_bpammo(id, WEAPON_FLASHBANG, get_flash_num());
 				}
 
-				if (get_pcvar_num(g_eCvars[e_cSmokeNum]) >= 1) {
+				if (get_smoke_num() >= 1) {
 					rg_give_item(id, "weapon_smokegrenade");
-					rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, get_pcvar_num(g_eCvars[e_cSmokeNum]));
+					rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, get_smoke_num());
 				}
 
 				if (g_iCurrentMode == e_mDM) {
-					if (get_pcvar_num(g_eCvars[e_cHpMode]) == 100)
+					if (get_hp_mode() == 100)
 						set_entvar(id, var_health, 100.0);
 					else 
 						set_entvar(id, var_health, 1.0);

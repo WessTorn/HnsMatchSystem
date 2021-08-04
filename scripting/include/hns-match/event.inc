@@ -33,7 +33,7 @@ public EventDeathMsg() {
 		setUserRole(killer);
 	}
 	
-	set_task(get_pcvar_float(g_eCvars[e_cDMRespawn]), "RespawnPlayer", victim);
+	set_task(float(get_dm_float()), "RespawnPlayer", victim);
 }
 
 public RespawnPlayer(id) {

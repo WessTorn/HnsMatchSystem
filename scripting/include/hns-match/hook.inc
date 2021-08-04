@@ -52,15 +52,15 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 					new players[MAX_PLAYERS], pnum;
 					get_players(players, pnum, "ace", "CT");
 					if (!pnum) {
-						new Float:roundtime = get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0;
+						new Float:roundtime = get_round_time() * 60.0;
 						g_flSidesTime[g_iCurrentSW] += roundtime - g_flRoundTime;
 					}
 				}
 				if (g_bGameStarted) {
 					new iWinTeam = -1;
 					new szTime[24];		
-					new Float:flTimeToWinTT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[g_iCurrentSW]);
-					new Float:flTimeToWinCT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[!g_iCurrentSW]);
+					new Float:flTimeToWinTT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
+					new Float:flTimeToWinCT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
 					if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
 						iWinTeam = !g_iCurrentSW;
 					} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {
@@ -69,7 +69,7 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 					g_iRoundsPlayed[g_iCurrentSW]++;
 					if (iWinTeam != -1) {
 						MixFinishedMR(iWinTeam == g_iCurrentSW ? 1 : 2);
-					} else if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= (get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2) - 1) {
+					} else if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= (get_max_rounds() * 2) - 1) {
 						if (!g_bLastRound) {
 							g_iCurrentSW = !g_iCurrentSW;
 							rg_swap_all_players();
@@ -215,7 +215,7 @@ public rgOnRoundFreezeEnd() {
 	if (g_bGameStarted)
 		g_bSurvival = true;
 
-	set_task(g_eCvars[e_cSemiclip] ? 3.0 : 5.0, "taskCheckAfk");
+	set_task(is_semiclip() ? 3.0 : 5.0, "taskCheckAfk");
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 	set_task(2.5, "task_MainThink", .flags = "b");
 
@@ -249,7 +249,7 @@ public taskRoundEvent() {
 		}
 
 		if (g_iCurrentRules == e_mTimer) {
-			if (g_flSidesTime[g_iCurrentSW] >= get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) {
+			if (g_flSidesTime[g_iCurrentSW] >= float(get_cap_time()) * 60.0) {
 				g_bGameStarted = false;
 				g_bSurvival = false;
 				new Float:flTimeDiff;
@@ -283,7 +283,7 @@ public taskRoundEvent() {
 			}
 		}	
 	}
-	if ((g_flRoundTime / 60.0) >= get_pcvar_float(g_eCvars[e_cRoundTime])) {
+	if ((g_flRoundTime / 60.0) >= get_round_time()) {
 		if (g_bGameStarted)
 			g_bSurvival = false;
 
@@ -291,8 +291,8 @@ public taskRoundEvent() {
 	}
 	if (g_iCurrentRules == e_mMR) {
 		new iWinTeam = -1;
-		new Float:flTimeToWinTT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[g_iCurrentSW]);
-		new Float:flTimeToWinCT = Float:(get_pcvar_float(g_eCvars[e_cRoundTime]) * 60.0) * (get_pcvar_num(g_eCvars[e_cMaxRounds]) - g_iRoundsPlayed[!g_iCurrentSW]);
+		new Float:flTimeToWinTT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
+		new Float:flTimeToWinCT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
 		if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
 			iWinTeam = !g_iCurrentSW;
 		} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {
@@ -360,7 +360,7 @@ public rgPlayerSpawn(id) {
 		setUserGodmode(id, 1);
 
 	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) {
-		if (get_pcvar_num(g_eCvars[e_cHpMode]) == 1) {
+		if (get_hp_mode() == 1) {
 			set_entvar(id, var_health, 1.0);
 		}
 	}

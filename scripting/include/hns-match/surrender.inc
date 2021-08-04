@@ -47,7 +47,7 @@ public taskSurrender() {
 		return;
 	}
 
-	if (g_eSurrenderData[e_sFlTime] == get_pcvar_num(g_eCvars[e_cSurVoteTime])) {
+	if (g_eSurrenderData[e_sFlTime] == get_vote_time()) {
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
 			client_print_color(iPlayer, print_team_blue, "%L", id, "SUR_NEED", prefix, g_eMatchInfo[e_mTeamSizeTT], g_eMatchInfo[e_mTeamSizeTT]);

@@ -4,14 +4,18 @@
 Counter-Strike Hide'n'Seek Match System plugins
 
 ## Add pts
-https://github.com/OpenHNS/HnsMatchSystem-additions PTS
+https://github.com/OpenHNS/HnsMatchSystem-additions ПТС плагин.
 
-In order to use PTS you need:
-1. Install and enable these 2 plugins on the server:
+Для использования PTS вам необходимо:
+1. Скомпилировать и установить эти 2 плагина на сервер:
 - [HnsMatch-sql.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-sql.sma)
 - [HnsMatch-pts.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-pts.sma)
 
-2.uncomment 1 line (remove //) in [HnsMatchSystem.sma] https://github.com/WessTorn/HnsMatchSystem/blob/main/scripting/HnsMatchSystem.sma
+2. Раскомментировать 1-ю линию (удалить - //) в плагине: [HnsMatchSystem.sma] https://github.com/WessTorn/HnsMatchSystem/blob/main/scripting/HnsMatchSystem.sma
+
+3. После 2-го действия необходимо опять скомпилировать HnsMatchSystem.sma, поставить на сервер и перезапустить сервер.
+
+4. Далее, появится конфиг файл с настройкой базы данных (/addons/amxmodx/configs/plugins/hnsmatch-sql.cfg), туда вводим данные от базы данных и перезапускаем сервер.
 
 ## Требование
 - [ReHLDS](https://dev-cs.ru/resources/64/)
@@ -60,6 +64,7 @@ In order to use PTS you need:
 | hns_survotetime      | 10         | Время (в секундах), в течение которого идет голосование (surrender) |
 | hns_checkplay        | 1          | Меню play/nolay при входе на кнайф карте / `0` off `1` on |
 | hns_knifemap         | 35hp_2     | Кнайф карта |
+| hns_prefix         | ^1>     | Префикс системы (^1 - желтый, ^3 - голубой, ^4 - зеленый) |
 | hns_rules         | 0     | Игровой режим `0` Timer `1` MR |
 
 ## Комманды

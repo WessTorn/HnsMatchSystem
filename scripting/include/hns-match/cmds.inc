@@ -165,11 +165,11 @@ public cmdStartRound(id) {
 		client_print_color(id, print_team_blue, "%L", id, "NOT_START_MIX", prefix);
 		return;
 	} else {
-		if (equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap]))
+		if (equali(g_eMatchInfo[e_mMapName], knifemap))
 			return;
 
 		client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
-		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_pcvar_num(g_eCvars[e_cSurTimeDelay]);
+		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
 
 		#if defined USE_PTS
 			g_flMatchDelay = get_gametime() + 600; // Сделать кваром
@@ -192,6 +192,7 @@ stock pfStartMatch() {
 	set_task(2.5, "taskPrepareMode", e_mMatch);
 	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "Going Live in 3 second!");
 	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "Live! Live! Live!^nGood Luck & Have Fun!");
+	client_print_color(0, print_team_blue, "Я тут 2");
 }
 
 public cmdKnifeRound(id) {
@@ -221,7 +222,7 @@ public cmdCaptain(id) {
 	if (!getUserInAccess(id))
 		return;
 
-	if (!equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap]))
+	if (!equali(g_eMatchInfo[e_mMapName], knifemap))
 		return;
 
 	if (g_iCurrentMode != e_mTraining)
@@ -294,7 +295,7 @@ public cmdSkillMode(id) {
 
 	client_print_color(0, print_team_blue, "%L", id, "TYPE_SKILL", prefix, getUserName(id));
 
-	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
+	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 		enableSemiclip(0);
 	} else {
 		if (g_iCurrentMode == e_mTraining)
@@ -305,11 +306,11 @@ public cmdSkillMode(id) {
 
 	if (g_iCurrentMode == e_mMatch) {
 		set_cvar_num("mp_freezetime", 5);
-		set_pcvar_num(g_eCvars[e_cFlashNum], 1);
-		set_pcvar_num(g_eCvars[e_cSmokeNum], 1);
+		set_flash_num(1);
+		set_smoke_num(1);
 	}
 
-	set_pcvar_num(g_eCvars[e_cSemiclip], 1);
+	set_semiclip(true);
 
 	return PLUGIN_HANDLED;
 }
@@ -322,10 +323,10 @@ public cmdBoostMode(id) {
 
 	if (g_iCurrentMode == e_mMatch) {
 		set_cvar_num("mp_freezetime", 15);
-		set_pcvar_num(g_eCvars[e_cFlashNum], 3);
-		set_pcvar_num(g_eCvars[e_cSmokeNum], 1);
+		set_flash_num(3);
+		set_smoke_num(1);
 	}
-	set_pcvar_num(g_eCvars[e_cSemiclip], 0);
+	set_semiclip(false);
 	disableSemiclip();
 
 	return PLUGIN_HANDLED;
@@ -338,7 +339,7 @@ public cmdAa10(id) {
 	client_print_color(0, print_team_blue, "%L", id, "AA_10", prefix, getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 10);
-	set_pcvar_num(g_eCvars[e_cAA], 10);
+	set_aa_mode(10);
 
 	return PLUGIN_HANDLED;
 }
@@ -350,7 +351,7 @@ public cmdAa100(id) {
 	client_print_color(0, print_team_blue, "%L", id, "AA_100", prefix, getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 100);
-	set_pcvar_num(g_eCvars[e_cAA], 100);
+	set_aa_mode(100);
 
 	return PLUGIN_HANDLED;
 }
@@ -364,7 +365,7 @@ public cmdRestartRound(id) {
 	removeHook(id);
 
 	if (g_iCurrentMode == e_mMatch)
-	g_iGameStops++;
+		g_iGameStops++;
 
 	return PLUGIN_HANDLED;
 }
@@ -464,7 +465,7 @@ public cmdStopPause(id) {
 		restartRound();
 		removeHook(id);
 
-		if (get_pcvar_num(g_eCvars[e_cSemiclip]) == 1) {
+		if (is_semiclip() == 1) {
 			set_cvar_num("mp_freezetime", 5);
 			enableSemiclip(3);
 		} else {
@@ -485,7 +486,7 @@ public cmdMrMode(id) {
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 		if (g_iCurrentRules != e_mMR) {
 			client_print_color(0, print_team_blue, "%L", id, "MR_ACTIVATED", prefix, id);
-			set_pcvar_num(g_eCvars[e_cRules], 1);
+			set_rules_mode(1);
 			g_iCurrentRules = e_mMR;
 		} else {
 			client_print_color(id, print_team_blue, "%L", id, "MR_ALREADY", prefix, id);
@@ -501,7 +502,7 @@ public cmdTimerMode(id) {
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 		if (g_iCurrentRules != e_mTimer) {
 			client_print_color(0, print_team_blue, "%L", id, "TIMER_ACTIVATED", prefix, id);
-			set_pcvar_num(g_eCvars[e_cRules], 2);
+			set_rules_mode(2);
 			g_iCurrentRules = e_mTimer;
 		} else {
 			client_print_color(id, print_team_blue, "%L", id, "TIMER_ALREADY", prefix, id);
@@ -538,7 +539,7 @@ public cmdSurrender(id) {
 
 	g_eSurrenderData[e_sStarted] = true;
 	g_eSurrenderData[e_sInitiator] = id;
-	g_eSurrenderData[e_sFlDelay] = get_gametime() + get_pcvar_num(g_eCvars[e_cSurTimeDelay]);
+	g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
 	client_print_color(0, print_team_blue, "%L", id, "SUR_PLAYER", prefix, id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 
 	for (new i; i < iNum; i++) {
@@ -551,8 +552,8 @@ public cmdSurrender(id) {
 public cmdShowTimers(id) {
 	if (g_bGameStarted || g_iCurrentMode == e_mPaused) {
 		new timeToWin[2][24];
-		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
-		fnConvertTime((get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
+		fnConvertTime((float(get_cap_time()) * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
+		fnConvertTime((float(get_cap_time()) * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
 		
 		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
 		get_players(iPlayers, TTsize, "ce", "TERRORIST");
@@ -585,11 +586,11 @@ public cmdShowTimers(id) {
 			if (!g_iCurrentSW) {
 				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR1",
 					timeToWin[0], TTsize, CTSize, timeToWin[1],
-					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
+					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 			} else {
 				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR2",
 					timeToWin[1], TTsize, CTSize, timeToWin[0],
-					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_pcvar_num(g_eCvars[e_cMaxRounds]) * 2);
+					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 			}
 		}
 	} else {

@@ -35,7 +35,7 @@ public sayHandle(id) {
 		}
 
 		if (is_str_num(szTarget)) {
-			set_pcvar_num(g_eCvars[e_cCapTime], str_to_num(szTarget));
+			set_cap_time(str_to_num(szTarget));
 			client_print_color(0, print_team_blue, "%L", id, "SET_WINTIME", prefix, getUserName(id), str_to_num(szTarget));
 		}
 		return PLUGIN_CONTINUE;
@@ -48,7 +48,7 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 
 		if (is_str_num(szTarget)) {
-			set_pcvar_float(g_eCvars[e_cRoundTime], str_to_float(szTarget));
+			set_round_time(szTarget);
 			client_print_color(0, print_team_blue, "%L", id, "SET_ROUNDTIME", prefix, getUserName(id), str_to_float(szTarget));
 		}
 		return PLUGIN_CONTINUE;
@@ -66,7 +66,7 @@ public sayHandle(id) {
 		}
 
 		if (is_str_num(szTarget)) {
-			set_pcvar_num(g_eCvars[e_cMaxRounds], str_to_num(szTarget));
+			set_max_rounds(str_to_num(szTarget));
 			client_print_color(0, print_team_blue, "%L", id, "SET_MAXROUNDS", prefix, getUserName(id), str_to_num(szTarget));
 		}
 		return PLUGIN_CONTINUE;
@@ -104,7 +104,7 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 		}
 
-		g_flSidesTime[!g_iCurrentSW] = (get_pcvar_float(g_eCvars[e_cCapTime]) - (minutes + (seconds / 60.0))) * 60.0;
+		g_flSidesTime[!g_iCurrentSW] = (float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
 		client_print_color(0, print_team_blue, "%L", 0, "SER_TIME_TT", prefix, id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
 	}
@@ -141,7 +141,7 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 		}
 
-		g_flSidesTime[!g_iCurrentSW] = (get_pcvar_float(g_eCvars[e_cCapTime]) - (minutes + (seconds / 60.0))) * 60.0;
+		g_flSidesTime[!g_iCurrentSW] = (get_pcvar_float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
 		client_print_color(0, print_team_blue, "%L", 0, "SER_TIME_CT", prefix, id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
 	}

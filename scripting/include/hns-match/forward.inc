@@ -65,7 +65,7 @@ public fwdEmitSoundPre(id, iChannel, szSample[], Float:volume, Float:attenuation
 
 public fwdGameNameDesc() {
 	static gameName[32];
-	get_pcvar_string(g_eCvars[e_cGameName], gameName, 31);
+	get_game_description(gameName, 31);
 	forward_return(FMV_STRING, gameName);
 
 	return FMRES_SUPERCEDE;

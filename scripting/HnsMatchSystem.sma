@@ -9,27 +9,12 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.2.3", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.2.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
-	g_eCvars[e_cRoundTime] = get_cvar_pointer("mp_roundtime");
-	
-	g_eCvars[e_cCapTime]			= register_cvar("hns_wintime", "15");
-	g_eCvars[e_cMaxRounds]			= register_cvar("hns_rounds", "6");
-	g_eCvars[e_cFlashNum]			= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cSmokeNum]			= register_cvar("hns_smoke", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cLastMode]			= register_cvar("hns_lastmode", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cAA]					= register_cvar("hns_aa", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cSemiclip]			= register_cvar("hns_semiclip", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cHpMode]				= register_cvar("hns_hpmode", "100", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cDMRespawn] 			= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cSurVoteTime] 		= register_cvar("hns_survotetime", "10", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cSurTimeDelay] 		= register_cvar("hns_surtimedelay", "120", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cCheckPlayNoPlay] 	= register_cvar("hns_checkplay", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_eCvars[e_cRules] 				= register_cvar("hns_rules", "0");
-	g_eCvars[e_cGameName]			= register_cvar("hns_gamename", "Hide'n'Seek");
-	get_pcvar_string(register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER), g_eCvars[e_cKnifeMap], 24);
+
+	cvars_init();
 
 	register_clcmd("say", "sayHandle");
 
@@ -55,23 +40,26 @@ public plugin_init() {
 }
 
 public taskDelayedMode() {
-	if (equali(g_eCvars[e_cKnifeMap], g_eMatchInfo[e_mMapName])) {
+	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 		taskPrepareMode(e_mTraining);
-	} else if (get_pcvar_num(g_eCvars[e_cLastMode]) == 0) {
+	} else if (get_last_mode() == 0) {
 		taskPrepareMode(e_mTraining);
-	} else if (get_pcvar_num(g_eCvars[e_cLastMode]) == 1) {
+	} else if (get_last_mode() == 1) {
 		taskPrepareMode(e_mPublic);
-	} else if (get_pcvar_num(g_eCvars[e_cLastMode]) == 2) {
+	} else if (get_last_mode() == 2) {
 		taskPrepareMode(e_mDM);
 	} else {
 		taskPrepareMode(e_mTraining);
 	}
 
-	if(get_pcvar_num(g_eCvars[e_cRules]) == 1) {
+	if(get_rules_mode() == 1) {
 		g_iCurrentRules = e_mMR;
 	} else {
 		g_iCurrentRules = e_mTimer;		
 	}
+
+	get_knife_map(knifemap, charsmax(knifemap));
+	get_prefix(prefix, charsmax(prefix));
 }
 
 public registerMode() {
@@ -82,7 +70,7 @@ public registerMode() {
 }
 
 loadPlayers() {
-	if (!equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap]))
+	if (!equali(g_eMatchInfo[e_mMapName], knifemap))
 		g_bPlayersListLoaded = PDS_GetString("playerslist", g_szBuffer, charsmax(g_szBuffer));
 
 	if (g_bPlayersListLoaded) {
@@ -141,7 +129,7 @@ decodeObject(&JSON:object) {
 }
 
 public PDS_Save() {
-	if (equali(g_eMatchInfo[e_mMapName], g_eCvars[e_cKnifeMap])) {
+	if (equali(g_eMatchInfo[e_mMapName], knifemap)) {
 		if (g_szBuffer[0])
 			PDS_SetString("playerslist", g_szBuffer);
 	}
@@ -188,13 +176,13 @@ public taskPrepareMode(mode) {
 		case e_mTraining: {
 			g_iCurrentMode = e_mTraining;
 			server_cmd("exec %s/training.cfg", szPath);
-			set_pcvar_num(g_eCvars[e_cLastMode], 0);
+			set_last_mode(0);
 			disableSemiclip();
 		}
 		case e_mKnife: {
 			g_iCurrentMode = e_mKnife;
 			server_cmd("exec %s/knife.cfg", szPath);
-			set_pcvar_num(g_eCvars[e_cLastMode], 0);
+			set_last_mode(0);
 			disableSemiclip();
 		}
 		case e_mMatch: {
@@ -208,20 +196,20 @@ public taskPrepareMode(mode) {
 			g_bLastRound = false;
 
 			server_cmd("exec %s/match.cfg", szPath);
-			set_pcvar_num(g_eCvars[e_cLastMode], 0);
+			set_last_mode(0);
 
-			if (get_pcvar_num(g_eCvars[e_cSemiclip]) == 1) {
+			if (is_semiclip()) {
 				set_cvar_num("mp_freezetime", 5);
-				set_pcvar_num(g_eCvars[e_cFlashNum], 1);
-				set_pcvar_num(g_eCvars[e_cSmokeNum], 1);
-				set_pcvar_num(g_eCvars[e_cSemiclip], 1);
+				set_flash_num(1);
+				set_smoke_num(1);
+				set_semiclip(true);
 				enableSemiclip(3);
 				loadMapCFG();
 			} else {
 				set_cvar_num("mp_freezetime", 15);
-				set_pcvar_num(g_eCvars[e_cFlashNum], 3);
-				set_pcvar_num(g_eCvars[e_cSmokeNum], 1);
-				set_pcvar_num(g_eCvars[e_cSemiclip], 0);
+				set_flash_num(3);
+				set_smoke_num(1);
+				set_semiclip(false);
 				disableSemiclip();
 				loadMapCFG();
 			}
@@ -232,7 +220,7 @@ public taskPrepareMode(mode) {
 			get_players(iPlayers, iNum, "e", "TERRORIST");
 			g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
-			fnConvertTime(get_pcvar_float(g_eCvars[e_cCapTime]) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
+			fnConvertTime(float(get_cap_time()) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
 			rg_send_audio(0, "sound/barney/ba_bring.wav");
 
 			addStats();
@@ -240,16 +228,16 @@ public taskPrepareMode(mode) {
 		case e_mPublic: {
 			g_iCurrentMode = e_mPublic;
 			server_cmd("exec %s/public.cfg", szPath);
-			set_pcvar_num(g_eCvars[e_cFlashNum], 1);
-			set_pcvar_num(g_eCvars[e_cLastMode], 1);
+			set_flash_num(1);
+			set_last_mode(1);
 			enableSemiclip(3);
 			loadMapCFG();
 		}
 		case e_mDM: {
 			g_iCurrentMode = e_mDM;
 			server_cmd("exec %s/deathmatch.cfg", szPath);
-			set_pcvar_num(g_eCvars[e_cFlashNum], 1);
-			set_pcvar_num(g_eCvars[e_cLastMode], 2);
+			set_flash_num(1);
+			set_last_mode(2);
 			enableSemiclip(3);
 		} 
 		case e_mCaptain: {

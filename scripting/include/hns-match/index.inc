@@ -17,6 +17,7 @@
 	#include <hns_matchsystem_pts>
 #endif
 
+#include <hns-match/cvars>
 #include <hns-match/globals>
 #include <hns-match/cmds>
 #include <hns-match/say>

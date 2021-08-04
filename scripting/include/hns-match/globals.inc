@@ -6,7 +6,8 @@
 
 #define access ADMIN_MAP
 
-new prefix[24] = "^1>";
+stock prefix[24];
+stock knifemap[24];
 
 enum {
 	e_mTraining,
@@ -79,24 +80,8 @@ enum _:SurrenderData_s {
 new g_eSurrenderData[SurrenderData_s];
 
 enum _:Cvars_s {
-	e_cCapTime,
-	e_cMaxRounds,
-	e_cRoundTime,
-	e_cGameName,
-	e_cFlashNum,
-	e_cSmokeNum,
-	e_cAA,
-	e_cLastMode,
-	e_cSemiclip,
-	e_cHpMode,
-	e_cDMRespawn,
-	e_cRules,
-	e_cKnifeMap[25],
-	e_cSurVoteTime,
-	e_cSurTimeDelay,
-	e_cCheckPlayNoPlay
+	e_cKnifeMap[25]
 };
-new g_eCvars[Cvars_s];
 
 new bool:g_bSurvival;
 new bool:g_bGameStarted;
