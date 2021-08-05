@@ -141,7 +141,7 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 		}
 
-		g_flSidesTime[!g_iCurrentSW] = (get_pcvar_float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
+		g_flSidesTime[!g_iCurrentSW] = (float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
 		client_print_color(0, print_team_blue, "%L", 0, "SER_TIME_CT", prefix, id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
 	}

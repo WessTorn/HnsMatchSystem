@@ -472,7 +472,11 @@ public cmdStopPause(id) {
 			set_cvar_num("mp_freezetime", 15);
 			disableSemiclip();
 		}
+		
 		loadMapCFG();
+
+		if (get_flash_num() == 0)
+			set_flash_num(0);
 	}
 
 	server_cmd("sv_alltalk 3"); //  Переделать!

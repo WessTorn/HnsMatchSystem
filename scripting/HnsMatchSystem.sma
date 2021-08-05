@@ -9,7 +9,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.2.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.2.4.1", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -204,14 +204,12 @@ public taskPrepareMode(mode) {
 				set_smoke_num(1);
 				set_semiclip(true);
 				enableSemiclip(3);
-				loadMapCFG();
 			} else {
 				set_cvar_num("mp_freezetime", 15);
 				set_flash_num(3);
 				set_smoke_num(1);
 				set_semiclip(false);
 				disableSemiclip();
-				loadMapCFG();
 			}
 
 			loadMapCFG();
