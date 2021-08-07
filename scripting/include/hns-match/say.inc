@@ -30,13 +30,13 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 
 		if(g_iCurrentRules == e_mMR) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_TIME", prefix);
+			chat_print(id, "%L", id, "NOT_SET_TIME");
 			return PLUGIN_HANDLED;
 		}
 
 		if (is_str_num(szTarget)) {
 			set_cap_time(str_to_num(szTarget));
-			client_print_color(0, print_team_blue, "%L", id, "SET_WINTIME", prefix, getUserName(id), str_to_num(szTarget));
+			chat_print(0, "%L", id, "SET_WINTIME", getUserName(id), str_to_num(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -49,7 +49,7 @@ public sayHandle(id) {
 
 		if (is_str_num(szTarget)) {
 			set_round_time(szTarget);
-			client_print_color(0, print_team_blue, "%L", id, "SET_ROUNDTIME", prefix, getUserName(id), str_to_float(szTarget));
+			chat_print(0, "%L", id, "SET_ROUNDTIME", getUserName(id), str_to_float(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -61,13 +61,13 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 
 		if(g_iCurrentRules == e_mTimer) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_MR", prefix);
+			chat_print(id, "%L", id, "NOT_SET_MR");
 			return PLUGIN_HANDLED;
 		}
 
 		if (is_str_num(szTarget)) {
 			set_max_rounds(str_to_num(szTarget));
-			client_print_color(0, print_team_blue, "%L", id, "SET_MAXROUNDS", prefix, getUserName(id), str_to_num(szTarget));
+			chat_print(0, "%L", id, "SET_MAXROUNDS", getUserName(id), str_to_num(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -87,12 +87,12 @@ public sayHandle(id) {
 		replace(szTarget, charsmax(szTarget), ".", " ");
 
 		if (!parse(szTarget, szMinutes, charsmax(szMinutes), szSeconds, charsmax(szSeconds))) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_TT", prefix);
+			chat_print(id, "%L", id, "NOT_SET_TT");
 			return PLUGIN_HANDLED;
 		}
 
 		if (!szMinutes[0] || !szSeconds[0]) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_TT", prefix);
+			chat_print(id, "%L", id, "NOT_SET_TT");
 			return PLUGIN_HANDLED;
 		}
 
@@ -100,12 +100,12 @@ public sayHandle(id) {
 		new seconds = str_to_num(szSeconds);
 
 		if (seconds >= 60) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_TT", prefix);
+			chat_print(id, "%L", id, "NOT_SET_TT");
 			return PLUGIN_HANDLED;
 		}
 
 		g_flSidesTime[!g_iCurrentSW] = (float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
-		client_print_color(0, print_team_blue, "%L", 0, "SER_TIME_TT", prefix, id, szMinutes, szSeconds);
+		chat_print(0, "%L", 0, "SER_TIME_TT", id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
 	}
 
@@ -124,12 +124,12 @@ public sayHandle(id) {
 		replace(szTarget, charsmax(szTarget), ".", " ");
 
 		if (!parse(szTarget, szMinutes, charsmax(szMinutes), szSeconds, charsmax(szSeconds))) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_СT", prefix);
+			chat_print(id, "%L", id, "NOT_SET_СT");
 			return PLUGIN_HANDLED;
 		}
 
 		if (!szMinutes[0] || !szSeconds[0]) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_СT", prefix);
+			chat_print(id, "%L", id, "NOT_SET_СT");
 			return PLUGIN_HANDLED;
 		}
 
@@ -137,12 +137,12 @@ public sayHandle(id) {
 		new seconds = str_to_num(szSeconds);
 
 		if (seconds >= 60) {
-			client_print_color(id, print_team_blue, "%L", id, "NOT_SET_СT", prefix);
+			chat_print(id, "%L", id, "NOT_SET_СT");
 			return PLUGIN_HANDLED;
 		}
 
 		g_flSidesTime[!g_iCurrentSW] = (float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
-		client_print_color(0, print_team_blue, "%L", 0, "SER_TIME_CT", prefix, id, szMinutes, szSeconds);
+		chat_print(0, "%L", 0, "SER_TIME_CT", id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
 	}
 

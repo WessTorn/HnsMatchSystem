@@ -9,7 +9,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.2.4.1", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.2.4.2", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -60,6 +60,7 @@ public taskDelayedMode() {
 
 	get_knife_map(knifemap, charsmax(knifemap));
 	get_prefix(prefix, charsmax(prefix));
+	format(prefix, charsmax(prefix), "%s", prefix);
 }
 
 public registerMode() {

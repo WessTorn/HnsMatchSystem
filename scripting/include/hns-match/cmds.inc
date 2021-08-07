@@ -62,7 +62,7 @@ public blockCmd(id) {
 public cmdShowKnife(id) {
 	g_bOnOff[id] = !g_bOnOff[id];
 
-	client_print_color(id, print_team_blue, "%L", id, "SHOW_KNIFE", prefix, g_bOnOff[id] ? "^3in" : "^3");
+	chat_print(id, "%L", id, "SHOW_KNIFE", g_bOnOff[id] ? "^3in" : "^3");
 
 	if (!is_user_alive(id))
 		return PLUGIN_HANDLED;
@@ -87,10 +87,10 @@ public cmdPubMode(id) {
 	if (g_iCurrentMode != e_mPublic) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
 			taskPrepareMode(e_mPublic);
-			client_print_color(0, print_team_blue, "%L", id, "PUB_ACTIVATED", prefix, getUserName(id));
+			chat_print(0, "%L", id, "PUB_ACTIVATED", getUserName(id));
 		}
 	} else {
-		client_print_color(id, print_team_blue, "%L", id, "PUB_ALREADY", prefix, getUserName(id));
+		chat_print(id, "%L", id, "PUB_ALREADY", getUserName(id));
 	}
 
 	if (containi(g_eMatchInfo[e_mMapName], "boost") != -1) {
@@ -111,11 +111,11 @@ public cmdDMMode(id) {
 	if (g_iCurrentMode != e_mDM) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
 			taskPrepareMode(e_mDM);
-			client_print_color(0, print_team_blue, "%L", id, "DM_ACTIVATED", prefix, getUserName(id));
+			chat_print(0, "%L", id, "DM_ACTIVATED", getUserName(id));
 		}
 	} else {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
-			client_print_color(id, print_team_blue, "%L", id, "DM_ALREADY", prefix, getUserName(id));
+			chat_print(id, "%L", id, "DM_ALREADY", getUserName(id));
 		}
 	}
 
@@ -134,7 +134,7 @@ public cmdTransferSpec(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "TRANSF_SPEC", prefix, getUserName(id));
+	chat_print(0, "%L", id, "TRANSF_SPEC", getUserName(id));
 	transferUsers(TEAM_SPECTATOR);
 	return PLUGIN_HANDLED;
 }
@@ -143,7 +143,7 @@ public cmdTransferTT(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "TRANSF_TT", prefix, getUserName(id));
+	chat_print(0, "%L", id, "TRANSF_TT", getUserName(id));
 	transferUsers(TEAM_TERRORIST);
 	return PLUGIN_HANDLED;
 }
@@ -152,7 +152,7 @@ public cmdTransferCT(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "TRANSF_CT", prefix, getUserName(id));
+	chat_print(0, "%L", id, "TRANSF_CT", getUserName(id));
 	transferUsers(TEAM_CT);
 	return PLUGIN_HANDLED;
 }
@@ -162,13 +162,13 @@ public cmdStartRound(id) {
 		return;
 
 	if (g_iCurrentMode != e_mTraining) {
-		client_print_color(id, print_team_blue, "%L", id, "NOT_START_MIX", prefix);
+		chat_print(id, "%L", id, "NOT_START_MIX");
 		return;
 	} else {
 		if (equali(g_eMatchInfo[e_mMapName], knifemap))
 			return;
 
-		client_print_color(0, print_team_blue, "%L", id, "START_MIX", prefix, getUserName(id));
+		chat_print(0, "%L", id, "START_MIX", getUserName(id));
 		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
 
 		#if defined USE_PTS
@@ -192,7 +192,6 @@ stock pfStartMatch() {
 	set_task(2.5, "taskPrepareMode", e_mMatch);
 	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "Going Live in 3 second!");
 	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "Live! Live! Live!^nGood Luck & Have Fun!");
-	client_print_color(0, print_team_blue, "Я тут 2");
 }
 
 public cmdKnifeRound(id) {
@@ -200,7 +199,7 @@ public cmdKnifeRound(id) {
 		return;
 	
 	if (g_iCurrentMode != e_mTraining) {
-		client_print_color(id, print_team_blue, "%L", id, "NOT_START_KNIFE", prefix);
+		chat_print(id, "%L", id, "NOT_START_KNIFE");
 		return;
 	} else {
 		pfKnifeRound(id);
@@ -213,7 +212,7 @@ stock pfKnifeRound(id) {
 	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "Knife Round Started");
 
 	if (id)
-		client_print_color(0, print_team_blue, "%L", id, "START_KNIFE", prefix, getUserName(id));
+		chat_print(0, "%L", id, "START_KNIFE", getUserName(id));
 
 	return;
 }
@@ -263,7 +262,7 @@ public cmdStop(id) {
 
 	switch (g_iCurrentMode) {
 		case e_mPaused, e_mMatch: {
-			client_print_color(0, print_team_blue, "%L", id, "STOP_MIX", prefix, getUserName(id));
+			chat_print(0, "%L", id, "STOP_MIX", getUserName(id));
 			g_bGameStarted = false;
 			g_bLastRound = false;
 			g_bSurvival = false;
@@ -271,18 +270,18 @@ public cmdStop(id) {
 			g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
 		}
 		case e_mKnife: {
-			client_print_color(0, print_team_blue, "%L", id, "STOP_KNIFE", prefix, getUserName(id));
+			chat_print(0, "%L", id, "STOP_KNIFE", getUserName(id));
 		}
 		case e_mCaptain: {
-			client_print_color(0, print_team_blue, "%L", id, "STOP_CAP", prefix, getUserName(id));
+			chat_print(0, "%L", id, "STOP_CAP", getUserName(id));
 			resetCaptainData();
 			return;
 		}
 		case e_mPublic: {
-			client_print_color(0, print_team_blue, "%L", id, "STOP_PUB", prefix, getUserName(id));
+			chat_print(0, "%L", id, "STOP_PUB", getUserName(id));
 		}
 		case e_mDM: {
-			client_print_color(0, print_team_blue, "%L", id, "STOP_DM", prefix, getUserName(id));
+			chat_print(0, "%L", id, "STOP_DM", getUserName(id));
 		}
 	}
 	rg_send_audio(0, "fvox/fuzz.wav");
@@ -293,7 +292,7 @@ public cmdSkillMode(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "TYPE_SKILL", prefix, getUserName(id));
+	chat_print(0, "%L", id, "TYPE_SKILL", getUserName(id));
 
 	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 		enableSemiclip(0);
@@ -319,7 +318,7 @@ public cmdBoostMode(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "TYPE_BOOST", prefix, getUserName(id));
+	chat_print(0, "%L", id, "TYPE_BOOST", getUserName(id));
 
 	if (g_iCurrentMode == e_mMatch) {
 		set_cvar_num("mp_freezetime", 15);
@@ -336,7 +335,7 @@ public cmdAa10(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "AA_10", prefix, getUserName(id));
+	chat_print(0, "%L", id, "AA_10", getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 10);
 	set_aa_mode(10);
@@ -348,7 +347,7 @@ public cmdAa100(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "AA_100", prefix, getUserName(id));
+	chat_print(0, "%L", id, "AA_100", getUserName(id));
 
 	set_cvar_num("sv_airaccelerate", 100);
 	set_aa_mode(100);
@@ -360,7 +359,7 @@ public cmdRestartRound(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "GAME_RESTART", prefix, getUserName(id));
+	chat_print(0, "%L", id, "GAME_RESTART", getUserName(id));
 	restartRound();
 	removeHook(id);
 
@@ -374,7 +373,7 @@ public cmdSwapTeams(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	client_print_color(0, print_team_blue, "%L", id, "GAME_SWAP", prefix, getUserName(id));
+	chat_print(0, "%L", id, "GAME_SWAP", getUserName(id));
 
 	restartRound();
 	rg_swap_all_players();
@@ -414,7 +413,7 @@ public cmdStartPause(id) {
 			g_bGameStarted = false;
 		} else {
 			if (id)
-				client_print_color(id, print_team_blue,  "%L", id, "GAME_NOTSTARTED", prefix);
+				chat_print(id,  "%L", id, "GAME_NOTSTARTED");
 		}
 
 		get_players(iPlayers, iNum, "ac");
@@ -429,7 +428,7 @@ public cmdStartPause(id) {
 		set_task(1.0, "taskHudPaused", .flags = "b");
 
 		if (id) {
-			client_print_color(0, print_team_blue, "%L", id, "GAME_PAUSED", prefix, getUserName(id));
+			chat_print(0, "%L", id, "GAME_PAUSED", getUserName(id));
 		}
 
 		rg_send_audio(0, "fvox/deactivated.wav");
@@ -454,7 +453,7 @@ public cmdStopPause(id) {
 		g_iCurrentMode = e_mMatch;
 
 		if (id) {
-			client_print_color(0, print_team_blue, "%L", id, "GAME_UNPAUSED", prefix, getUserName(id));
+			chat_print(0, "%L", id, "GAME_UNPAUSED", getUserName(id));
 		}
 
 		rg_send_audio(0, "fvox/activated.wav");
@@ -489,11 +488,11 @@ public cmdMrMode(id) {
 
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 		if (g_iCurrentRules != e_mMR) {
-			client_print_color(0, print_team_blue, "%L", id, "MR_ACTIVATED", prefix, id);
+			chat_print(0, "%L", id, "MR_ACTIVATED", id);
 			set_rules_mode(1);
 			g_iCurrentRules = e_mMR;
 		} else {
-			client_print_color(id, print_team_blue, "%L", id, "MR_ALREADY", prefix, id);
+			chat_print(id, "%L", id, "MR_ALREADY", id);
 		}
 	}
 	return PLUGIN_HANDLED
@@ -505,11 +504,11 @@ public cmdTimerMode(id) {
 
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 		if (g_iCurrentRules != e_mTimer) {
-			client_print_color(0, print_team_blue, "%L", id, "TIMER_ACTIVATED", prefix, id);
+			chat_print(0, "%L", id, "TIMER_ACTIVATED", id);
 			set_rules_mode(2);
 			g_iCurrentRules = e_mTimer;
 		} else {
-			client_print_color(id, print_team_blue, "%L", id, "TIMER_ALREADY", prefix, id);
+			chat_print(id, "%L", id, "TIMER_ALREADY", id);
 		}
 	}
 	return PLUGIN_HANDLED
@@ -531,7 +530,7 @@ public cmdSurrender(id) {
 	if (g_eSurrenderData[e_sFlDelay] > get_gametime()) {
 		new szTime[24];
 		fnConvertTime(g_eSurrenderData[e_sFlDelay] - get_gametime(), szTime, 23, false);
-		client_print_color(id, print_team_blue, "%L", id, "SUR_WAIT", prefix, szTime);
+		chat_print(id, "%L", id, "SUR_WAIT", szTime);
 		return;
 	}
 
@@ -544,7 +543,7 @@ public cmdSurrender(id) {
 	g_eSurrenderData[e_sStarted] = true;
 	g_eSurrenderData[e_sInitiator] = id;
 	g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
-	client_print_color(0, print_team_blue, "%L", id, "SUR_PLAYER", prefix, id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
+	chat_print(0, "%L", id, "SUR_PLAYER", id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -588,17 +587,17 @@ public cmdShowTimers(id) {
 			fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
 			fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
 			if (!g_iCurrentSW) {
-				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR1",
+				chat_print(id, "%L", 0, "SCORE_TIME_MR1",
 					timeToWin[0], TTsize, CTSize, timeToWin[1],
 					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 			} else {
-				client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME_MR2",
+				chat_print(id, "%L", 0, "SCORE_TIME_MR2",
 					timeToWin[1], TTsize, CTSize, timeToWin[0],
 					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 			}
 		}
 	} else {
-		client_print_color(id, print_team_blue, "%L", id, "SCORE_NOT", prefix);
+		chat_print(id, "%L", id, "SCORE_NOT");
 	}
 }
 
@@ -639,14 +638,14 @@ public cmdTeamSpec(id) {
 public cmdNoplay(id) {
 	if (!g_bNoplay[id]) {
 		g_bNoplay[id] = true;
-		client_print_color(0, print_team_blue, "%L", id, "STATUS_NOPLAY", prefix, getUserName(id));
+		chat_print(0, "%L", id, "STATUS_NOPLAY", getUserName(id));
 	}
 }
 
 public cmdPlay(id) {
 	if (g_bNoplay[id]) {
 		g_bNoplay[id] = false;
-		client_print_color(0, print_team_blue, "%L", id, "STATUS_PLAY", prefix, getUserName(id));
+		chat_print(0, "%L", id, "STATUS_PLAY", getUserName(id));
 	}
 }
 
@@ -661,21 +660,23 @@ public cmdClipMode(id) {
 		return PLUGIN_HANDLED
 	}
 	if(!is_user_alive(id))  {
-		client_print_color(id, print_team_blue, "%L", id, "TRAINING_NOTALIVE", prefix)
+		chat_print(id, "%L", id, "TRAINING_NOTALIVE")
 		return PLUGIN_HANDLED
 	} else {
 		if(!get_user_noclip(id))
 			set_user_noclip(id, 1);
 		else
 			set_user_noclip(id, 0);
-		client_print_color(id, print_team_blue, "%s No Clip ^3%sabled!", prefix, get_user_noclip(id) ? "en" : "dis");
+		chat_print(id, "%s No Clip ^3%sabled!", get_user_noclip(id) ? "en" : "dis");
 	}
 	return PLUGIN_HANDLED;
 }
 
 public cmdRespawn(id) {
-	if (g_iCurrentMode == e_mTraining) {
-		rg_round_respawn(id);
+	if (getUserTeam(id) != TEAM_SPECTATOR) {
+		if (g_iCurrentMode == e_mTraining) {
+			rg_round_respawn(id);
+		}
 	}
 }
 

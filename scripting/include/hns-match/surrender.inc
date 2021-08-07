@@ -50,7 +50,7 @@ public taskSurrender() {
 	if (g_eSurrenderData[e_sFlTime] == get_vote_time()) {
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
-			client_print_color(iPlayer, print_team_blue, "%L", id, "SUR_NEED", prefix, g_eMatchInfo[e_mTeamSizeTT], g_eMatchInfo[e_mTeamSizeTT]);
+			chat_print(iPlayer, "%L", id, "SUR_NEED", g_eMatchInfo[e_mTeamSizeTT], g_eMatchInfo[e_mTeamSizeTT]);
 		}
 		resetSurrenderData();
 		return;
@@ -121,8 +121,8 @@ resetSurrenderData() {
 }
 
 autoLose(TeamName:iTeam) {
-	client_print_color(0, print_team_blue, "%L", 0, "SUR_END", prefix, iTeam == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
-	client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
+	chat_print(0, "%L", 0, "SUR_END", iTeam == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
+	chat_print(0, "%L", 0, "SHOW_TOP");
 
 	#if defined USE_PTS
 		if (iTeam == TEAM_TERRORIST)

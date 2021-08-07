@@ -21,7 +21,7 @@ public EventDeathMsg() {
 			new lucky = GetRandomCT();
 			if(lucky) {
 				rg_set_user_team(lucky, TEAM_TERRORIST);
-				client_print_color(lucky, print_team_blue, "%L", lucky, "DM_TRANSF", prefix)
+				chat_print(lucky, "%L", lucky, "DM_TRANSF")
 				rg_set_user_team(victim, TEAM_CT);
 				setUserRole(lucky);
 			}

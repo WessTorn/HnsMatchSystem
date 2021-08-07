@@ -33,7 +33,7 @@ public taskCheckAfk() {
 
 	if (iPlayersAfk) {
 		cmdStartPause(0);
-		client_print_color(0, print_team_blue, "%L", 0, "AFK_PAUSE", prefix, iPlayersAfk);
+		chat_print(0, "%L", 0, "AFK_PAUSE", iPlayersAfk);
 		set_task(1.0, "taskAfk", .flags = "b");
 	}
 }
@@ -75,7 +75,7 @@ public taskAfk() {
 
 	if (!iPlayersAfk) {
 		cmdStopPause(0);
-		client_print_color(0, print_team_blue, "%L", 0, "AFK_UNPAUSE", prefix);
+		chat_print(0, "%L", 0, "AFK_UNPAUSE");
 	} else {
 		set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.15, .y = 0.20, .holdtime = 1.0);
 		ShowSyncHudMsg(0, g_MsgSync, "%s", szBuffer);

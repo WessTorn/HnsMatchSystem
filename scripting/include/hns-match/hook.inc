@@ -260,15 +260,15 @@ public taskRoundEvent() {
 
 				new szTime[24];
 				fnConvertTime(flTimeDiff, szTime, 23, false);
-				client_print_color(0, print_team_blue, "%L", 0, "TT_WIN", prefix, szTime);
-				client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
+				chat_print(0, "%L", 0, "TT_WIN", szTime);
+				chat_print(0, "%L", 0, "SHOW_TOP");
 
 				#if defined USE_PTS
 					if (g_flMatchDelay > get_gametime()) {
-						client_print_color(0, print_team_blue, "^3Not pts (mix time < 10 min)");
+						chat_print(0, "^3Not pts (mix time < 10 min)");
 					} else {
 						if (get_num_players_in_match() < 5) {
-							client_print_color(0, print_team_blue, "^3Not pts (Players <= 5");
+							chat_print(0, "^3Not pts (Players <= 5");
 						} else {
 							hns_set_pts_tt();
 						}
@@ -311,15 +311,15 @@ public MixFinishedMR(iWinTeam) {
 	new Float:TimeDiff = floatabs(g_flSidesTime[g_iCurrentSW] - g_flSidesTime[!g_iCurrentSW]);
 	new szTime[24];
 	fnConvertTime(TimeDiff, szTime, 23);
-	client_print_color(0, print_team_blue, "%L", 0, "MR_WIN", prefix, iWinTeam == 1 ? "TT" : "CT", szTime);
-	client_print_color(0, print_team_blue, "%L", 0, "SHOW_TOP", prefix);
+	chat_print(0, "%L", 0, "MR_WIN", iWinTeam == 1 ? "TT" : "CT", szTime);
+	chat_print(0, "%L", 0, "SHOW_TOP");
 
 	#if defined USE_PTS
 		if (g_flMatchDelay > get_gametime()) {
-			client_print_color(0, print_team_blue, "^3Not pts (mix time < 10 min)");
+			chat_print(0, "^3Not pts (mix time < 10 min)");
 		} else {
 			if (get_num_players_in_match() < 5) {
-				client_print_color(0, print_team_blue, "^3Not pts (Players <= 5");
+				chat_print(0, "^3Not pts (Players <= 5");
 			} else {
 				if (iWinTeam == 1)
 					hns_set_pts_tt();

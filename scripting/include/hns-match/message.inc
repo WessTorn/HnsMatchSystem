@@ -147,6 +147,6 @@ public handlePlayMenu(id, iMenu, item) {
 	
 	switch (item) {
 		case 0: cmdPlay(id);
-		case 1: client_print_color(0, print_team_blue, "%L", id, "STATUS_NOPLAY", prefix, getUserName(id));
+		case 1: chat_print(0, "%L", id, "STATUS_NOPLAY", getUserName(id));
 	}
 }

@@ -73,10 +73,10 @@ public fwdGameNameDesc() {
 
 public fwdClientKill(id) {
 	if (g_iCurrentMode == e_mDM) {
-		client_print_color(0, print_team_blue, "%L", id, "KILL_NOT", prefix);
+		chat_print(0, "%L", id, "KILL_NOT");
 		return FMRES_SUPERCEDE;
 	} else {
-		client_print_color(0, print_team_blue, "%L", id, "KILL_HIMSELF", prefix, getUserName(id));
+		chat_print(0, "%L", id, "KILL_HIMSELF", getUserName(id));
 	}
 	return FMRES_IGNORED;
 }

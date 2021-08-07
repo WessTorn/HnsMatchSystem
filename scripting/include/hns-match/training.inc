@@ -7,21 +7,21 @@ new bool:flCheckpointAlternate[33];
 
 stock checkPoint(id) {
 	if(!is_user_alive(id)) {
-		client_print_color(id, print_team_blue, "%L", id, "CP_NOTALIVE", prefix);
+		chat_print(id, "%L", id, "CP_NOTALIVE");
 	} else {
 		get_entvar(id, var_origin, flCheckpoints[id][flCheckpointAlternate[id] ? 1 : 0]);
 		get_entvar(id, var_v_angle, flCheckpointAngles[id]);
 		flCheckpointAlternate[id] = !flCheckpointAlternate[id];
-		client_print_color(id, print_team_blue, "%L", id, "CP_SAVE", prefix);
+		chat_print(id, "%L", id, "CP_SAVE");
 	}
 }
 
 stock goCheck(id) {
 	if(!flCheckpoints[id][0][0]) {
-		client_print_color(id, print_team_blue, "%L", id, "CP_NOT", prefix);
+		chat_print(id, "%L", id, "CP_NOT");
 	}
 	if(!is_user_alive(id)) {
-		client_print_color(id, print_team_blue, "%L", id, "CP_NOTALIVE", prefix);
+		chat_print(id, "%L", id, "CP_NOTALIVE");
 	} else {
 		set_entvar(id, var_velocity, Float:{0.0, 0.0, 0.0});
 		set_entvar(id, var_flags, get_entvar(id, var_flags) | FL_DUCKING);
@@ -36,10 +36,10 @@ stock goCheck(id) {
 
 stock stuck(id) {
 	if(!flCheckpoints[id][0][0] || !flCheckpoints[id][1][0]) {
-		client_print_color(id, print_team_blue, "%L", id, "CP_NOTSTUCK", prefix);
+		chat_print(id, "%L", id, "CP_NOTSTUCK");
 	}
 	if(!is_user_alive(id)) {
-		client_print_color(id, print_team_blue, "%L", id, "CP_NOTALIVE", prefix);
+		chat_print(id, "%L", id, "CP_NOTALIVE");
 	} else {
 		set_entvar(id, var_velocity, Float:{0.0, 0.0, 0.0});
 		set_entvar(id, var_flags, get_entvar(id, var_flags) | FL_DUCKING);
@@ -55,12 +55,12 @@ stock stuck(id) {
 
 stock cmdDamade(id) {
 	bDamage[id] = !bDamage[id];
-	client_print_color(id, print_team_blue,"%s Damage show ^3%sabled.", prefix, bDamage[id] ? "en" : "dis");
+	chat_print(id,"%s Damage show ^3%sabled.", bDamage[id] ? "en" : "dis");
 }
 
 stock damageHit(id, Float:damage) {
 	if(bDamage[id]) {
-		client_print_color(id, print_team_blue, "%L", id, "DAMAGE_INFO", prefix, floatround(damage, floatround_ceil));
+		chat_print(id, "%L", id, "DAMAGE_INFO", floatround(damage, floatround_ceil));
 	}
 }
 

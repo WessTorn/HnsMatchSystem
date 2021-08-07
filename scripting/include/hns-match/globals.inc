@@ -6,7 +6,6 @@
 
 #define access ADMIN_MAP
 
-stock prefix[24];
 stock knifemap[24];
 
 enum {

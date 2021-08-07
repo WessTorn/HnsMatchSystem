@@ -91,7 +91,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 					if (get_user_flags(id) & ADMIN_BAN)
 						verifMenu(id);
 					else
-						client_print_color(id, print_team_blue, "%L", id, "HAS_NOT_STOP", prefix);
+						chat_print(id, "%L", id, "HAS_NOT_STOP");
 				}
 			}
 		}
