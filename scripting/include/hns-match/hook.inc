@@ -52,15 +52,15 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 					new players[MAX_PLAYERS], pnum;
 					get_players(players, pnum, "ace", "CT");
 					if (!pnum) {
-						new Float:roundtime = get_round_time() * 60.0;
+						new Float:roundtime = get_pcvar_float(get_round_time()) * 60.0;
 						g_flSidesTime[g_iCurrentSW] += roundtime - g_flRoundTime;
 					}
 				}
 				if (g_bGameStarted) {
 					new iWinTeam = -1;
 					new szTime[24];		
-					new Float:flTimeToWinTT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
-					new Float:flTimeToWinCT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
+					new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
+					new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
 					if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
 						iWinTeam = !g_iCurrentSW;
 					} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {
@@ -283,7 +283,7 @@ public taskRoundEvent() {
 			}
 		}	
 	}
-	if ((g_flRoundTime / 60.0) >= get_round_time()) {
+	if ((g_flRoundTime / 60.0) >= get_pcvar_float(get_round_time())) {
 		if (g_bGameStarted)
 			g_bSurvival = false;
 
@@ -291,8 +291,8 @@ public taskRoundEvent() {
 	}
 	if (g_iCurrentRules == e_mMR) {
 		new iWinTeam = -1;
-		new Float:flTimeToWinTT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
-		new Float:flTimeToWinCT = Float:(get_round_time() * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
+		new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
+		new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
 		if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
 			iWinTeam = !g_iCurrentSW;
 		} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {

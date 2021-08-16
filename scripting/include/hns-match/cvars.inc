@@ -38,7 +38,7 @@ stock cvars_init() {
 }
 
 stock get_round_time() {
-	return float:get_pcvar_float(g_pRoundTime);
+	return g_pRoundTime;
 }
 
 stock set_round_time(str[]) {
@@ -108,8 +108,8 @@ stock set_hp_mode(num) {
 	set_pcvar_num(g_pHpMode, num);
 }
 
-stock get_dm_float() {
-	return float:get_pcvar_float(g_pDMRespawn);
+stock get_dm_resp() {
+	return get_pcvar_num(g_pDMRespawn);
 }
 
 stock get_vote_time() {

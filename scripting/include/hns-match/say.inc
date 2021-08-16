@@ -124,12 +124,12 @@ public sayHandle(id) {
 		replace(szTarget, charsmax(szTarget), ".", " ");
 
 		if (!parse(szTarget, szMinutes, charsmax(szMinutes), szSeconds, charsmax(szSeconds))) {
-			chat_print(id, "%L", id, "NOT_SET_СT");
+			chat_print(id, "%L", id, "NOT_SET_CT");
 			return PLUGIN_HANDLED;
 		}
 
 		if (!szMinutes[0] || !szSeconds[0]) {
-			chat_print(id, "%L", id, "NOT_SET_СT");
+			chat_print(id, "%L", id, "NOT_SET_CT");
 			return PLUGIN_HANDLED;
 		}
 
@@ -137,7 +137,7 @@ public sayHandle(id) {
 		new seconds = str_to_num(szSeconds);
 
 		if (seconds >= 60) {
-			chat_print(id, "%L", id, "NOT_SET_СT");
+			chat_print(id, "%L", id, "NOT_SET_CT");
 			return PLUGIN_HANDLED;
 		}
 
