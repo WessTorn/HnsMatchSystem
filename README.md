@@ -1,5 +1,7 @@
 ## [README in English](https://github.com/WessTorn/HnsMatchSystem/blob/main/README_ENG.md)
 
+## WessTorn уехал в армию, разработка остановлена. В системе могут быть баги, не успел их исправить.
+
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 

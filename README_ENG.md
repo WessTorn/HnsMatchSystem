@@ -1,6 +1,8 @@
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
+## WessTorn left for the army, development stopped. There may be bugs in the system, did not have time to fix them.
+
 ## Add pts
 https://github.com/OpenHNS/HnsMatchSystem-additions PTS
 

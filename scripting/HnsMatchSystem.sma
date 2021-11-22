@@ -9,10 +9,9 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.2.4.3", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.2.4.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
-
 
 	cvars_init();
 
@@ -21,10 +20,11 @@ public plugin_init() {
 	hookOnOff_init();
 	cmds_init();
 	hook_init();
-	event_init();
 	ham_init();
 	forward_init();
 	message_init();
+
+	register_event("DeathMsg", "EventDeathMsg", "a");
 
 	set_task(0.5, "taskDelayedMode");
 
@@ -40,6 +40,8 @@ public plugin_init() {
 }
 
 public taskDelayedMode() {
+	get_knife_map(knifemap, charsmax(knifemap));
+
 	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 		taskPrepareMode(e_mTraining);
 	} else if (get_last_mode() == 0) {
@@ -58,7 +60,6 @@ public taskDelayedMode() {
 		g_iCurrentRules = e_mTimer;		
 	}
 
-	get_knife_map(knifemap, charsmax(knifemap));
 	get_prefix(prefix, charsmax(prefix));
 	format(prefix, charsmax(prefix), "%s", prefix);
 }
@@ -165,6 +166,52 @@ public client_disconnected(id) {
 	statsSetArray(id);
 }
 
+public EventDeathMsg() {
+	if (g_iCurrentMode != e_mDM) {
+		return;
+	}
+
+	new killer = read_data(1);
+	new victim = read_data(2);
+	
+	if(killer == 0)  {
+		if(getUserTeam(victim) == TEAM_TERRORIST) {
+			new lucky = GetRandomCT();
+			if(lucky) {
+				rg_set_user_team(lucky, TEAM_TERRORIST);
+				chat_print(lucky, "%L", lucky, "DM_TRANSF")
+				rg_set_user_team(victim, TEAM_CT);
+				setUserRole(lucky);
+			}
+		}
+	} else if(killer != victim && getUserTeam(killer) == TEAM_CT) {
+		rg_set_user_team(killer, TEAM_TERRORIST); 
+		rg_set_user_team(victim, TEAM_CT); 
+		
+		setUserRole(killer);
+	}
+	
+	set_task(float(get_dm_resp()), "RespawnPlayer", victim);
+}
+
+public RespawnPlayer(id) {
+	if (!is_user_connected(id))
+		return;
+	
+	if (getUserTeam(id) != TEAM_SPECTATOR)
+		rg_round_respawn(id);
+}
+
+GetRandomCT() {
+	static iPlayers[32], iCTNum
+	get_players(iPlayers, iCTNum, "ache", "CT");
+		
+	if(!iCTNum)
+		return 0
+		
+	return iCTNum > 1 ? iPlayers[random(iCTNum)] : iPlayers[iCTNum - 1];
+}
+
 public is_hooked(id) {
 	return g_bHooked[id];
 }
@@ -219,7 +266,7 @@ public taskPrepareMode(mode) {
 			get_players(iPlayers, iNum, "e", "TERRORIST");
 			g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
-			fnConvertTime(float(get_cap_time()) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
+			fnConvertTime(get_pcvar_float(get_cap_time()) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
 			rg_send_audio(0, "sound/barney/ba_bring.wav");
 
 			addStats();

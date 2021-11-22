@@ -249,7 +249,7 @@ public taskRoundEvent() {
 		}
 
 		if (g_iCurrentRules == e_mTimer) {
-			if (g_flSidesTime[g_iCurrentSW] >= float(get_cap_time()) * 60.0) {
+			if (g_flSidesTime[g_iCurrentSW] >= get_pcvar_float(get_cap_time()) * 60.0) {
 				g_bGameStarted = false;
 				g_bSurvival = false;
 				new Float:flTimeDiff;
