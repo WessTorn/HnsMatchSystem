@@ -266,7 +266,7 @@ public taskPrepareMode(mode) {
 			get_players(iPlayers, iNum, "e", "TERRORIST");
 			g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
-			fnConvertTime(get_pcvar_float(get_cap_time()) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
+			fnConvertTime(get_cap_time() * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
 			rg_send_audio(0, "sound/barney/ba_bring.wav");
 
 			addStats();

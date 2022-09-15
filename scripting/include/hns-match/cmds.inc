@@ -555,8 +555,8 @@ public cmdSurrender(id) {
 public cmdShowTimers(id) {
 	if (g_bGameStarted || g_iCurrentMode == e_mPaused) {
 		new timeToWin[2][24];
-		fnConvertTime((get_pcvar_float(get_cap_time()) * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
-		fnConvertTime((get_pcvar_float(get_cap_time()) * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
+		fnConvertTime((get_cap_time() * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
+		fnConvertTime((get_cap_time() * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
 		
 		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
 		get_players(iPlayers, TTsize, "ce", "TERRORIST");

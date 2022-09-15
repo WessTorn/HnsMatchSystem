@@ -104,7 +104,7 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 		}
 
-		g_flSidesTime[!g_iCurrentSW] = (get_pcvar_float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
+		g_flSidesTime[!g_iCurrentSW] = (get_cap_time() - (minutes + (seconds / 60.0))) * 60.0;
 		chat_print(0, "%L", 0, "SER_TIME_TT", id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
 	}
@@ -141,7 +141,7 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 		}
 
-		g_flSidesTime[!g_iCurrentSW] = (get_pcvar_float(get_cap_time()) - (minutes + (seconds / 60.0))) * 60.0;
+		g_flSidesTime[!g_iCurrentSW] = (get_cap_time() - (minutes + (seconds / 60.0))) * 60.0;
 		chat_print(0, "%L", 0, "SER_TIME_CT", id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
 	}
