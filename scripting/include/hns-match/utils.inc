@@ -11,7 +11,7 @@ stock chat_print(const id, const message[], any:...) {
 
 	vformat(msgFormated, charsmax(msgFormated), message, 3);
 
-	if (equali(prefix, ""))
+	if (!prefix[0])
         client_print_color(id, print_team_blue, "%s", msgFormated);
 	else
 		client_print_color(id, print_team_blue, "[^3%s^1] %s", prefix, msgFormated);
