@@ -18,7 +18,7 @@ static g_pPrefix;
 
 stock cvars_init() {
 	g_pRoundTime = get_cvar_pointer("mp_roundtime");
-	
+
 	g_pCapTime			= register_cvar("hns_wintime", "15", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pMaxRounds		= register_cvar("hns_rounds", "6", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pFlashNum			= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);

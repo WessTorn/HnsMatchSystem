@@ -10,7 +10,7 @@ stock message_init() {
 	register_message(get_user_msgid("VGUIMenu"), "msgVguiMenu");
 	register_message(get_user_msgid("HideWeapon"), "msgHideWeapon");
 
-	set_msg_block(get_user_msgid("HudTextArgs"), BLOCK_SET); 
+	set_msg_block(get_user_msgid("HudTextArgs"), BLOCK_SET);
 }
 
 public msgHostagePos(msgid, dest, id) {
@@ -126,7 +126,7 @@ stock bool:checkPlayer(id) {
 public taskPlay(id) {
 	if (!is_user_connected(id))
 		return;
-	
+
 	new iMenu = menu_create("\rYou play?", "handlePlayMenu");
 
 	menu_additem(iMenu, "Yes");
@@ -144,7 +144,7 @@ public handlePlayMenu(id, iMenu, item) {
 		return;
 
 	menu_destroy(iMenu);
-	
+
 	switch (item) {
 		case 0: cmdPlay(id);
 		case 1: chat_print(0, "%L", id, "STATUS_NOPLAY", getUserName(id));

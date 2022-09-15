@@ -31,7 +31,7 @@ public task_MainThink() {
 
 	if (g_bFreezePeriod)
 		return;
-	
+
 	new TTPlayers[32], iTTNum;
 	get_players(TTPlayers, iTTNum, "ache", "TERRORIST");
 	new CTPlayers[32], iCTNum;
@@ -116,10 +116,10 @@ public apply_stats() {
 public task_ShowPlayerInfo() {
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum);
-	
+
 	for(new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
-		
+
 		if(is_user_alive(iPlayer)) {
 			if(g_iCurrentMode == e_mMatch) {
 				new szTime[24];
@@ -129,13 +129,13 @@ public task_ShowPlayerInfo() {
 			}
 			continue;
 		}
-		
+
 		for(new j = 1; j <= MaxClients; j++) {
 			new id = j;
-			
+
 			if(!is_user_alive(id))
 				continue;
-			
+
 			if(get_entvar(iPlayer, var_iuser2) == id) {
 				new szTime[24], szBuffer[64];
 				new szTimeFlash[24], szBuffer2[64];
@@ -208,7 +208,7 @@ public ShowTop(player) {
 			for (new j = 0; j < 10; j++) {
 				if (flBestTime[j] < flBestTime[i]) {
 					new Float:flTmp = flBestTime[i];
-					new szTmpAuth[MAX_AUTHID_LENGTH]; 
+					new szTmpAuth[MAX_AUTHID_LENGTH];
 					copy(szTmpAuth, charsmax(szTmpAuth), g_iBestAuth[i]);
 					flBestTime[i] = flBestTime[j];
 					flBestTime[j] = flTmp;

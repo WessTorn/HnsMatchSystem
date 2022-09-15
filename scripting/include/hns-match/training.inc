@@ -45,7 +45,7 @@ stock stuck(id) {
 		set_entvar(id, var_flags, get_entvar(id, var_flags) | FL_DUCKING);
 		engfunc(EngFunc_SetOrigin, id, flCheckpoints[id][flCheckpointAlternate[id]]);
 		flCheckpointAlternate[id] = !flCheckpointAlternate[id];
-		
+
 		if(g_bSaveAngles[id]) {
 			set_entvar(id, var_angles, flCheckpointAngles[id]);
 			set_entvar(id, var_fixangle, 1);
