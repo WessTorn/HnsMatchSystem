@@ -9,7 +9,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.2.4.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.2.4.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -57,7 +57,7 @@ public taskDelayedMode() {
 	if(get_rules_mode() == 1) {
 		g_iCurrentRules = e_mMR;
 	} else {
-		g_iCurrentRules = e_mTimer;		
+		g_iCurrentRules = e_mTimer;
 	}
 
 	get_prefix(prefix, charsmax(prefix));
@@ -173,7 +173,7 @@ public EventDeathMsg() {
 
 	new killer = read_data(1);
 	new victim = read_data(2);
-	
+
 	if(killer == 0)  {
 		if(getUserTeam(victim) == TEAM_TERRORIST) {
 			new lucky = GetRandomCT();
@@ -185,19 +185,19 @@ public EventDeathMsg() {
 			}
 		}
 	} else if(killer != victim && getUserTeam(killer) == TEAM_CT) {
-		rg_set_user_team(killer, TEAM_TERRORIST); 
-		rg_set_user_team(victim, TEAM_CT); 
-		
+		rg_set_user_team(killer, TEAM_TERRORIST);
+		rg_set_user_team(victim, TEAM_CT);
+
 		setUserRole(killer);
 	}
-	
+
 	set_task(float(get_dm_resp()), "RespawnPlayer", victim);
 }
 
 public RespawnPlayer(id) {
 	if (!is_user_connected(id))
 		return;
-	
+
 	if (getUserTeam(id) != TEAM_SPECTATOR)
 		rg_round_respawn(id);
 }
@@ -205,10 +205,10 @@ public RespawnPlayer(id) {
 GetRandomCT() {
 	static iPlayers[32], iCTNum
 	get_players(iPlayers, iCTNum, "ache", "CT");
-		
+
 	if(!iCTNum)
 		return 0
-		
+
 	return iCTNum > 1 ? iPlayers[random(iCTNum)] : iPlayers[iCTNum - 1];
 }
 
@@ -285,7 +285,7 @@ public taskPrepareMode(mode) {
 			set_flash_num(1);
 			set_last_mode(2);
 			enableSemiclip(3);
-		} 
+		}
 		case e_mCaptain: {
 			g_iCurrentMode = e_mCaptain;
 			server_cmd("exec %s/captain.cfg", szPath);
