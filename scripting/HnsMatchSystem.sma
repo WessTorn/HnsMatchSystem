@@ -298,7 +298,7 @@ public taskPrepareMode(mode) {
 public plugin_cfg() {
 	new szPath[PLATFORM_MAX_PATH];
 	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
-	formatex(szPath, charsmax(szPath), "%s/mixsystem/%s", szPath, "matchsystem.cfg");
+	format(szPath, charsmax(szPath), "%s/mixsystem/%s", szPath, "matchsystem.cfg");
 	server_cmd("exec %s", szPath);
 }
 
@@ -376,7 +376,7 @@ fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
 		formatex(szTemp, charsmax(szTemp), "%02i:%02.0f", iMinutes, flSeconds);
 	}
 
-	formatex(convert_time, len, szTemp);
+	formatex(convert_time, len, "%s", szTemp);
 
 	return (PLUGIN_HANDLED);
 }
