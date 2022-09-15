@@ -137,11 +137,6 @@ public PDS_Save() {
 	}
 }
 
-public plugin_end() {
-	TrieDestroy(g_tPlayerInfo);
-	ArrayDestroy(g_aPlayersLoadData);
-}
-
 public client_putinserver(id) {
 	g_bOnOff[id] = false;
 
