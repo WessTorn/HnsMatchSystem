@@ -23,7 +23,7 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 			statsApply();
 		}
 	}
-	
+
 	if (event == ROUND_TARGET_SAVED || event == ROUND_HOSTAGE_NOT_RESCUED) {
 		SetHookChainArg(1, ATYPE_INTEGER, WINSTATUS_TERRORISTS);
 		SetHookChainArg(2, ATYPE_INTEGER, ROUND_TERRORISTS_ESCAPED);
@@ -58,7 +58,7 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 				}
 				if (g_bGameStarted) {
 					new iWinTeam = -1;
-					new szTime[24];		
+					new szTime[24];
 					new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
 					new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
 					if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
@@ -243,13 +243,13 @@ public taskRoundEvent() {
 			new id = iPlayers[i];
 			if (!is_user_alive(id))
 				continue;
-			
+
 			g_ePlayerInfo[id][e_plrSurviveTime] += 0.25;
 			g_eRoundInfo[id][e_flSurviveTime] += 0.25;
 		}
 
 		if (g_iCurrentRules == e_mTimer) {
-			if (g_flSidesTime[g_iCurrentSW] >= get_pcvar_float(get_cap_time()) * 60.0) {
+			if (g_flSidesTime[g_iCurrentSW] >= (get_cap_time() * 60.0)) {
 				g_bGameStarted = false;
 				g_bSurvival = false;
 				new Float:flTimeDiff;
@@ -281,7 +281,7 @@ public taskRoundEvent() {
 				g_bPlayersListLoaded = false;
 				ShowTop(0);
 			}
-		}	
+		}
 	}
 	if ((g_flRoundTime / 60.0) >= get_pcvar_float(get_round_time())) {
 		if (g_bGameStarted)
@@ -408,6 +408,6 @@ public rgPlayerMovePost(const PlayerMove:ppmove, const server) {
 
 	if(g_bHooked[id]) {
 		velocity_by_aim(id, 550, velocity);
-		set_pmove(pm_velocity, velocity);     
+		set_pmove(pm_velocity, velocity);
 	}
 }

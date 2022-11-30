@@ -174,7 +174,7 @@ public cmdStartRound(id) {
 		#if defined USE_PTS
 			g_flMatchDelay = get_gametime() + 600; // Сделать кваром
 		#endif
-			
+
 		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "c");
 		for (new i; i < iNum; i++) {
@@ -197,7 +197,7 @@ stock pfStartMatch() {
 public cmdKnifeRound(id) {
 	if (!getUserInAccess(id))
 		return;
-	
+
 	if (g_iCurrentMode != e_mTraining) {
 		chat_print(id, "%L", id, "NOT_START_KNIFE");
 		return;
@@ -226,7 +226,7 @@ public cmdCaptain(id) {
 
 	if (g_iCurrentMode != e_mTraining)
 		return;
-	
+
 	captainStart(id);
 }
 
@@ -401,7 +401,7 @@ public cmdStartPause(id) {
 
 		if (g_bGameStarted) {
 			g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
-			
+
 			get_players(iPlayers, iNum, "c");
 			for (new i; i < iNum; i++) {
 				new iPlayer = iPlayers[i];
@@ -471,7 +471,7 @@ public cmdStopPause(id) {
 			set_cvar_num("mp_freezetime", 15);
 			disableSemiclip();
 		}
-		
+
 		loadMapCFG();
 
 		if (get_flash_num() == 0)
@@ -555,9 +555,9 @@ public cmdSurrender(id) {
 public cmdShowTimers(id) {
 	if (g_bGameStarted || g_iCurrentMode == e_mPaused) {
 		new timeToWin[2][24];
-		fnConvertTime((get_pcvar_float(get_cap_time()) * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
-		fnConvertTime((get_pcvar_float(get_cap_time()) * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
-		
+		fnConvertTime((get_cap_time() * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
+		fnConvertTime((get_cap_time() * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
+
 		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
 		get_players(iPlayers, TTsize, "ce", "TERRORIST");
 		get_players(iPlayers, CTSize, "ce", "CT");

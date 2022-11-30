@@ -9,7 +9,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	register_plugin("Hide'n'Seek Match System", "1.2.4.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor 
+	register_plugin("Hide'n'Seek Match System", "1.2.4.4", "??"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -57,7 +57,7 @@ public taskDelayedMode() {
 	if(get_rules_mode() == 1) {
 		g_iCurrentRules = e_mMR;
 	} else {
-		g_iCurrentRules = e_mTimer;		
+		g_iCurrentRules = e_mTimer;
 	}
 
 	get_prefix(prefix, charsmax(prefix));
@@ -137,11 +137,6 @@ public PDS_Save() {
 	}
 }
 
-public plugin_end() {
-	TrieDestroy(g_tPlayerInfo);
-	ArrayDestroy(g_aPlayersLoadData);
-}
-
 public client_putinserver(id) {
 	g_bOnOff[id] = false;
 
@@ -173,7 +168,7 @@ public EventDeathMsg() {
 
 	new killer = read_data(1);
 	new victim = read_data(2);
-	
+
 	if(killer == 0)  {
 		if(getUserTeam(victim) == TEAM_TERRORIST) {
 			new lucky = GetRandomCT();
@@ -185,19 +180,19 @@ public EventDeathMsg() {
 			}
 		}
 	} else if(killer != victim && getUserTeam(killer) == TEAM_CT) {
-		rg_set_user_team(killer, TEAM_TERRORIST); 
-		rg_set_user_team(victim, TEAM_CT); 
-		
+		rg_set_user_team(killer, TEAM_TERRORIST);
+		rg_set_user_team(victim, TEAM_CT);
+
 		setUserRole(killer);
 	}
-	
+
 	set_task(float(get_dm_resp()), "RespawnPlayer", victim);
 }
 
 public RespawnPlayer(id) {
 	if (!is_user_connected(id))
 		return;
-	
+
 	if (getUserTeam(id) != TEAM_SPECTATOR)
 		rg_round_respawn(id);
 }
@@ -205,10 +200,10 @@ public RespawnPlayer(id) {
 GetRandomCT() {
 	static iPlayers[32], iCTNum
 	get_players(iPlayers, iCTNum, "ache", "CT");
-		
+
 	if(!iCTNum)
 		return 0
-		
+
 	return iCTNum > 1 ? iPlayers[random(iCTNum)] : iPlayers[iCTNum - 1];
 }
 
@@ -266,7 +261,7 @@ public taskPrepareMode(mode) {
 			get_players(iPlayers, iNum, "e", "TERRORIST");
 			g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
-			fnConvertTime(get_pcvar_float(get_cap_time()) * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
+			fnConvertTime(get_cap_time() * 60.0, g_eMatchInfo[e_mWinTime], charsmax(g_eMatchInfo[e_mWinTime]));
 			rg_send_audio(0, "sound/barney/ba_bring.wav");
 
 			addStats();
@@ -285,7 +280,7 @@ public taskPrepareMode(mode) {
 			set_flash_num(1);
 			set_last_mode(2);
 			enableSemiclip(3);
-		} 
+		}
 		case e_mCaptain: {
 			g_iCurrentMode = e_mCaptain;
 			server_cmd("exec %s/captain.cfg", szPath);
@@ -298,7 +293,7 @@ public taskPrepareMode(mode) {
 public plugin_cfg() {
 	new szPath[PLATFORM_MAX_PATH];
 	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
-	formatex(szPath, charsmax(szPath), "%s/mixsystem/%s", szPath, "matchsystem.cfg");
+	format(szPath, charsmax(szPath), "%s/mixsystem/%s", szPath, "matchsystem.cfg");
 	server_cmd("exec %s", szPath);
 }
 
@@ -376,7 +371,7 @@ fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
 		formatex(szTemp, charsmax(szTemp), "%02i:%02.0f", iMinutes, flSeconds);
 	}
 
-	formatex(convert_time, len, szTemp);
+	formatex(convert_time, len, "%s", szTemp);
 
 	return (PLUGIN_HANDLED);
 }

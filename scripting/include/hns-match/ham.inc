@@ -9,7 +9,7 @@ new iAllocKnifeModel;
 
 stock ham_init() {
 	iAllocKnifeModel = engfunc(EngFunc_AllocString, "models/v_knife.mdl");
-	
+
 	RegisterHam(Ham_Item_Deploy, "weapon_knife", "hamDeployKnife", 1);
 	RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_knife", "hamKnifePrim");
 

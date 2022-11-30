@@ -186,11 +186,11 @@ public settingsMatchMenu(id) {
 
 	new titleFreeztime[64]; formatex(titleFreeztime, 63, "Freezetime: \y%d", get_cvar_num("mp_freezetime"));
 
-	new titleTimeRound[64]; 
-	
-	if (g_iCurrentRules == e_mTimer) 
+	new titleTimeRound[64];
+
+	if (g_iCurrentRules == e_mTimer)
 		formatex(titleTimeRound, 63, "Wintime: \y%d^n", get_cap_time());
-	else 
+	else
 		formatex(titleTimeRound, 63, "Maxrounds: \y%d^n", get_max_rounds());
 
 	new titleHP[64];
@@ -276,7 +276,7 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 		case 4: {
 			if (get_hp_mode() == 100)
 				set_hp_mode(1);
-			else 
+			else
 				set_hp_mode(100);
 
 			settingsMatchMenu(id);
@@ -349,7 +349,7 @@ public verifMenuHandler(id, hMenu, item) {
 public trainingMenu(id) {
 	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
 		return;
-	
+
 	new hMenu = menu_create("\yTrainig menu:", "trainingMenuHandler");
 
 	menu_additem(hMenu, "Checkpoint", "1");
