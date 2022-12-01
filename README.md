@@ -1,7 +1,5 @@
 ## [README in English](https://github.com/WessTorn/HnsMatchSystem/blob/main/README_ENG.md)
 
-## WessTorn уехал в армию, разработка остановлена. В системе могут быть баги, не успел их исправить.
-
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
@@ -22,8 +20,8 @@ https://github.com/OpenHNS/HnsMatchSystem-additions ПТС плагин.
 ## Требование
 - [ReHLDS](https://dev-cs.ru/resources/64/)
 - [Amxmodx 1.9.0](https://dev-cs.ru/resources/405/)
-- [Reapi 5.19 (last)](https://dev-cs.ru/resources/73/updates)
-- [ReGameDLL 5.20 (last)](https://dev-cs.ru/resources/67/updates)
+- [Reapi 5.22 (last)](https://dev-cs.ru/resources/73/updates)
+- [ReGameDLL 5.21 (last)](https://dev-cs.ru/resources/67/updates)
 - [ReSemiclip 2.3.9 (last)](https://dev-cs.ru/resources/71/updates)
 
 ## Характеристики

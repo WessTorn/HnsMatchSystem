@@ -1,8 +1,6 @@
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
-## WessTorn left for the army, development stopped. There may be bugs in the system, did not have time to fix them.
-
 ## Add pts
 https://github.com/OpenHNS/HnsMatchSystem-additions PTS
 
@@ -20,8 +18,8 @@ In order to use PTS you need:
 ## Requirements
 - [ReHLDS](https://dev-cs.ru/resources/64/)
 - [Amxmodx 1.9.0](https://dev-cs.ru/resources/405/)
-- [Reapi 5.19 (last)](https://dev-cs.ru/resources/73/updates)
-- [ReGameDLL 5.20 (last)](https://dev-cs.ru/resources/67/updates)
+- [Reapi 5.22 (last)](https://dev-cs.ru/resources/73/updates)
+- [ReGameDLL 5.21 (last)](https://dev-cs.ru/resources/67/updates)
 - [ReSemiclip 2.3.9 (last)](https://dev-cs.ru/resources/71/updates)
 
 ## Characteristics
