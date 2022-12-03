@@ -46,7 +46,7 @@ stock set_round_time(str[]) {
 }
 
 stock get_cap_time() {
-	get_pcvar_num(g_pCapTime);
+	return get_pcvar_num(g_pCapTime);
 }
 
 stock set_cap_time(num) {
