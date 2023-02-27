@@ -187,11 +187,7 @@ public settingsMatchMenu(id) {
 	new titleFreeztime[64]; formatex(titleFreeztime, 63, "Freezetime: \y%d", get_cvar_num("mp_freezetime"));
 
 	new titleTimeRound[64];
-
-	if (g_iCurrentRules == e_mTimer)
-		formatex(titleTimeRound, 63, "Wintime: \y%d^n", get_cap_time());
-	else
-		formatex(titleTimeRound, 63, "Maxrounds: \y%d^n", get_max_rounds());
+	formatex(titleTimeRound, 63, "Maxrounds: \y%d^n", get_max_rounds());
 
 	new titleHP[64];
 	if (get_hp_mode() == 100)
@@ -251,25 +247,14 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 			settingsMatchMenu(id);
 		}
 		case 3: {
-			if (g_iCurrentRules == e_mTimer) {
-				if (get_cap_time() == 5)
-					set_cap_time(10);
-				else if (get_cap_time() == 10)
-					set_cap_time(15);
-				else if (get_cap_time() == 15)
-					set_cap_time(20);
-				else if (get_cap_time() >= 20)
-					set_cap_time(5);
-			} else {
-				if (get_max_rounds() == 4)
-					set_max_rounds(5);
-				else if (get_max_rounds() == 5)
-					set_max_rounds(6);
-				else if (get_max_rounds() == 6)
-					set_max_rounds(7);
-				else if (get_max_rounds() >= 7)
-					set_max_rounds(4);
-			}
+			if (get_max_rounds() == 4)
+				set_max_rounds(5);
+			else if (get_max_rounds() == 5)
+				set_max_rounds(6);
+			else if (get_max_rounds() == 6)
+				set_max_rounds(7);
+			else if (get_max_rounds() >= 7)
+				set_max_rounds(4);
 
 			settingsMatchMenu(id);
 		}
@@ -390,39 +375,6 @@ public trainingMenuHandler(id, hMenu, item) {
 		case 5: {
 			cmdShowDamage(id);
 			trainingMenu(id);
-		}
-	}
-	return PLUGIN_HANDLED;
-}
-
-public modeSelectMenu(id) {
-	if (!is_user_connected(id) || !getUserInAccess(id) || g_iCurrentMode != e_mTraining)
-		return;
-
-	new hMenu = menu_create("\yChoose game mode", "HandlerSelectMode");
-
-	menu_additem(hMenu, "MR System", "1");
-	menu_additem(hMenu, "Timer", "2");
-
-	menu_setprop(hMenu, MPROP_EXIT, MEXIT_ALL);
-	menu_display(id, hMenu, 0);
-}
-
-public HandlerSelectMode(id, hMenu, item) {
-	if (item == MENU_EXIT) {
-		menu_destroy(hMenu);
-		return PLUGIN_HANDLED;
-	}
-	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	new iKey = str_to_num(szData);
-
-	switch (iKey) {
-		case 1: {
-			cmdMrMode(id);
-		}
-		case 2: {
-			cmdTimerMode(id);
 		}
 	}
 	return PLUGIN_HANDLED;

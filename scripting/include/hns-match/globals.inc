@@ -6,6 +6,8 @@
 
 #define access ADMIN_MAP
 
+new g_PluginId;
+
 stock knifemap[24];
 
 enum {
@@ -18,12 +20,6 @@ enum {
 	e_mDM
 }
 new g_iCurrentMode;
-
-enum MatchMode {
-	e_mTimer,
-	e_mMR
-}
-new MatchMode:g_iCurrentRules = e_mTimer;
 
 enum _:PlayersLoad_s {
 	e_pAuth[24],
@@ -41,19 +37,6 @@ enum _:PlayerInfo_s
 new Trie:g_tPlayerInfo;
 new g_ePlayerInfo[MAX_PLAYERS + 1][PlayerInfo_s];
 
-enum _:RoundInfo_s
-{
-	Float:e_flSurviveTime,
-	Float:e_flDmg,
-	Float:e_flRunDistance,
-	Float:e_flFlashedTime,
-	Float:e_flHideTime,
-	e_iFound,
-	e_iStabs
-};
-
-new g_eRoundInfo[MAX_PLAYERS + 1][RoundInfo_s];
-
 new g_iGameStops;
 
 enum _:CaptainTeam_s {
@@ -65,8 +48,7 @@ new bool:g_bCaptainsBattle;
 
 enum _:MatchInfo_s {
 	e_mMapName[32],
-	e_mTeamSizeTT,
-	e_mWinTime[24]
+	e_mTeamSizeTT
 };
 new g_eMatchInfo[MatchInfo_s];
 
@@ -109,6 +91,17 @@ new g_MsgSync;
 
 new g_iBestAuth[10][MAX_AUTHID_LENGTH];
 
-#if defined USE_PTS
-	new Float:g_flMatchDelay;
-#endif
+// const
+new const sndDenySelect[] = "common/wpn_denyselect.wav";
+new const sndUseSound[] = "buttons/blip1.wav";
+new const szDefaultEntities[][] = {
+	"func_hostage_rescue",
+	"func_bomb_target",
+	"info_bomb_target",
+	"hostage_entity",
+	"info_vip_start",
+	"func_vip_safetyzone",
+	"func_escapezone",
+	"armoury_entity",
+	"monster_scentist"
+}

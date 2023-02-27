@@ -29,7 +29,6 @@ public taskHudMessage(Params[]) {
 	BBB = Params[4];
 	dhud = Params[5];
 	HoldTime = Float:Params[6];
-
 	if (!id || is_user_connected(id)) {
 		if (dhud) {
 			set_dhudmessage(RRR, GGG, BBB, -1.0, 0.2, 0, 0.0, HoldTime, 0.1, 0.1);

@@ -15,7 +15,6 @@ stock cmds_init() {
 	RegisterSayCmd("hideknife", "hknife", "cmdShowKnife");
 
 	RegisterSayCmd("mix", "mix", "mainMatchMenu", access, "Main menu admin");
-	RegisterSayCmd("mode", "type", "modeSelectMenu", access, "Mode menu");
 	RegisterSayCmd("training", "training", "trainingMenu", 0, "Training menu");
 
 	RegisterSayCmd("pub", "public", "cmdPubMode", access, "Public mode");
@@ -35,8 +34,6 @@ stock cmds_init() {
 	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "Swap Teams");
 	RegisterSayCmd("pause", "ps", "cmdStartPause", access, "Start pause");
 	RegisterSayCmd("live", "unpause", "cmdStopPause", access, "Unpause");
-	RegisterSayCmd("mr", "maxround", "cmdMrMode", access, "Max Rounds mode");
-	RegisterSayCmd("timer", "timer", "cmdTimerMode", access, "Timer mode");
 	RegisterSayCmd("surrender", "sur", "cmdSurrender", 0, "Surrender vote");
 	RegisterSayCmd("score", "s", "cmdShowTimers", 0, "Score");
 	RegisterSayCmd("pick", "pick", "cmdPick", 0, "Pick player");
@@ -171,10 +168,6 @@ public cmdStartRound(id) {
 		chat_print(0, "%L", id, "START_MIX", getUserName(id));
 		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
 
-		#if defined USE_PTS
-			g_flMatchDelay = get_gametime() + 600; // Сделать кваром
-		#endif
-
 		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "c");
 		for (new i; i < iNum; i++) {
@@ -190,8 +183,8 @@ stock pfStartMatch() {
 	g_iGameStops = 0;
 	rg_send_audio(0, "plats/elevbell1.wav");
 	set_task(2.5, "taskPrepareMode", e_mMatch);
-	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "Going Live in 3 second!");
-	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "Live! Live! Live!^nGood Luck & Have Fun!");
+	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "%L", "HUD_STARTMIX1");
+	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "%L", "HUD_STARTMIX2");
 }
 
 public cmdKnifeRound(id) {
@@ -209,7 +202,7 @@ public cmdKnifeRound(id) {
 
 stock pfKnifeRound(id) {
 	taskPrepareMode(e_mKnife);
-	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "Knife Round Started");
+	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "%L", "HUD_STARTKNIFE");
 
 	if (id)
 		chat_print(0, "%L", id, "START_KNIFE", getUserName(id));
@@ -252,6 +245,7 @@ public cmdStop(id) {
 			g_bPlayersListLoaded = false;
 			g_bLastRound = false;
 			taskPrepareMode(e_mTraining);
+			ExecuteForward(g_hForwards[MATCH_CANCELED], _);
 			return;
 		}
 
@@ -268,6 +262,7 @@ public cmdStop(id) {
 			g_bSurvival = false;
 			g_bPlayersListLoaded = false;
 			g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
+			ExecuteForward(g_hForwards[MATCH_CANCELED], _);
 		}
 		case e_mKnife: {
 			chat_print(0, "%L", id, "STOP_KNIFE", getUserName(id));
@@ -406,7 +401,7 @@ public cmdStartPause(id) {
 			for (new i; i < iNum; i++) {
 				new iPlayer = iPlayers[i];
 				ResetPlayerRoundData(iPlayer);
-				arrayset(g_eRoundInfo[iPlayer], 0, RoundInfo_s);
+				arrayset(g_eRoundStats[iPlayer], 0, STATS_PLAYER);
 			}
 
 			g_bSurvival = false;
@@ -441,7 +436,7 @@ public cmdStartPause(id) {
 public taskHudPaused() {
 	if (g_iCurrentMode == e_mPaused) {
 		set_dhudmessage(100, 100, 100, -1.0, 0.75, 0, 0.0, 1.01, 0.0, 0.0);
-		show_dhudmessage(0, "GAME PAUSE");
+		show_dhudmessage(0, "%L", "HUD_PAUSE");
 	}
 }
 
@@ -459,7 +454,7 @@ public cmdStopPause(id) {
 		rg_send_audio(0, "fvox/activated.wav");
 		g_bGameStarted = true;
 
-		setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "Game Unpause^nLive Live Live");
+		setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "%L", "HUD_UNPAUSE");
 
 		restartRound();
 		removeHook(id);
@@ -480,38 +475,6 @@ public cmdStopPause(id) {
 
 	server_cmd("sv_alltalk 3"); //  Переделать!
 	return PLUGIN_HANDLED;
-}
-
-public cmdMrMode(id) {
-	if (!getUserInAccess(id))
-		return PLUGIN_HANDLED;
-
-	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
-		if (g_iCurrentRules != e_mMR) {
-			chat_print(0, "%L", id, "MR_ACTIVATED", id);
-			set_rules_mode(1);
-			g_iCurrentRules = e_mMR;
-		} else {
-			chat_print(id, "%L", id, "MR_ALREADY", id);
-		}
-	}
-	return PLUGIN_HANDLED
-}
-
-public cmdTimerMode(id) {
-	if (!getUserInAccess(id))
-		return PLUGIN_HANDLED;
-
-	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
-		if (g_iCurrentRules != e_mTimer) {
-			chat_print(0, "%L", id, "TIMER_ACTIVATED", id);
-			set_rules_mode(2);
-			g_iCurrentRules = e_mTimer;
-		} else {
-			chat_print(id, "%L", id, "TIMER_ALREADY", id);
-		}
-	}
-	return PLUGIN_HANDLED
 }
 
 public cmdSurrender(id) {
@@ -555,46 +518,22 @@ public cmdSurrender(id) {
 public cmdShowTimers(id) {
 	if (g_bGameStarted || g_iCurrentMode == e_mPaused) {
 		new timeToWin[2][24];
-		fnConvertTime((get_cap_time() * 60.0) - g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
-		fnConvertTime((get_cap_time() * 60.0) - g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
+		fnConvertTime(g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
+		fnConvertTime(g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
 
 		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
 		get_players(iPlayers, TTsize, "ce", "TERRORIST");
 		get_players(iPlayers, CTSize, "ce", "CT");
-
-		if (g_iCurrentRules == e_mTimer) {
-			new timeDiff[2][24];
-			fnConvertTime(g_flSidesTime[g_iCurrentSW] - g_flSidesTime[!g_iCurrentSW], timeDiff[0], 23, false);
-			fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], timeDiff[1], 23, false);
-
-			if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
-				if (!g_iCurrentSW)
-					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME1", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[1]);
-				else
-					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME2", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
-			} else if(g_flSidesTime[!g_iCurrentSW] < g_flSidesTime[g_iCurrentSW]) {
-				if (!g_iCurrentSW)
-					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME3", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
-				else
-					client_print_color(id, print_team_red, "%L", 0, "SCORE_TIME4", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[0]);
-			} else {
-				if (!g_iCurrentSW)
-					client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME5", timeToWin[g_iCurrentSW], TTsize, CTSize, timeToWin[!g_iCurrentSW], timeDiff[0]);
-				else
-					client_print_color(id, print_team_blue, "%L", 0, "SCORE_TIME6", timeToWin[!g_iCurrentSW], TTsize, CTSize, timeToWin[g_iCurrentSW], timeDiff[1]);
-			}
+		fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
+		fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
+		if (!g_iCurrentSW) {
+			chat_print(id, "%L", 0, "SCORE_TIME_MR1",
+				timeToWin[0], TTsize, CTSize, timeToWin[1],
+				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 		} else {
-			fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
-			fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
-			if (!g_iCurrentSW) {
-				chat_print(id, "%L", 0, "SCORE_TIME_MR1",
-					timeToWin[0], TTsize, CTSize, timeToWin[1],
-					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
-			} else {
-				chat_print(id, "%L", 0, "SCORE_TIME_MR2",
-					timeToWin[1], TTsize, CTSize, timeToWin[0],
-					(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
-			}
+			chat_print(id, "%L", 0, "SCORE_TIME_MR2",
+				timeToWin[1], TTsize, CTSize, timeToWin[0],
+				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 		}
 	} else {
 		chat_print(id, "%L", id, "SCORE_NOT");

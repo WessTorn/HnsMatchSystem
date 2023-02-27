@@ -11,6 +11,7 @@
 #include <fun>
 #include <reapi>
 #include <json>
+#include <xs>
 #include <PersistentDataStorage>
 
 #if defined USE_PTS
@@ -18,21 +19,22 @@
 #endif
 
 #include <hns-match/globals>
-#include <hns-match/cmds>
-#include <hns-match/cvars>
-#include <hns-match/utils>
-#include <hns-match/say>
-#include <hns-match/hook>
-#include <hns-match/ham>
 #include <hns-match/forward>
+#include <hns-match/stats>
+#include <hns-match/addition/cmds>
+#include <hns-match/addition/cvars>
+#include <hns-match/utils>
+//#include <hns-match/addition/sql>
+#include <hns-match/addition/say>
+#include <hns-match/ham>
 #include <hns-match/message>
 
 #include <hns-match/user>
-#include <hns-match/surrender>
-#include <hns-match/afk>
-#include <hns-match/hookOnOff>
-#include <hns-match/captain>
-#include <hns-match/hnsmenu>
+#include <hns-match/addition/surrender>
+#include <hns-match/addition/afk>
+#include <hns-match/addition/hookOnOff>
+#include <hns-match/addition/captain>
+#include <hns-match/addition/hnsmenu>
 #include <hns-match/hud>
-#include <hns-match/showinfo>
-#include <hns-match/training>
+#include <hns-match/addition/showinfo>
+#include <hns-match/addition/training>

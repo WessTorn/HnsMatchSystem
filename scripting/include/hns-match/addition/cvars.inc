@@ -1,4 +1,3 @@
-static g_pCapTime;
 static g_pMaxRounds;
 static g_pRoundTime;
 static g_pGameName;
@@ -9,7 +8,6 @@ static g_pLastMode;
 static g_pSemiclip;
 static g_pHpMode;
 static g_pDMRespawn;
-static g_pRules;
 static g_pKnifeMap;
 static g_pSurVoteTime;
 static g_pSurTimeDelay;
@@ -19,7 +17,6 @@ static g_pPrefix;
 stock cvars_init() {
 	g_pRoundTime = get_cvar_pointer("mp_roundtime");
 
-	g_pCapTime			= register_cvar("hns_wintime", "15", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pMaxRounds		= register_cvar("hns_rounds", "6", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pFlashNum			= register_cvar("hns_flash", "2", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pSmokeNum			= register_cvar("hns_smoke", "1", FCVAR_ARCHIVE | FCVAR_SERVER);
@@ -30,8 +27,7 @@ stock cvars_init() {
 	g_pDMRespawn 		= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pSurVoteTime 		= register_cvar("hns_survotetime", "10", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pSurTimeDelay 	= register_cvar("hns_surtimedelay", "120", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_pCheckPlayNoPlay 	= register_cvar("hns_checkplay", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_pRules 			= register_cvar("hns_rules", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
+	g_pCheckPlayNoPlay 	= register_cvar("hns_checkplay", "0", FCVAR_ARCHIVE | FCVAR_SERVER);Z
 	g_pGameName			= register_cvar("hns_gamename", "Hide'n'Seek", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pKnifeMap			= register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pPrefix			= register_cvar("hns_prefix", "Match", FCVAR_ARCHIVE | FCVAR_SERVER);
@@ -43,14 +39,6 @@ stock get_round_time() {
 
 stock set_round_time(str[]) {
 	set_pcvar_float(g_pRoundTime, str_to_float(str));
-}
-
-stock get_cap_time() {
-	return get_pcvar_num(g_pCapTime);
-}
-
-stock set_cap_time(num) {
-	set_pcvar_num(g_pCapTime, num);
 }
 
 stock get_max_rounds() {
@@ -130,10 +118,6 @@ stock get_last_mode() {
 
 stock set_last_mode(num) {
 	set_pcvar_num(g_pLastMode, num);
-}
-
-stock get_rules_mode() {
-	return get_pcvar_num(g_pRules);
 }
 
 stock set_rules_mode(num) {

@@ -23,24 +23,6 @@ public sayHandle(id) {
 		  szArgs, charsmax(szArgs), \
 		  szTarget, charsmax(szTarget));
 
-	if (equali(szArgs, "/wintime", 8)) {
-		trim(szTarget);
-
-		if (!getUserInAccess(id))
-			return PLUGIN_HANDLED;
-
-		if(g_iCurrentRules == e_mMR) {
-			chat_print(id, "%L", id, "NOT_SET_TIME");
-			return PLUGIN_HANDLED;
-		}
-
-		if (is_str_num(szTarget)) {
-			set_cap_time(str_to_num(szTarget));
-			chat_print(0, "%L", id, "SET_WINTIME", getUserName(id), str_to_num(szTarget));
-		}
-		return PLUGIN_CONTINUE;
-	}
-
 	if (equali(szArgs, "/roundtime", 10)) {
 		trim(szTarget);
 
@@ -60,11 +42,6 @@ public sayHandle(id) {
 		if (!getUserInAccess(id))
 			return PLUGIN_HANDLED;
 
-		if(g_iCurrentRules == e_mTimer) {
-			chat_print(id, "%L", id, "NOT_SET_MR");
-			return PLUGIN_HANDLED;
-		}
-
 		if (is_str_num(szTarget)) {
 			set_max_rounds(str_to_num(szTarget));
 			chat_print(0, "%L", id, "SET_MAXROUNDS", getUserName(id), str_to_num(szTarget));
@@ -72,7 +49,7 @@ public sayHandle(id) {
 		return PLUGIN_CONTINUE;
 	}
 
-	if (equali(szArgs, "/tt", 15)) {
+	/*if (equali(szArgs, "/tt", 15)) {
 		trim(szTarget);
 
 		if (!getUserInAccess(id))
@@ -144,7 +121,7 @@ public sayHandle(id) {
 		g_flSidesTime[!g_iCurrentSW] = (get_cap_time() - (minutes + (seconds / 60.0))) * 60.0;
 		chat_print(0, "%L", 0, "SER_TIME_CT", id, szMinutes, szSeconds);
 		return PLUGIN_CONTINUE;
-	}
+	}*/
 
 	return PLUGIN_CONTINUE;
 }
