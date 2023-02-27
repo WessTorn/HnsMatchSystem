@@ -7,7 +7,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.5", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
+	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.5.1", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -167,7 +167,7 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 					if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
 						if (!g_bLastRound) {
 							fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], szTime, charsmax(szTime));
-							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("%L", szTime, "HUD_TIMETOWIN"));
+							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("%L", LANG_SERVER, "HUD_TIMETOWIN", szTime));
 							g_bLastRound = true;
 						}
 					}
@@ -186,7 +186,7 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 				else
 					g_iCaptainPick = g_eCaptain[e_cTT];
 
-				setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, fmt("%L", g_iCaptainPick, "HUD_CAPWIN"));
+				setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, fmt("%L", LANG_SERVER, "HUD_CAPWIN", g_iCaptainPick));
 
 				taskPrepareMode(e_mCaptain);
 				g_bCaptainsBattle = false;
@@ -384,7 +384,7 @@ public MixFinishedMR(iWinTeam) {
 		}
 	#endif
 
-	setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "%L", "HUD_GAMEOVER");
+	setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "%L", LANG_SERVER, "HUD_GAMEOVER");
 	taskPrepareMode(e_mTraining);
 
 	g_bPlayersListLoaded = false;

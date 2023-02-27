@@ -27,7 +27,7 @@ stock cvars_init() {
 	g_pDMRespawn 		= register_cvar("hns_dmrespawn", "3", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pSurVoteTime 		= register_cvar("hns_survotetime", "10", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pSurTimeDelay 	= register_cvar("hns_surtimedelay", "120", FCVAR_ARCHIVE | FCVAR_SERVER);
-	g_pCheckPlayNoPlay 	= register_cvar("hns_checkplay", "0", FCVAR_ARCHIVE | FCVAR_SERVER);Z
+	g_pCheckPlayNoPlay 	= register_cvar("hns_checkplay", "0", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pGameName			= register_cvar("hns_gamename", "Hide'n'Seek", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pKnifeMap			= register_cvar("hns_knifemap", "35hp_2", FCVAR_ARCHIVE | FCVAR_SERVER);
 	g_pPrefix			= register_cvar("hns_prefix", "Match", FCVAR_ARCHIVE | FCVAR_SERVER);

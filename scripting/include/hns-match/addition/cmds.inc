@@ -183,8 +183,8 @@ stock pfStartMatch() {
 	g_iGameStops = 0;
 	rg_send_audio(0, "plats/elevbell1.wav");
 	set_task(2.5, "taskPrepareMode", e_mMatch);
-	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "%L", "HUD_STARTMIX1");
-	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "%L", "HUD_STARTMIX2");
+	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX1");
+	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX2");
 }
 
 public cmdKnifeRound(id) {
@@ -202,7 +202,7 @@ public cmdKnifeRound(id) {
 
 stock pfKnifeRound(id) {
 	taskPrepareMode(e_mKnife);
-	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "%L", "HUD_STARTKNIFE");
+	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_STARTKNIFE");
 
 	if (id)
 		chat_print(0, "%L", id, "START_KNIFE", getUserName(id));
@@ -436,7 +436,7 @@ public cmdStartPause(id) {
 public taskHudPaused() {
 	if (g_iCurrentMode == e_mPaused) {
 		set_dhudmessage(100, 100, 100, -1.0, 0.75, 0, 0.0, 1.01, 0.0, 0.0);
-		show_dhudmessage(0, "%L", "HUD_PAUSE");
+		show_dhudmessage(0, "%L", LANG_SERVER, "HUD_PAUSE");
 	}
 }
 
@@ -454,7 +454,7 @@ public cmdStopPause(id) {
 		rg_send_audio(0, "fvox/activated.wav");
 		g_bGameStarted = true;
 
-		setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "%L", "HUD_UNPAUSE");
+		setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_UNPAUSE");
 
 		restartRound();
 		removeHook(id);
