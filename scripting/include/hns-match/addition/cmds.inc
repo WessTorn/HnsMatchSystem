@@ -7,46 +7,46 @@
 stock cmds_init() {
 	register_clcmd("nightvision", "mainMatchMenu");
 
-	register_clcmd("chooseteam", "blockCmd");
-	register_clcmd("jointeam", "blockCmd");
-	register_clcmd("joinclass", "blockCmd");
+	register_clcmd("chooseteam", 	"blockCmd");
+	register_clcmd("jointeam", 		"blockCmd");
+	register_clcmd("joinclass", 	"blockCmd");
 
 	RegisterSayCmd("showknife", "knife", "cmdShowKnife");
 	RegisterSayCmd("hideknife", "hknife", "cmdShowKnife");
 
-	RegisterSayCmd("mix", "mix", "mainMatchMenu", access, "Main menu admin");
-	RegisterSayCmd("training", "training", "trainingMenu", 0, "Training menu");
+	RegisterSayCmd("mix", 		"mix", 		"mainMatchMenu", 	access, "Main menu admin");
+	RegisterSayCmd("training",	"training", "trainingMenu", 	0, "Training menu");
 
-	RegisterSayCmd("pub", "public", "cmdPubMode", access, "Public mode");
-	RegisterSayCmd("dm", "deathmatch", "cmdDMMode", access, "DeathMatch mode");
-	RegisterSayCmd("specall", "specall", "cmdTransferSpec", access, "Spec Transfer");
-	RegisterSayCmd("ttall", "ttall", "cmdTransferTT", access, "TT Transfer");
-	RegisterSayCmd("ctall", "ctall", "cmdTransferCT", access, "CT Transfer");
-	RegisterSayCmd("startmix", "start", "cmdStartRound", access, "Starts Round");
-	RegisterSayCmd("kniferound", "kf", "cmdKnifeRound", access, "Knife Round");
-	RegisterSayCmd("captain", "cap", "cmdCaptain", access, "Captain Mode");
-	RegisterSayCmd("stop", "cancel", "cmdStopMode", access, "Stop Current Mode");
-	RegisterSayCmd("skill", "skill", "cmdSkillMode", access, "Skill mode");
-	RegisterSayCmd("boost", "boost", "cmdBoostMode", access, "Boost mode");
-	RegisterSayCmd("aa10", "10aa", "cmdAa10", access, "10aa");
-	RegisterSayCmd("aa100", "100aa", "cmdAa100", access, "100aa");
-	RegisterSayCmd("rr", "restart", "cmdRestartRound", access, "Restart round");
-	RegisterSayCmd("swap", "swap", "cmdSwapTeams", access, "Swap Teams");
-	RegisterSayCmd("pause", "ps", "cmdStartPause", access, "Start pause");
-	RegisterSayCmd("live", "unpause", "cmdStopPause", access, "Unpause");
-	RegisterSayCmd("surrender", "sur", "cmdSurrender", 0, "Surrender vote");
-	RegisterSayCmd("score", "s", "cmdShowTimers", 0, "Score");
-	RegisterSayCmd("pick", "pick", "cmdPick", 0, "Pick player");
-	RegisterSayCmd("back", "spec", "cmdTeamSpec", 0, "Spec/Back player");
-	RegisterSayCmd("np", "noplay", "cmdNoplay", 0, "No play");
-	RegisterSayCmd("ip", "play", "cmdPlay", 0, "Play");
-	RegisterSayCmd("checkpoint", "cp", "cmdCheckpoint", 0, "Сheckpoint");
-	RegisterSayCmd("teleport", "tp", "cmdGoCheck", 0, "Teleport to checkpoint");
-	RegisterSayCmd("gocheck", "gc", "cmdGoCheck", 0, "Сheckpoint");
-	RegisterSayCmd("damage", "showdamade", "cmdShowDamage", 0, "Show damage");
-	RegisterSayCmd("noclip", "clip", "cmdClipMode", 0, "No clip mode");
-	RegisterSayCmd("respawn", "resp", "cmdRespawn", 0, "Respawn player");
-	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
+	RegisterSayCmd("pub", 		"public", 		"cmdPubMode", 		access, "Public mode");
+	RegisterSayCmd("dm", 		"deathmatch", 	"cmdDMMode", 		access, "DeathMatch mode");
+	RegisterSayCmd("specall", 	"specall", 		"cmdTransferSpec", 	access, "Spec Transfer");
+	RegisterSayCmd("ttall", 	"ttall", 		"cmdTransferTT", 	access, "TT Transfer");
+	RegisterSayCmd("ctall", 	"ctall", 		"cmdTransferCT", 	access, "CT Transfer");
+	RegisterSayCmd("startmix", 	"start", 		"cmdStartRound", 	access, "Starts Round");
+	RegisterSayCmd("kniferound", "kf", 			"cmdKnifeRound", 	access, "Knife Round");
+	RegisterSayCmd("captain", 	"cap", 			"cmdCaptain", 		access, "Captain Mode");
+	RegisterSayCmd("stop", 		"cancel", 		"cmdStopMode", 		access, "Stop Current Mode");
+	RegisterSayCmd("skill", 	"skill", 		"cmdSkillMode", 	access, "Skill mode");
+	RegisterSayCmd("boost", 	"boost", 		"cmdBoostMode", 	access, "Boost mode");
+	RegisterSayCmd("aa10", 		"10aa", 		"cmdAa10", 			access, "10aa");
+	RegisterSayCmd("aa100", 	"100aa", 		"cmdAa100", 		access, "100aa");
+	RegisterSayCmd("rr", 		"restart", 		"cmdRestartRound", 	access, "Restart round");
+	RegisterSayCmd("swap", 		"swap", 		"cmdSwapTeams", 	access, "Swap Teams");
+	RegisterSayCmd("pause", 	"ps", 			"cmdStartPause", 	access, "Start pause");
+	RegisterSayCmd("live", 		"unpause", 		"cmdStopPause",		access, "Unpause");
+	RegisterSayCmd("surrender", "sur", 			"cmdSurrender", 	0, "Surrender vote");
+	RegisterSayCmd("score", 	"s", 			"cmdShowTimers", 	0, "Score");
+	RegisterSayCmd("pick", 		"pick", 		"cmdPick", 			0, "Pick player");
+	RegisterSayCmd("back", 		"spec", 		"cmdTeamSpec", 		0, "Spec/Back player");
+	RegisterSayCmd("np", 		"noplay", 		"cmdNoplay", 		0, "No play");
+	RegisterSayCmd("ip", 		"play", 		"cmdPlay", 			0, "Play");
+	RegisterSayCmd("checkpoint","cp", 			"cmdCheckpoint", 	0, "Сheckpoint");
+	RegisterSayCmd("teleport", 	"tp", 			"cmdGoCheck", 		0, "Teleport to checkpoint");
+	RegisterSayCmd("gocheck", 	"gc", 			"cmdGoCheck", 		0, "Сheckpoint");
+	RegisterSayCmd("damage", 	"showdamade", 	"cmdShowDamage", 	0, "Show damage");
+	RegisterSayCmd("noclip", 	"clip", 		"cmdClipMode", 		0, "No clip mode");
+	RegisterSayCmd("respawn", 	"resp", 		"cmdRespawn", 		0, "Respawn player");
+	RegisterSayCmd("top", 		"tops", 		"ShowTop", 			0, "Show top");
 }
 
 public blockCmd(id) {
@@ -59,7 +59,10 @@ public blockCmd(id) {
 public cmdShowKnife(id) {
 	g_bOnOff[id] = !g_bOnOff[id];
 
-	chat_print(id, "%L", id, "SHOW_KNIFE", g_bOnOff[id] ? "^3in" : "^3");
+	if (g_bOnOff[id])
+		chat_print(id, "%L", id, "SHOW_KNIFEON");
+	else
+		chat_print(id, "%L", id, "SHOW_KNIFEOFF");
 
 	if (!is_user_alive(id))
 		return PLUGIN_HANDLED;
@@ -84,16 +87,10 @@ public cmdPubMode(id) {
 	if (g_iCurrentMode != e_mPublic) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
 			taskPrepareMode(e_mPublic);
-			chat_print(0, "%L", id, "PUB_ACTIVATED", getUserName(id));
+			chat_print(0, "%L", 0, "PUB_ACTIVATED", id);
 		}
 	} else {
-		chat_print(id, "%L", id, "PUB_ALREADY", getUserName(id));
-	}
-
-	if (containi(g_eMatchInfo[e_mMapName], "boost") != -1) {
-		disableSemiclip();
-	} else {
-		enableSemiclip(3);
+		chat_print(id, "%L", id, "PUB_ALREADY");
 	}
 
 	removeHook(id);
@@ -108,18 +105,12 @@ public cmdDMMode(id) {
 	if (g_iCurrentMode != e_mDM) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
 			taskPrepareMode(e_mDM);
-			chat_print(0, "%L", id, "DM_ACTIVATED", getUserName(id));
+			chat_print(0, "%L", 0, "DM_ACTIVATED", id);
 		}
 	} else {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
-			chat_print(id, "%L", id, "DM_ALREADY", getUserName(id));
+			chat_print(id, "%L", id, "DM_ALREADY", id);
 		}
-	}
-
-	if (containi(g_eMatchInfo[e_mMapName], "boost") != -1) {
-		disableSemiclip();
-	} else {
-		enableSemiclip(3);
 	}
 
 	removeHook(id);
@@ -131,7 +122,7 @@ public cmdTransferSpec(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "TRANSF_SPEC", getUserName(id));
+	chat_print(0, "%L", 0, "TRANSF_SPEC", id);
 	transferUsers(TEAM_SPECTATOR);
 	return PLUGIN_HANDLED;
 }
@@ -140,7 +131,7 @@ public cmdTransferTT(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "TRANSF_TT", getUserName(id));
+	chat_print(0, "%L", 0, "TRANSF_TT", id);
 	transferUsers(TEAM_TERRORIST);
 	return PLUGIN_HANDLED;
 }
@@ -149,7 +140,7 @@ public cmdTransferCT(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "TRANSF_CT", getUserName(id));
+	chat_print(0, "%L", 0, "TRANSF_CT", id);
 	transferUsers(TEAM_CT);
 	return PLUGIN_HANDLED;
 }
@@ -165,15 +156,8 @@ public cmdStartRound(id) {
 		if (equali(g_eMatchInfo[e_mMapName], knifemap))
 			return;
 
-		chat_print(0, "%L", id, "START_MIX", getUserName(id));
+		chat_print(0, "%L", 0, "START_MIX", id);
 		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
-
-		new iPlayers[MAX_PLAYERS], iNum;
-		get_players(iPlayers, iNum, "c");
-		for (new i; i < iNum; i++) {
-			new iPlayer = iPlayers[i];
-			arrayset(g_ePlayerInfo[iPlayer], 0, PlayerInfo_s);
-		}
 
 		pfStartMatch();
 	}
@@ -205,7 +189,7 @@ stock pfKnifeRound(id) {
 	setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_STARTKNIFE");
 
 	if (id)
-		chat_print(0, "%L", id, "START_KNIFE", getUserName(id));
+		chat_print(0, "%L", 0, "START_KNIFE", id);
 
 	return;
 }
@@ -256,7 +240,7 @@ public cmdStop(id) {
 
 	switch (g_iCurrentMode) {
 		case e_mPaused, e_mMatch: {
-			chat_print(0, "%L", id, "STOP_MIX", getUserName(id));
+			chat_print(0, "%L", 0, "STOP_MIX", id);
 			g_bGameStarted = false;
 			g_bLastRound = false;
 			g_bSurvival = false;
@@ -265,18 +249,18 @@ public cmdStop(id) {
 			ExecuteForward(g_hForwards[MATCH_CANCELED], _);
 		}
 		case e_mKnife: {
-			chat_print(0, "%L", id, "STOP_KNIFE", getUserName(id));
+			chat_print(0, "%L", 0, "STOP_KNIFE", id);
 		}
 		case e_mCaptain: {
-			chat_print(0, "%L", id, "STOP_CAP", getUserName(id));
+			chat_print(0, "%L", 0, "STOP_CAP", id);
 			resetCaptainData();
 			return;
 		}
 		case e_mPublic: {
-			chat_print(0, "%L", id, "STOP_PUB", getUserName(id));
+			chat_print(0, "%L", 0, "STOP_PUB", id);
 		}
 		case e_mDM: {
-			chat_print(0, "%L", id, "STOP_DM", getUserName(id));
+			chat_print(0, "%L", 0, "STOP_DM", id);
 		}
 	}
 	rg_send_audio(0, "fvox/fuzz.wav");
@@ -287,7 +271,7 @@ public cmdSkillMode(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "TYPE_SKILL", getUserName(id));
+	chat_print(0, "%L", 0, "TYPE_SKILL", id);
 
 	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
 		enableSemiclip(0);
@@ -313,7 +297,7 @@ public cmdBoostMode(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "TYPE_BOOST", getUserName(id));
+	chat_print(0, "%L", 0, "TYPE_BOOST", id);
 
 	if (g_iCurrentMode == e_mMatch) {
 		set_cvar_num("mp_freezetime", 15);
@@ -330,7 +314,7 @@ public cmdAa10(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "AA_10", getUserName(id));
+	chat_print(0, "%L", 0, "AA_10", id);
 
 	set_cvar_num("sv_airaccelerate", 10);
 	set_aa_mode(10);
@@ -342,7 +326,7 @@ public cmdAa100(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "AA_100", getUserName(id));
+	chat_print(0, "%L", 0, "AA_100", id);
 
 	set_cvar_num("sv_airaccelerate", 100);
 	set_aa_mode(100);
@@ -354,7 +338,7 @@ public cmdRestartRound(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "GAME_RESTART", getUserName(id));
+	chat_print(0, "%L", 0, "GAME_RESTART", id);
 	restartRound();
 	removeHook(id);
 
@@ -368,7 +352,7 @@ public cmdSwapTeams(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	chat_print(0, "%L", id, "GAME_SWAP", getUserName(id));
+	chat_print(0, "%L", 0, "GAME_SWAP", id);
 
 	restartRound();
 	rg_swap_all_players();
@@ -423,7 +407,7 @@ public cmdStartPause(id) {
 		set_task(1.0, "taskHudPaused", .flags = "b");
 
 		if (id) {
-			chat_print(0, "%L", id, "GAME_PAUSED", getUserName(id));
+			chat_print(0, "%L", 0, "GAME_PAUSED", id);
 		}
 
 		rg_send_audio(0, "fvox/deactivated.wav");
@@ -448,7 +432,7 @@ public cmdStopPause(id) {
 		g_iCurrentMode = e_mMatch;
 
 		if (id) {
-			chat_print(0, "%L", id, "GAME_UNPAUSED", getUserName(id));
+			chat_print(0, "%L", 0, "GAME_UNPAUSED", id);
 		}
 
 		rg_send_audio(0, "fvox/activated.wav");
@@ -506,7 +490,7 @@ public cmdSurrender(id) {
 	g_eSurrenderData[e_sStarted] = true;
 	g_eSurrenderData[e_sInitiator] = id;
 	g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
-	chat_print(0, "%L", id, "SUR_PLAYER", id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
+	chat_print(0, "%L", 0, "SUR_PLAYER", id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -527,11 +511,11 @@ public cmdShowTimers(id) {
 		fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
 		fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
 		if (!g_iCurrentSW) {
-			chat_print(id, "%L", 0, "SCORE_TIME_MR1",
+			chat_print(id, "%L", id, "SCORE_TIME_MR1",
 				timeToWin[0], TTsize, CTSize, timeToWin[1],
 				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 		} else {
-			chat_print(id, "%L", 0, "SCORE_TIME_MR2",
+			chat_print(id, "%L", id, "SCORE_TIME_MR2",
 				timeToWin[1], TTsize, CTSize, timeToWin[0],
 				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 		}
@@ -577,14 +561,14 @@ public cmdTeamSpec(id) {
 public cmdNoplay(id) {
 	if (!g_bNoplay[id]) {
 		g_bNoplay[id] = true;
-		chat_print(0, "%L", id, "STATUS_NOPLAY", getUserName(id));
+		chat_print(0, "%L", 0, "STATUS_NOPLAY", id);
 	}
 }
 
 public cmdPlay(id) {
 	if (g_bNoplay[id]) {
 		g_bNoplay[id] = false;
-		chat_print(0, "%L", id, "STATUS_PLAY", getUserName(id));
+		chat_print(0, "%L", 0, "STATUS_PLAY", id);
 	}
 }
 
@@ -602,11 +586,14 @@ public cmdClipMode(id) {
 		chat_print(id, "%L", id, "TRAINING_NOTALIVE")
 		return PLUGIN_HANDLED
 	} else {
-		if(!get_user_noclip(id))
+		if(!get_user_noclip(id)) {
 			set_user_noclip(id, 1);
-		else
+			chat_print(id, "%L", id, "NOCLIP_ON");
+		}
+		else {
 			set_user_noclip(id, 0);
-		chat_print(id, "%s No Clip ^3%sabled!", get_user_noclip(id) ? "en" : "dis");
+			chat_print(id, "%L", id, "NOCLIP_OFF");
+		}
 	}
 	return PLUGIN_HANDLED;
 }

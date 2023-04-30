@@ -55,7 +55,12 @@ stock stuck(id) {
 
 stock cmdDamade(id) {
 	bDamage[id] = !bDamage[id];
-	chat_print(id,"%s Damage show ^3%sabled.", bDamage[id] ? "en" : "dis");
+
+	if (bDamage[id]) {
+		chat_print(id, "%L", id, "DAMAGE_OFF");
+	} else {
+		chat_print(id, "%L", id, "DAMAGE_ON");
+	}
 }
 
 stock damageHit(id, Float:damage) {

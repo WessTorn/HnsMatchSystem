@@ -7,7 +7,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.5.1", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
+	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.6", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -37,11 +37,10 @@ public plugin_init() {
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
 	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
 	RegisterHookChain(RG_CBasePlayer_PreThink, "rgPlayerPreThink", true);
+	RegisterHookChain(RG_CBasePlayer_Killed, "rgPlayerKilled", true);
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
 	RegisterHookChain(RG_PM_Move, "rgPlayerMovePost", true);
-
-	register_event("DeathMsg", "EventDeathMsg", "a");
 
 	set_task(0.5, "taskDelayedMode");
 
@@ -50,7 +49,6 @@ public plugin_init() {
 	loadPlayers();
 
 	g_MsgSync = CreateHudSyncObj();
-	g_tPlayerInfo = TrieCreate();
 
 	g_bFreezePeriod = true;
 	register_dictionary("mixsystem.txt");
@@ -81,7 +79,7 @@ public fwdClientKill(id) {
 		chat_print(0, "%L", id, "KILL_NOT");
 		return FMRES_SUPERCEDE;
 	} else {
-		chat_print(0, "%L", id, "KILL_HIMSELF", getUserName(id));
+		chat_print(0, "%L", id, "KILL_HIMSELF", id);
 	}
 	return FMRES_IGNORED;
 }
@@ -203,38 +201,6 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 	return HC_CONTINUE;
 }
 
-stock savePlayers(TeamName:team_winners) {
-	new JSON:arrayRoot = json_init_array();
-
-	new iPlayers[MAX_PLAYERS], iNum, szAuth[24];
-	get_players(iPlayers, iNum, "ch");
-
-	for (new i; i < iNum; i++) {
-		new id = iPlayers[i];
-
-		if (getUserTeam(id) == TEAM_SPECTATOR) continue;
-
-		get_user_authid(id, szAuth, charsmax(szAuth));
-
-		arrayAppendValue(arrayRoot, json_init_string(fmt("player_%i", i + 1)));
-
-		new JSON:object = json_init_object();
-		json_object_set_string(object, "e_pAuth", fmt("%s", szAuth));
-		new TeamName:iTeam = TeamName:getUserTeam(id) == team_winners ? TEAM_TERRORIST : TEAM_CT;
-		json_object_set_number(object, "e_pTeam", _:iTeam);
-		arrayAppendValue(arrayRoot, object);
-		json_free(object);
-	}
-
-	json_serial_to_string(arrayRoot, g_szBuffer, charsmax(g_szBuffer), true);
-	server_print("Players saved (%d bytes)", json_serial_size(arrayRoot, true));
-	json_free(arrayRoot);
-}
-
-arrayAppendValue(JSON:array, JSON:node) {
-	json_array_append_value(array, node);
-	json_free(node);
-}
 
 public rgResetMaxSpeed(id) {
 	if (get_member_game(m_bFreezePeriod)) {
@@ -335,7 +301,6 @@ public taskRoundEvent() {
 			if (!is_user_alive(id))
 				continue;
 
-			g_ePlayerInfo[id][e_plrSurviveTime] += 0.25;
 			g_eRoundStats[id][e_flSurviveTime] += 0.25;
 		}
 	}
@@ -443,6 +408,32 @@ public rgPlayerPreThink(id)
 	ExecuteForward(g_StatsFuncs[STATSFUNCS_PRETHINK], _, id);
 }
 
+public rgPlayerKilled(victim, attacker) {
+	if (!is_user_connected(attacker))
+		return;
+
+	if (g_iCurrentMode == e_mDM) {
+		if (attacker == 0) {
+			if (getUserTeam(victim) == TEAM_TERRORIST) {
+				new lucky = GetRandomCT();
+				if (lucky) {
+					rg_set_user_team(lucky, TEAM_TERRORIST);
+					chat_print(0, "%L", 0, "DM_TRANSF", lucky)
+					rg_set_user_team(victim, TEAM_CT);
+					setUserRole(lucky);
+				}
+			}
+		} else if (attacker != victim && getUserTeam(attacker) == TEAM_CT) {
+			rg_set_user_team(attacker, TEAM_TERRORIST);
+			rg_set_user_team(victim, TEAM_CT);
+
+			setUserRole(attacker);
+		}
+
+		set_task(float(get_dm_resp()), "RespawnPlayer", victim);
+	}
+}
+
 public rgPlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold) {
 	if (g_iCurrentMode == e_mMatch) {
 		if (getUserTeam(index) != getUserTeam(attacker))
@@ -501,65 +492,6 @@ public registerMode() {
 	dllfunc(DLLFunc_Spawn, g_iHostageEnt);
 }
 
-loadPlayers() {
-	if (!equali(g_eMatchInfo[e_mMapName], knifemap))
-		g_bPlayersListLoaded = PDS_GetString("playerslist", g_szBuffer, charsmax(g_szBuffer));
-
-	if (g_bPlayersListLoaded) {
-		new JSON:arrayRoot = json_parse(g_szBuffer);
-
-		if (!json_is_array(arrayRoot)) {
-			if (arrayRoot != Invalid_JSON)
-				json_free(arrayRoot);
-
-			server_print("Root value is not array!");
-			return;
-		}
-		decodeArray(arrayRoot);
-		json_free(arrayRoot);
-	}
-}
-
-decodeArray(&JSON:array) {
-	new JSON:arrayValue;
-	for (new i = 0; i < json_array_get_count(array); i++) {
-		arrayValue = json_array_get_value(array, i);
-
-		if (json_get_type(arrayValue) == JSONObject)
-			decodeObject(arrayValue);
-
-		json_free(arrayValue);
-	}
-}
-
-decodeObject(&JSON:object) {
-	new szKey[30];
-	new JSON:objValue;
-	new eTempPlayer[PlayersLoad_s], iSave;
-	for (new i = 0; i < json_object_get_count(object); i++) {
-		json_object_get_name(object, i, szKey, charsmax(szKey));
-		objValue = json_object_get_value_at(object, i);
-
-		switch (json_get_type(objValue)) {
-			case JSONString: {
-				json_get_string(objValue, eTempPlayer[e_pAuth], charsmax(eTempPlayer[e_pAuth]));
-				iSave++;
-			}
-			case JSONNumber: {
-				eTempPlayer[e_pTeam] = json_get_number(objValue);
-				iSave++;
-			}
-		}
-
-		if (iSave == 2) {
-			ArrayPushArray(g_aPlayersLoadData, eTempPlayer);
-			arrayset(eTempPlayer, 0, PlayersLoad_s);
-			iSave = 0;
-		}
-		json_free(objValue);
-	}
-}
-
 public PDS_Save() {
 	if (equali(g_eMatchInfo[e_mMapName], knifemap)) {
 		if (g_szBuffer[0])
@@ -570,53 +502,11 @@ public PDS_Save() {
 public client_putinserver(id) {
 	g_bOnOff[id] = false;
 
-	statsGetArray(id);
 	training_putin(id);
-
-	TrieGetArray(g_tPlayerInfo, getUserKey(id), g_ePlayerInfo[id], PlayerInfo_s);
-	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
-		if (g_ePlayerInfo[id][e_plrRetryGameStops] < g_iGameStops) {
-			if (g_ePlayerInfo[id][e_plrRetryTime]) {
-				g_ePlayerInfo[id][e_plrSurviveTime] -= g_ePlayerInfo[id][e_plrRetryTime];
-				g_ePlayerInfo[id][e_plrRetryTime] = 0.0;
-			}
-		}
-	} else {
-		arrayset(g_ePlayerInfo[id], 0, PlayerInfo_s);
-	}
 }
 
 public client_disconnected(id) {
 	g_bHooked[id] = false;
-	statsSetArray(id);
-}
-
-public EventDeathMsg() {
-	if (g_iCurrentMode != e_mDM) {
-		return;
-	}
-
-	new killer = read_data(1);
-	new victim = read_data(2);
-
-	if(killer == 0)  {
-		if(getUserTeam(victim) == TEAM_TERRORIST) {
-			new lucky = GetRandomCT();
-			if(lucky) {
-				rg_set_user_team(lucky, TEAM_TERRORIST);
-				chat_print(lucky, "%L", lucky, "DM_TRANSF")
-				rg_set_user_team(victim, TEAM_CT);
-				setUserRole(lucky);
-			}
-		}
-	} else if(killer != victim && getUserTeam(killer) == TEAM_CT) {
-		rg_set_user_team(killer, TEAM_TERRORIST);
-		rg_set_user_team(victim, TEAM_CT);
-
-		setUserRole(killer);
-	}
-
-	set_task(float(get_dm_resp()), "RespawnPlayer", victim);
 }
 
 public RespawnPlayer(id) {
@@ -783,7 +673,7 @@ stock loadMapCFG() {
 
 ResetPlayerRoundData(id) {
 	if (getUserTeam(id) == TEAM_TERRORIST)
-		g_ePlayerInfo[id][e_plrSurviveTime] -= g_eRoundStats[id][e_flSurviveTime];
+		g_eRoundStats[id][e_flSurviveTime] -= g_eRoundStats[id][e_flSurviveTime];
 }
 
 fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {

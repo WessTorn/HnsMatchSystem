@@ -28,6 +28,7 @@
 #include <hns-match/addition/say>
 #include <hns-match/ham>
 #include <hns-match/message>
+#include <hns-match/save>
 
 #include <hns-match/user>
 #include <hns-match/addition/surrender>

@@ -20,7 +20,7 @@ stock captainStart(id) {
 		transferUserToSpec(iPlayer);
 	}
 	chooseCapsMenu(id);
-	chat_print(0, "%L", id, "CAP_CHOOSE", id);
+	chat_print(0, "%L", 0, "CAP_CHOOSE", id);
 }
 
 stock chooseCapsMenu(id) {
@@ -95,12 +95,12 @@ public chooseCapsHandler(id, iMenu, item) {
 
 	if (!g_eCaptain[e_cTT]) {
 		g_eCaptain[e_cTT] = iPlayer;
-		chat_print(0, "%L", id, "CAP_FIRST", iPlayer);
+		chat_print(0, "%L", 0, "CAP_FIRST", iPlayer);
 
 		chooseCapsMenu(id);
 	} else if (!g_eCaptain[e_cCT]) {
 		g_eCaptain[e_cCT] = iPlayer;
-		chat_print(0, "%L", id, "CAP_SECOND", iPlayer);
+		chat_print(0, "%L", 0, "CAP_SECOND", iPlayer);
 
 		if (is_user_connected(g_eCaptain[e_cTT]) && is_user_connected(g_eCaptain[e_cCT])) {
 			rg_set_user_team(g_eCaptain[e_cTT], TEAM_TERRORIST);
@@ -109,7 +109,7 @@ public chooseCapsHandler(id, iMenu, item) {
 			g_bCaptainsBattle = true;
 			pfKnifeRound(0);
 		} else {
-			chat_print(0, "%L", id, "CAP_HAS_LEFT");
+			chat_print(0, "%L", 0, "CAP_HAS_LEFT");
 			resetCaptainData();
 		}
 	}
@@ -183,7 +183,7 @@ public pickHandler(id, iMenu, item) {
 		return;
 	}
 
-	chat_print(0, "%L", id, "PLAYER_CHOOSE", id, iPlayer);
+	chat_print(0, "%L", 0, "PLAYER_CHOOSE", id, iPlayer);
 	rg_set_user_team(iPlayer, getUserTeam(id));
 	rg_round_respawn(iPlayer);
 
@@ -205,7 +205,7 @@ public pickHandler(id, iMenu, item) {
 
 	if (iTotalPlayers == 10) {
 		resetCaptainData();
-		chat_print(0, "%L", id, "TEAM_FULL");
+		chat_print(0, "%L", 0, "TEAM_FULL");
 	}
 }
 

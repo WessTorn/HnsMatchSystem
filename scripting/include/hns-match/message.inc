@@ -110,19 +110,6 @@ public taskSetPlayerTeam(id) {
 	}
 }
 
-stock bool:checkPlayer(id) {
-	new eTempPlayer[PlayersLoad_s], iSize = ArraySize(g_aPlayersLoadData);
-	new szAuth[24]; get_user_authid(id, szAuth, charsmax(szAuth));
-	for (new i; i < iSize; i++) {
-		ArrayGetArray(g_aPlayersLoadData, i, eTempPlayer);
-		if (equal(szAuth, eTempPlayer[e_pAuth])) {
-			rg_set_user_team(id, eTempPlayer[e_pTeam]);
-			return true;
-		}
-	}
-	return false;
-}
-
 public taskPlay(id) {
 	if (!is_user_connected(id))
 		return;
@@ -147,6 +134,6 @@ public handlePlayMenu(id, iMenu, item) {
 
 	switch (item) {
 		case 0: cmdPlay(id);
-		case 1: chat_print(0, "%L", id, "STATUS_NOPLAY", getUserName(id));
+		case 1: chat_print(0, "%L", id, "STATUS_NOPLAY", id);
 	}
 }

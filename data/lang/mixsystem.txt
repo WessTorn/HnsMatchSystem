@@ -1,18 +1,11 @@
 [en]
-STATUS_NOPLAY   = ^3%s^1 is ^3not available^1 for pick [^3NOPLAY^1]
-STATUS_PLAY     = ^3%s^1 is now ^3available^1 for pick [^3PLAY^1]
+STATUS_NOPLAY   = ^3%n^1 is ^3not available^1 for pick [^3NOPLAY^1]
+STATUS_PLAY     = ^3%n^1 is now ^3available^1 for pick [^3PLAY^1]
 
-SET_WINTIME     = ^3%s^1 set ^3wintime^1 to ^3%d^1 minutes.
-SET_ROUNDTIME   = ^3%s ^1 set ^3roundtime^1 to ^3%.2f^1 minutes.
-SET_MAXROUNDS   = ^3%s ^1 set ^3maxrounds^1 to ^3%d^1 rounds.
-SER_TIME_TT     = ^3%n^1 set timer for team TT to ^3%s:%s^1.
-SER_TIME_CT     = ^3%n^1 set timer for team CT to ^3%s:%s^1.
-NOT_SET_TT      = Invalid syntax. Example: ^3/tt 15:43^1.
-NOT_SET_CT      = Invalid syntax. Example: ^3/ct 15:43^1.
-NOT_SET_TIME    = Disable mr mode, before changing wintimer.
-NOT_SET_MR      = Disable timer mode, before changing maxrounds.
+SET_ROUNDTIME   = ^3%n ^1 set ^3roundtime^1 to ^3%.2f^1 minutes.
+SET_MAXROUNDS   = ^3%n ^1 set ^3maxrounds^1 to ^3%d^1 rounds.
 
-KILL_HIMSELF    = ^3%s ^1killed himself
+KILL_HIMSELF    = ^3%n^1 killed himself
 KILL_NOT        = Kill during deathmatch is not available.
 
 SUR_WAIT        = Wait ^3%s^1 for surrender!
@@ -23,51 +16,47 @@ SUR_END         = Team ^3%s^1 surrendered!
 AFK_PAUSE       = ^3%d^1 players AFK, pausing game
 AFK_UNPAUSE     = LIVE! All players is here! Unpausing match.
 
-DM_TRANSF       = Transfered to ^3Terrorist^1.
+DM_TRANSF       = %n Transfered to ^3Terrorist^1.
 
 GAME_NOTSTARTED = Game not started or already paused (use /unpause)
-GAME_PAUSED     = ^3%s^1 paused the game!
-GAME_UNPAUSED   = ^3%s^1 unpaused the game!
-GAME_SWAP       = ^3%s^1 swap teams!
-GAME_RESTART    = ^3%s^1 did restart!
+GAME_PAUSED     = ^3%n^1 paused the game!
+GAME_UNPAUSED   = ^3%n^1 unpaused the game!
+GAME_SWAP       = ^3%n^1 swap teams!
+GAME_RESTART    = ^3%n^1 did restart!
 
-PUB_ACTIVATED   = ^3%s^1 has activated ^3public^1 mode
-PUB_ALREADY     = ^3%s^3 public mode is already running
+PUB_ACTIVATED   = ^3%n^1 has activated ^3public^1 mode.
+PUB_ALREADY     = Public mode is already running.
 
-DM_ACTIVATED    = ^3%s^1 has activated ^3deatchmatch^1 mode
+DM_ACTIVATED    = ^3%n^1 has activated ^3deatchmatch^1 mode
 DM_ALREADY      = deatchmatch mode is already running
 
-TRANSF_SPEC     = ^3%s^1 transfered all players to ^3spectators
-TRANSF_TT       = ^3%s^1 transfered all players to ^3terrorist's
-TRANSF_CT       = ^3%s^1 transfered all players to ^3counter-terrorist's
+TRANSF_SPEC     = ^3%n^1 transfered all players to ^3spectators
+TRANSF_TT       = ^3%n^1 transfered all players to ^3terrorist's
+TRANSF_CT       = ^3%n^1 transfered all players to ^3counter-terrorist's
 
-TYPE_SKILL      = ^3%s^1 has activated ^3skill^1 mode
-TYPE_BOOST      = ^3%s^1 has activated ^3boost^1 mode
+TYPE_SKILL      = ^3%n^1 has activated ^3skill^1 mode
+TYPE_BOOST      = ^3%n^1 has activated ^3boost^1 mode
 
-AA_10           = ^3%s^1 changed ^3airaccelerate^1 to ^310
-AA_100          = ^3%s^1 changed ^3airaccelerate^1 to ^3100
-
-MR_ACTIVATED    = ^3%n^1 change mode to ^3MR^1!
-MR_ALREADY      = ^3MR^1 mode is already running!
-
-TIMER_ACTIVATED = ^3%n^1 change mode to ^3Timer^1!
-TIMER_ALREADY   = ^3Timer^1 mode is already running!
+AA_10           = ^3%n^1 changed ^3airaccelerate^1 to ^310
+AA_100          = ^3%n^1 changed ^3airaccelerate^1 to ^3100
 
 HAS_NOT_STOP    = has no access to stop the game!
 
-SHOW_KNIFE      = Knife is now set ^3%svisible
+SHOW_KNIFEON      = Knife is now set ^3visible.
+SHOW_KNIFEOFF     = Knife is now set ^3invisible.
+
 
 NOT_START_MIX   = Please disable other mode before start mix
 NOT_START_KNIFE = Please disable other mode before start knife round
 
-START_MIX       = ^3%s^1 has started ^3mix
-START_KNIFE     = ^3%s^1 has started ^3knife^1 round!
+START_MIX       = ^3%n^1 has started ^3mix
+START_KNIFE     = ^3%n^1 has started ^3knife^1 round!
 
-STOP_MIX        = ^3%s^1 stopped ^3mix
-STOP_KNIFE      = ^3%s^1 stopped ^3knife^1 round
-STOP_PUB        = ^3%s^1 stopped ^3public^1 mode
-STOP_CAP        = ^3%s^1 stopped ^3captain^1 mode
-STOP_DM         = ^3%s^1 stopped ^3deathmatch^1 mode
+STOP_MIX        = ^3%n^1 stopped ^3mix
+STOP_KNIFE      = ^3%n^1 stopped ^3knife^1 round
+STOP_PUB        = ^3%n^1 stopped ^3public^1 mode
+STOP_CAP        = ^3%n^1 stopped ^3captain^1 mode
+STOP_DM         = ^3%n^1 stopped ^3deathmatch^1 mode
 
 SCORE_TIME_MR1 = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds)
 SCORE_TIME_MR2 = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds)
@@ -102,3 +91,107 @@ HUD_STARTMIX2   = Live! Live! Live!^nGood Luck & Have Fun!
 HUD_STARTKNIFE  = Knife Round Started
 HUD_UNPAUSE     = Game Unpause^nLive! Live! Live!
 HUD_PAUSE       = GAME PAUSE
+
+NOCLIP_ON       = No Clip ^3enabled^1!
+NOCLIP_OFF      = No Clip ^3disabled^1!
+DAMAGE_ON          = Damage show ^3enabled^1.
+DAMAGE_OFF         = Damage show ^3disabled^1.
+
+[ru]
+
+STATUS_NOPLAY   = ^3%n^1 выставил статус ^1не играю^1. [^3NOPLAY^1]
+STATUS_PLAY     = ^3%n^1 выставил статус ^1играю^1. [^3PLAY^1]
+
+SET_ROUNDTIME   = ^3%s ^1 установил ^3roundtime^1 на ^3%.2f^1 минут.
+SET_MAXROUNDS   = ^3%s ^1 установил ^3maxrounds^1 на ^3%d^1 раундов.
+
+KILL_HIMSELF    = ^3%n^1 убил сам себя.
+KILL_NOT        = Не доступно для режима дезматч.
+
+SUR_WAIT        = Подождите ^3%s^1 чтобы сдаться!
+SUR_PLAYER      = Игрок ^3%n^1 (^3%s^1) захотел сдаться!
+SUR_NEED        = Нужно ^3%d/%d^1 голосов чтобы сдаться!
+SUR_END         = Команда ^3%s^1 сдалась!
+
+AFK_PAUSE       = ^3%d^1 игроков АФК, игра приостановлена.
+AFK_UNPAUSE     = Старт! Все игроки на месте! Игра возоблена.
+
+DM_TRANSF       = %n перенесли за ^3Террористов^1.
+
+GAME_NOTSTARTED = Игра приостановлена, используйте (^1say /unpause^1).
+GAME_PAUSED     = ^3%n^1 Приостановил игру!
+GAME_UNPAUSED   = ^3%n^1 Возобновил игру!
+GAME_SWAP       = ^3%n^1 Поменял команды местами!
+GAME_RESTART    = ^3%n^1 Перезапустил раунд!
+
+PUB_ACTIVATED   = ^3%n^1 активировал ^3паблик^1 режим.
+PUB_ALREADY     = Паблик режим уже запущен.
+
+DM_ACTIVATED    = ^3%n^1 активировал ^3дезматч^1 режим.
+DM_ALREADY      = дезматч режим уже запущен.
+
+TRANSF_SPEC     = ^3%n^1 Перевел всех игроков за ^3наблюдателей
+TRANSF_TT       = ^3%n^1 Перевел всех игроков за ^3террористов
+TRANSF_CT       = ^3%n^1 Перевел всех игроков за ^3контр-3террористов
+
+TYPE_SKILL      = ^3%n^1 активировал ^3скилл^1 режим
+TYPE_BOOST      = ^3%n^1 активировал ^3буст^1 режим
+
+AA_10           = ^3%n^1 установил ^3airaccelerate^1 на ^310
+AA_100          = ^3%n^1 установил ^3airaccelerate^1 на ^3100
+
+HAS_NOT_STOP    = Не имеет доступа к остановке игры!
+
+SHOW_KNIFEON      = Нож теперь ^3%sвидимый^1.
+SHOW_KNIFEOFF     = Нож теперь ^3не видимый^1.
+
+NOT_START_MIX   = Пожалуйста, отключите другой режим перед запуском матча.
+NOT_START_KNIFE = Пожалуйста, отключите другой режим перед запуском ножевого раунда.
+
+START_MIX       = ^3%n^1 Запустил ^3микс^1!
+START_KNIFE     = ^3%n^1 Запустил ^3ножевой раунд^1!
+
+STOP_MIX        = ^3%n^1 остановил ^3микс^1.
+STOP_KNIFE      = ^3%n^1 остановил ^3ножевой раунд^1.
+STOP_PUB        = ^3%n^1 остановил ^3паблик^1 режим.
+STOP_CAP        = ^3%n^1 остановил режим ^3капитанов^1.
+STOP_DM         = ^3%n^1 остановил ^3дезматч^1 режим.
+
+SCORE_TIME_MR1 = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов)
+SCORE_TIME_MR2 = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов)
+SCORE_NOT      = Извините, но игра не запущена.
+
+SAME_TIMER     = Время равное! ОВЕРТАЙМ! Начало доп. игры (+2 раунда).
+
+TT_WIN          = ТТ Выиграли игру! (^3%s^1 разрыв)
+MR_WIN          = %s Выиграли игру! (^3%s^1 разрыв)
+SHOW_TOP        = Показать топ игроков (^3/top^1).
+
+CAP_CHOOSE      = ^3%n^1 выбирает капитанов...
+CAP_FIRST       = Первый капитан --> ^3%n
+CAP_SECOND      = Второй капитан --> ^3%n
+CAP_HAS_LEFT    = Один из капитанов ушел, режим капитана отключен!
+TEAM_FULL       = Команды полны!
+
+PLAYER_CHOOSE   = ^3%n^1 выбрал игрока --> ^3%n
+
+TRAINING_NOTALIVE  = Вы должны быть живы, чтобы использовать эту команду!
+CP_NOTALIVE        = Вы должны быть живы, чтобы использовать чекпоинты!
+CP_SAVE            = Чекпоинт сохранен!
+CP_NOT             = У вас нет чекпоинтов!
+CP_NOTSTUCK        = У вас должен быть еще чекпинт чтобы использовать эту команду!
+DAMAGE_INFO        = Вы получили ^3%i^1 урона.
+NOCLIP_ON          = Ноклип включен!
+NOCLIP_OFF         = Ноклип отключен!
+DAMAGE_ON          = Показать дамаг - включен!
+DAMAGE_OFF         = Показать дамаг - отключен!
+
+
+HUD_TIMETOWIN   = Последний раунд!^n ТТ Нужно %s чтобы победить!
+HUD_CAPWIN      = Капитан %n победил!
+HUD_GAMEOVER    = Игра закончена.
+HUD_STARTMIX1   = Начало игры через 3 секунды!
+HUD_STARTMIX2   = Игра началась!^nУдачи и веселой игры!
+HUD_STARTKNIFE  = Начался ножевой раунд!
+HUD_UNPAUSE     = Игра возоблена^nНачало игры!
+HUD_PAUSE       = ИГРА ПРИОСТАНОВЛЕНА

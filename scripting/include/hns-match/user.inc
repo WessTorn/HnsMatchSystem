@@ -8,12 +8,6 @@ stock TeamName:getUserTeam(id) {
 	return get_member(id, m_iTeam);
 }
 
-stock getUserName(id) {
-	new szName[128];
-	get_user_name(id, szName, charsmax(szName));
-	return szName;
-}
-
 stock getUserKey(id) {
 	new szAuth[24];
 	get_user_authid(id, szAuth, charsmax(szAuth));

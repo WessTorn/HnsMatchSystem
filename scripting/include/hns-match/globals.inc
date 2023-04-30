@@ -21,22 +21,6 @@ enum {
 }
 new g_iCurrentMode;
 
-enum _:PlayersLoad_s {
-	e_pAuth[24],
-	e_pTeam
-};
-
-new Array:g_aPlayersLoadData;
-
-enum _:PlayerInfo_s
-{
-	Float:e_plrSurviveTime,
-	e_plrRetryGameStops,
-	Float:e_plrRetryTime
-};
-new Trie:g_tPlayerInfo;
-new g_ePlayerInfo[MAX_PLAYERS + 1][PlayerInfo_s];
-
 new g_iGameStops;
 
 enum _:CaptainTeam_s {
