@@ -36,7 +36,7 @@ public stats_stab(attacker) {
 	g_eRoundStats[attacker][e_iStabs]++;
 }
 
-public stats_dmg(id, damage) {
+public stats_dmg(id, Float:damage) {
 	g_eRoundStats[id][e_flDmg] += damage;
 }
 

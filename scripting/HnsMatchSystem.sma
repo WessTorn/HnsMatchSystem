@@ -1,3 +1,6 @@
+#define USE_PTS
+
+
 #include <hns-match/index>
 
 public plugin_precache() {
@@ -7,7 +10,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.6", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
+	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.7", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -52,6 +55,8 @@ public plugin_init() {
 
 	g_bFreezePeriod = true;
 	register_dictionary("mixsystem.txt");
+
+	g_hResetBugForward = CreateMultiForward("fwResetBug", ET_IGNORE, FP_CELL);
 }
 
 public fwdEmitSoundPre(id, iChannel, szSample[], Float:volume, Float:attenuation, fFlags, pitch) {
@@ -386,12 +391,13 @@ public rgPlayerSpawn(id) {
 	}
 
 	setUserRole(id);
+	ExecuteForward(g_hResetBugForward, _, id);
 }
 
 public rgTakeDamage(victim, inflictor, attacker, Float:damage, damage_bits) {
 	if (g_iCurrentMode == e_mMatch) {
 		if (is_user_connected(attacker) && getUserTeam(victim) != getUserTeam(attacker)) {
-			ExecuteForward(g_StatsFuncs[STATSFUNCS_DAMAGE], _, attacker);
+			ExecuteForward(g_StatsFuncs[STATSFUNCS_STAB], _, attacker);
 		}
 	} else if (g_iCurrentMode == e_mTraining) {
 		if(damage_bits & DMG_FALL) {
@@ -409,11 +415,8 @@ public rgPlayerPreThink(id)
 }
 
 public rgPlayerKilled(victim, attacker) {
-	if (!is_user_connected(attacker))
-		return;
-
 	if (g_iCurrentMode == e_mDM) {
-		if (attacker == 0) {
+		if (attacker == 0 || !is_user_connected(attacker)) {
 			if (getUserTeam(victim) == TEAM_TERRORIST) {
 				new lucky = GetRandomCT();
 				if (lucky) {
@@ -430,6 +433,7 @@ public rgPlayerKilled(victim, attacker) {
 			setUserRole(attacker);
 		}
 
+		//chat_print(0, "rgPlayerKilled (victim %n attacker %n)", victim, attacker)
 		set_task(float(get_dm_resp()), "RespawnPlayer", victim);
 	}
 }
@@ -437,7 +441,7 @@ public rgPlayerKilled(victim, attacker) {
 public rgPlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold) {
 	if (g_iCurrentMode == e_mMatch) {
 		if (getUserTeam(index) != getUserTeam(attacker))
-			ExecuteForward(g_StatsFuncs[STATSFUNCS_DAMAGE], _, attacker, fadeHold);
+			ExecuteForward(g_StatsFuncs[STATSFUNCS_FALSHEDTIME], _, attacker, fadeHold);
 	}
 
 	if (getUserTeam(index) == TEAM_TERRORIST || getUserTeam(index) == TEAM_SPECTATOR)
@@ -694,7 +698,7 @@ fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
 
 	formatex(convert_time, len, "%s", szTemp);
 
-	return (PLUGIN_HANDLED);
+	return PLUGIN_HANDLED;
 }
 
 enableSemiclip(team) {

@@ -74,7 +74,7 @@ public task_ShowPlayerInfo() {
 				}
 
 				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
-				/*#if defined USE_PTS
+				#if defined USE_PTS
 					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n (#%d)^n\
 						%s^n\
 						PTS: %d^n\
@@ -83,12 +83,12 @@ public task_ShowPlayerInfo() {
 						g_iCurrentMode == e_mMatch ? szBuffer : "",
 						hns_pts_get_player_info(id, pts),
 						hns_pts_get_player_info(id, wins), hns_pts_get_player_info(id, loss));
-				#else*/
+				#else
 					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n^n\
 						%s",
 						id,
 						g_iCurrentMode == e_mMatch ? szBuffer : "");
-				//#endif
+				#endif
 
 			}
 		}

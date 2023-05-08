@@ -9,6 +9,7 @@ enum _:Info
     wins,
     loss,
     rank,
+    top,
     skill[10]
 };
 

@@ -44,6 +44,10 @@ enum _:SurrenderData_s {
 };
 new g_eSurrenderData[SurrenderData_s];
 
+#if defined USE_PTS
+	new Float:g_flMatchDelay;
+#endif
+
 enum _:Cvars_s {
 	e_cKnifeMap[25]
 };
@@ -89,3 +93,5 @@ new const szDefaultEntities[][] = {
 	"armoury_entity",
 	"monster_scentist"
 }
+
+new g_hResetBugForward;

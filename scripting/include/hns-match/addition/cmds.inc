@@ -43,7 +43,7 @@ stock cmds_init() {
 	RegisterSayCmd("checkpoint","cp", 			"cmdCheckpoint", 	0, "Сheckpoint");
 	RegisterSayCmd("teleport", 	"tp", 			"cmdGoCheck", 		0, "Teleport to checkpoint");
 	RegisterSayCmd("gocheck", 	"gc", 			"cmdGoCheck", 		0, "Сheckpoint");
-	RegisterSayCmd("damage", 	"showdamade", 	"cmdShowDamage", 	0, "Show damage");
+	RegisterSayCmd("dmg", 		"damage", 		"cmdShowDamage", 	0, "Show damage");
 	RegisterSayCmd("noclip", 	"clip", 		"cmdClipMode", 		0, "No clip mode");
 	RegisterSayCmd("respawn", 	"resp", 		"cmdRespawn", 		0, "Respawn player");
 	RegisterSayCmd("top", 		"tops", 		"ShowTop", 			0, "Show top");
@@ -60,9 +60,9 @@ public cmdShowKnife(id) {
 	g_bOnOff[id] = !g_bOnOff[id];
 
 	if (g_bOnOff[id])
-		chat_print(id, "%L", id, "SHOW_KNIFEON");
+		chat_print(id, "%L", id, "SHOW_KNIFEOFF"); 
 	else
-		chat_print(id, "%L", id, "SHOW_KNIFEOFF");
+		chat_print(id, "%L", id, "SHOW_KNIFEON");
 
 	if (!is_user_alive(id))
 		return PLUGIN_HANDLED;
@@ -84,15 +84,19 @@ public cmdPubMode(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	if (g_iCurrentMode != e_mPublic) {
-		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
-			taskPrepareMode(e_mPublic);
-			chat_print(0, "%L", 0, "PUB_ACTIVATED", id);
-		}
-	} else {
+	if (g_iCurrentMode == e_mPublic) {
 		chat_print(id, "%L", id, "PUB_ALREADY");
+		return PLUGIN_HANDLED;
 	}
 
+	if (g_iCurrentMode != e_mTraining) {
+		chat_print(id, "%L", id, "PUB_CANC", id);
+		return PLUGIN_HANDLED;
+	}
+
+
+	taskPrepareMode(e_mPublic);
+	chat_print(0, "%L", 0, "PUB_ACTIVATED", id);
 	removeHook(id);
 
 	return PLUGIN_HANDLED;
@@ -102,17 +106,18 @@ public cmdDMMode(id) {
 	if (!getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	if (g_iCurrentMode != e_mDM) {
-		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
-			taskPrepareMode(e_mDM);
-			chat_print(0, "%L", 0, "DM_ACTIVATED", id);
-		}
-	} else {
-		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mKnife && g_iCurrentMode != e_mPaused) {
-			chat_print(id, "%L", id, "DM_ALREADY", id);
-		}
+	if (g_iCurrentMode == e_mDM) {
+		chat_print(id, "%L", id, "DM_ALREADY", id);
+		return PLUGIN_HANDLED;
 	}
 
+	if (g_iCurrentMode != e_mTraining) {
+		chat_print(id, "%L", id, "DM_CANC", id);
+		return PLUGIN_HANDLED;
+	}
+
+	taskPrepareMode(e_mDM);
+	chat_print(0, "%L", 0, "DM_ACTIVATED", id);
 	removeHook(id);
 
 	return PLUGIN_HANDLED;
@@ -158,6 +163,9 @@ public cmdStartRound(id) {
 
 		chat_print(0, "%L", 0, "START_MIX", id);
 		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
+		#if defined USE_PTS
+			g_flMatchDelay = get_gametime() + 600; // Сделать кваром
+		#endif
 
 		pfStartMatch();
 	}
@@ -511,11 +519,11 @@ public cmdShowTimers(id) {
 		fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
 		fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
 		if (!g_iCurrentSW) {
-			chat_print(id, "%L", id, "SCORE_TIME_MR1",
+			chat_print(id, "%L", id, "SCORE_TIME",
 				timeToWin[0], TTsize, CTSize, timeToWin[1],
 				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 		} else {
-			chat_print(id, "%L", id, "SCORE_TIME_MR2",
+			chat_print(id, "%L", id, "SCORE_TIME",
 				timeToWin[1], TTsize, CTSize, timeToWin[0],
 				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
 		}
@@ -588,11 +596,11 @@ public cmdClipMode(id) {
 	} else {
 		if(!get_user_noclip(id)) {
 			set_user_noclip(id, 1);
-			chat_print(id, "%L", id, "NOCLIP_ON");
+			chat_print(id, "%L", id, "NOCLIP_OFF");
 		}
 		else {
 			set_user_noclip(id, 0);
-			chat_print(id, "%L", id, "NOCLIP_OFF");
+			chat_print(id, "%L", id, "NOCLIP_ON");
 		}
 	}
 	return PLUGIN_HANDLED;

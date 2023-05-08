@@ -6,7 +6,7 @@
 
 public mainMatchMenu(id) {
 	if (!is_user_connected(id) || !getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	new hMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
 
@@ -61,6 +61,8 @@ public mainMatchMenu(id) {
 	menu_additem(hMenu, "Change map", "7");
 
 	menu_display(id, hMenu, 0);
+
+	return PLUGIN_HANDLED;
 }
 
 public mainMatchMenuHandler(id, hMenu, item) {
@@ -137,7 +139,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 
 public customMenu(id) {
 	if (!is_user_connected(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	new hMenu = menu_create("\yHide'n'Seek mix system", "customMenuHandler");
 
@@ -147,6 +149,7 @@ public customMenu(id) {
 
 
 	menu_display(id, hMenu, 0);
+	return PLUGIN_HANDLED;
 }
 
 public customMenuHandler(id, hMenu, item) {
@@ -173,7 +176,7 @@ public customMenuHandler(id, hMenu, item) {
 
 public settingsMatchMenu(id) {
 	if (!is_user_connected(id) || !getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	new title[64];
 	formatex(title, 63, "\yMix system settings");
@@ -209,9 +212,13 @@ public settingsMatchMenu(id) {
 
 	menu_additem(hMenu, titleAA, "7");
 	menu_display(id, hMenu, 0);
+	return PLUGIN_HANDLED;
 }
 
 public settingsMatchMenuHandler(id, hMenu, item) {
+	if (!is_user_connected(id))
+		return PLUGIN_HANDLED;
+
 	if (item == MENU_EXIT) {
 		menu_destroy(hMenu);
 		mainMatchMenu(id);
@@ -247,14 +254,14 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 			settingsMatchMenu(id);
 		}
 		case 3: {
-			if (get_max_rounds() == 4)
-				set_max_rounds(5);
-			else if (get_max_rounds() == 5)
-				set_max_rounds(6);
-			else if (get_max_rounds() == 6)
+			if (get_max_rounds() <= 7)
+				set_max_rounds(8);
+			else if (get_max_rounds() == 8)
+				set_max_rounds(9);
+			else if (get_max_rounds() == 9)
+				set_max_rounds(10);
+			else if (get_max_rounds() >= 10)
 				set_max_rounds(7);
-			else if (get_max_rounds() >= 7)
-				set_max_rounds(4);
 
 			settingsMatchMenu(id);
 		}
@@ -303,7 +310,7 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 
 public verifMenu(id) {
 	if (!is_user_connected(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	new hMenu = menu_create("\yVerification^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
 
@@ -312,28 +319,30 @@ public verifMenu(id) {
 
 	menu_setprop(hMenu, MPROP_EXIT, MEXIT_NEVER);
 	menu_display(id, hMenu, 0);
+	return PLUGIN_HANDLED;
 }
 
 public verifMenuHandler(id, hMenu, item) {
 	menu_destroy(hMenu);
 
 	if (item == MENU_EXIT)
-		return;
+		return PLUGIN_HANDLED;
 
 	switch (item) {
 		case 0: {
 			menu_destroy(hMenu);
-			return;
+			return PLUGIN_HANDLED;
 		}
 		case 1: {
 			cmdStop(id);
 		}
 	}
+	return PLUGIN_HANDLED;
 }
 
 public trainingMenu(id) {
 	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
-		return;
+		return PLUGIN_HANDLED;
 
 	new hMenu = menu_create("\yTrainig menu:", "trainingMenuHandler");
 
@@ -344,6 +353,8 @@ public trainingMenu(id) {
 	menu_additem(hMenu, "Damage", "5");
 
 	menu_display(id, hMenu, 0);
+
+	return PLUGIN_HANDLED;
 }
 
 public trainingMenuHandler(id, hMenu, item) {

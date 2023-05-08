@@ -31,6 +31,7 @@ stock goCheck(id) {
 			set_entvar(id, var_v_angle, flCheckpointAngles[id]);
 			set_entvar(id, var_fixangle, 1);
 		}
+		ExecuteForward(g_hResetBugForward, _, id);
 	}
 }
 
@@ -50,6 +51,7 @@ stock stuck(id) {
 			set_entvar(id, var_angles, flCheckpointAngles[id]);
 			set_entvar(id, var_fixangle, 1);
 		}
+		ExecuteForward(g_hResetBugForward, _, id);
 	}
 }
 
