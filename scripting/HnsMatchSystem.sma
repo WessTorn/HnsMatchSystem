@@ -1,5 +1,7 @@
 #define USE_PTS
 
+// Рестарт раунда переписать
+// Семиклип переписать
 
 #include <hns-match/index>
 
@@ -10,7 +12,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.7", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
+	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.8", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
 
 	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
 
@@ -55,6 +57,8 @@ public plugin_init() {
 
 	g_bFreezePeriod = true;
 	register_dictionary("mixsystem.txt");
+
+	g_tSaveData = TrieCreate();
 
 	g_hResetBugForward = CreateMultiForward("fwResetBug", ET_IGNORE, FP_CELL);
 }
@@ -107,12 +111,6 @@ public fwdSpawn(entid) {
 }
 
 public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
-	if (g_iCurrentMode == e_mMatch) {
-		if (!g_bFreezePeriod) {
-			statsApply();
-		}
-	}
-
 	if (event == ROUND_TARGET_SAVED || event == ROUND_HOSTAGE_NOT_RESCUED) {
 		SetHookChainArg(1, ATYPE_INTEGER, WINSTATUS_TERRORISTS);
 		SetHookChainArg(2, ATYPE_INTEGER, ROUND_TERRORISTS_ESCAPED);
@@ -256,6 +254,9 @@ public rgRestartRound() {
 	}
 
 	set_task(1.0, "taskDestroyBreakables");
+
+	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused)
+		g_flRetry = get_gametime() + RETRY_TIME;
 }
 
 public taskDestroyBreakables() {
@@ -279,6 +280,9 @@ public rgOnRoundFreezeEnd() {
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 
 	set_task(0.25, "taskRoundEvent", .flags = "b");
+	
+	if (g_iCurrentMode == e_mPaused)
+		g_flRetry = get_gametime() + RETRY_TIME;
 }
 
 public rgFlPlayerFallDamage(id) {
@@ -306,6 +310,7 @@ public taskRoundEvent() {
 			if (!is_user_alive(id))
 				continue;
 
+			iStats[id][e_flSurviveTime] += 0.25;
 			g_eRoundStats[id][e_flSurviveTime] += 0.25;
 		}
 	}
@@ -436,6 +441,9 @@ public rgPlayerKilled(victim, attacker) {
 		//chat_print(0, "rgPlayerKilled (victim %n attacker %n)", victim, attacker)
 		set_task(float(get_dm_resp()), "RespawnPlayer", victim);
 	}
+
+	if (g_iCurrentMode == e_mMatch) 
+		ExecuteForward(g_StatsFuncs[STATSFUNCS_KD], _, victim, attacker);
 }
 
 public rgPlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold) {
@@ -507,10 +515,13 @@ public client_putinserver(id) {
 	g_bOnOff[id] = false;
 
 	training_putin(id);
+	setPlayerStats(id);
 }
 
 public client_disconnected(id) {
 	g_bHooked[id] = false;
+
+	savePlayerStats(id);
 }
 
 public RespawnPlayer(id) {
@@ -647,13 +658,13 @@ public native_set_mode(amxx, params) {
 restartRound(Float:delay = 0.5) {
 	if (g_bSurvival) {
 		new iPlayers[32], iNum;
-		get_players(iPlayers, iNum);
+		get_players(iPlayers, iNum, "ch");
 
 		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
-			ResetPlayerRoundData(iPlayer);
+			ResetPlayerRoundStats(iPlayer);
 		}
 	}
 	g_bSurvival = false;
@@ -673,11 +684,6 @@ stock loadMapCFG() {
 		server_cmd("exec %s", szPath);
 	else
 		server_cmd("mp_roundtime 3.5");
-}
-
-ResetPlayerRoundData(id) {
-	if (getUserTeam(id) == TEAM_TERRORIST)
-		g_eRoundStats[id][e_flSurviveTime] -= g_eRoundStats[id][e_flSurviveTime];
 }
 
 fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
@@ -711,6 +717,11 @@ disableSemiclip() {
 	server_cmd("semiclip_option semiclip 0");
 	server_cmd("semiclip_option team 0");
 	server_cmd("semiclip_option time 0");
+}
+
+public plugin_end() {
+	TrieDestroy(g_tSaveData);
+	ArrayDestroy(g_aPlayersLoadData);
 }
 
 /*stock get_num_players_in_mix() {

@@ -10,6 +10,11 @@ new g_PluginId;
 
 stock knifemap[24];
 
+const RETRY_TIME = 30;
+new Float:g_flRetry;
+const TASK_SET_TEAM = 23456;
+const Float:RETRY_HP = 95.0;
+
 enum {
 	e_mTraining,
 	e_mPaused,

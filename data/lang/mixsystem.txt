@@ -60,7 +60,7 @@ STOP_PUB        = ^3%n^1 stopped ^3public^1 mode
 STOP_CAP        = ^3%n^1 stopped ^3captain^1 mode
 STOP_DM         = ^3%n^1 stopped ^3deathmatch^1 mode
 
-SCORE_TIME = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds)
+SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds)
 SCORE_NOT       = Sorry, but game ain't started atm
 
 SAME_TIMER      = Same Timers! OVERTIME! Playing +2 Rounds
@@ -95,8 +95,14 @@ HUD_PAUSE       = GAME PAUSE
 
 NOCLIP_ON       = No Clip ^3enabled^1!
 NOCLIP_OFF      = No Clip ^3disabled^1!
-DAMAGE_ON          = Damage show ^3enabled^1.
-DAMAGE_OFF         = Damage show ^3disabled^1.
+DAMAGE_ON       = Damage show ^3enabled^1.
+DAMAGE_OFF      = Damage show ^3disabled^1.
+
+MENU_MIX_TITLE    = \yHide'n'Seek match system
+MENU_MAIN_CAP     = Start Captain mode
+MENU_MAIN_NOTCAP  = \dStart Captain mode
+MENU_MAIN_STOPCAP = \rStop Captain mode
+
 
 [ru]
 
@@ -121,7 +127,7 @@ DM_TRANSF       = %n перенесли за ^3Террористов^1.
 
 GAME_NOTSTARTED = Игра приостановлена, используйте (^1say /unpause^1).
 GAME_PAUSED     = ^3%n^1 приостановил игру!
-GAME_UNPAUSED   = ^3%n^1 аозобновил игру!
+GAME_UNPAUSED   = ^3%n^1 возобновил игру!
 GAME_SWAP       = ^3%n^1 поменял команды местами!
 GAME_RESTART    = ^3%n^1 перезапустил раунд!
 
@@ -160,7 +166,7 @@ STOP_PUB        = ^3%n^1 остановил ^3паблик^1 режим.
 STOP_CAP        = ^3%n^1 остановил режим ^3капитанов^1.
 STOP_DM         = ^3%n^1 остановил ^3дезматч^1 режим.
 
-SCORE_TIME_MR1 = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов)
+SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов)
 SCORE_NOT      = Извините, но игра не запущена.
 
 SAME_TIMER     = Время равное! ОВЕРТАЙМ! Начало доп. игры (+2 раунда).

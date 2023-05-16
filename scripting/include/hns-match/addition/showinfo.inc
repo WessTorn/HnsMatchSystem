@@ -4,10 +4,6 @@
 
 #define _showinfo_included
 
-statsApply() {
-	apply_stats();
-}
-
 addStats() {
 	for (new i = 1; i <= MaxClients; i++) {
 		arrayset(iStats[i], 0, STATS_PLAYER);
@@ -15,30 +11,6 @@ addStats() {
 
 	for(new i; i < 10; i++) {
 		g_iBestAuth[i] = "";
-	}
-}
-
-public apply_stats() {
-	new TTPlayers[32], iTTNum;
-	get_players(TTPlayers, iTTNum, "che", "TERRORIST");
-	new CTPlayers[32], iCTNum;
-	get_players(CTPlayers, iCTNum, "che", "CT");
-	for (new i = 0; i < iTTNum; i++) {
-		new id = TTPlayers[i];
-		iStats[id][e_flSurviveTime]	= g_eRoundStats[id][e_flSurviveTime];
-		iStats[id][e_flDmg] += g_eRoundStats[id][e_flDmg];
-		iStats[id][e_flRunDistance] += g_eRoundStats[id][e_flRunDistance];
-		iStats[id][e_flFlashedTime] += g_eRoundStats[id][e_flFlashedTime];
-		arrayset(g_eRoundStats[id], 0, STATS_FUNCS);
-	}
-
-	for (new i = 0; i < iCTNum; i++) {
-		new id = CTPlayers[i];
-		iStats[id][e_flSurviveTime]	= g_eRoundStats[id][e_flSurviveTime];
-		iStats[id][e_flDmg] += g_eRoundStats[id][e_flDmg];
-		iStats[id][e_flRunDistance] += g_eRoundStats[id][e_flRunDistance];
-		iStats[id][e_flFlashedTime] += g_eRoundStats[id][e_flFlashedTime];
-		arrayset(g_eRoundStats[id], 0, STATS_FUNCS);
 	}
 }
 
@@ -52,7 +24,7 @@ public task_ShowPlayerInfo() {
 		if(is_user_alive(iPlayer)) {
 			if(g_iCurrentMode == e_mMatch) {
 				new szTime[24];
-				fnConvertTime(g_eRoundStats[iPlayer][e_flSurviveTime], szTime, charsmax(szTime), false);
+				fnConvertTime(iStats[iPlayer][e_flSurviveTime], szTime, charsmax(szTime), false);
 				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
 				ShowSyncHudMsg(iPlayer, g_MsgSync, "Survive time: %s", szTime);
 			}
@@ -69,7 +41,7 @@ public task_ShowPlayerInfo() {
 				new szTime[24], szBuffer[64];
 
 				if(g_iCurrentMode == e_mMatch) {
-					fnConvertTime(g_eRoundStats[id][e_flSurviveTime], szTime, charsmax(szTime), false);
+					fnConvertTime(iStats[id][e_flSurviveTime], szTime, charsmax(szTime), false);
 					formatex(szBuffer, charsmax(szBuffer), "Survive time: %s^nStabs: %d", szTime, iStats[id][e_iStabs]);
 				}
 
@@ -97,7 +69,6 @@ public task_ShowPlayerInfo() {
 
 public ShowTop(player) {
 	if (!player) {
-		apply_stats();
 		new Float:flBestTime[10];
 		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "ch");
@@ -112,7 +83,7 @@ public ShowTop(player) {
 				break;
 
 			get_user_authid(id, g_iBestAuth[iBid], charsmax(g_iBestAuth[]));
-			flBestTime[iBid] = g_eRoundStats[id][e_flSurviveTime];
+			flBestTime[iBid] = iStats[id][e_flSurviveTime];
 			iBid++;
 		}
 

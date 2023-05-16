@@ -167,12 +167,15 @@ public cmdStartRound(id) {
 			g_flMatchDelay = get_gametime() + 600; // Сделать кваром
 		#endif
 
+		g_iGameStops = 0;
+
+		setPlayerData();
+
 		pfStartMatch();
 	}
 }
 
 stock pfStartMatch() {
-	g_iGameStops = 0;
 	rg_send_audio(0, "plats/elevbell1.wav");
 	set_task(2.5, "taskPrepareMode", e_mMatch);
 	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX1");
@@ -389,10 +392,10 @@ public cmdStartPause(id) {
 		if (g_bGameStarted) {
 			g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
 
-			get_players(iPlayers, iNum, "c");
+			get_players(iPlayers, iNum, "ch");
 			for (new i; i < iNum; i++) {
 				new iPlayer = iPlayers[i];
-				ResetPlayerRoundData(iPlayer);
+				ResetPlayerRoundStats(iPlayer);
 				arrayset(g_eRoundStats[iPlayer], 0, STATS_PLAYER);
 			}
 
