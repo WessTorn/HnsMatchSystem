@@ -9,6 +9,7 @@ stock message_init() {
 	register_message(get_user_msgid("ShowMenu"), "msgShowMenu");
 	register_message(get_user_msgid("VGUIMenu"), "msgVguiMenu");
 	register_message(get_user_msgid("HideWeapon"), "msgHideWeapon");
+	
 
 	set_msg_block(get_user_msgid("HudTextArgs"), BLOCK_SET);
 }
@@ -76,37 +77,81 @@ stock forceTeamJoin(id, menu_msgid, team[] = "5", class[] = "0") {
 	engclient_cmd(id, jointeam, team);
 	engclient_cmd(id, joinclass, class);
 	set_msg_block(menu_msgid, msg_block);
-	set_task(0.1, "taskSetPlayerTeam", id);
-}
 
+	setPlayerStats(id);
+
+	set_task(0.2, "taskSetPlayerTeam", id);
+}
 
 public taskSetPlayerTeam(id) {
 	if (!is_user_connected(id))
 		return;
 
-	if (g_iCurrentMode >= e_mPaused && g_iCurrentMode != e_mPublic && g_iCurrentMode != e_mDM) {
-		transferUserToSpec(id);
-		return;
-	}
+	switch(g_iCurrentMode) {
+		case e_mMatch, e_mPaused: {
+			if (iStats[id][e_flSaveDiscTime] > get_gametime()) {
+				new iPlayers[MAX_PLAYERS], iNum;
+				get_players(iPlayers, iNum, "he", iStats[id][e_szSaveTeam]);
 
-	if (g_iCurrentMode == e_mTraining) {
-		if (equali(g_eMatchInfo[e_mMapName], knifemap)) {
-			rg_round_respawn(id);
-			if (is_check_play()) {
-				g_bNoplay[id] = true;
-				set_task(2.0, "taskPlay", id);
+				if (iNum < g_eMatchInfo[e_mTeamSizeTT]) {
+					rg_set_user_team(id, iStats[id][e_szSaveTeam][0] == 'T' ? TEAM_TERRORIST : TEAM_CT);
+
+					if (!iStats[id][e_bSaveAlive] || g_iCurrentMode == e_mPaused) {
+						console_print(0, "Player %n joined!", id);
+						chat_print(0, "Player %n joined!", id);
+
+						if (g_iCurrentMode == e_mPaused)
+							rg_round_respawn(id);
+
+						return;
+					}
+
+					new iPlayers[MAX_PLAYERS], iNum, bool:restart_round;
+					get_players(iPlayers, iNum, "ahe", iStats[id][e_szSaveTeam]);
+
+					new bid;
+					for (new i; i < iNum; i++) {
+						new iPlayer = iPlayers[i];
+
+						if (Float:get_entvar(iPlayer, var_health) < RETRY_HP) bid++;
+					}
+
+					restart_round = iNum == g_eMatchInfo[e_mTeamSizeTT] - 1 && !bid ? true : false;
+
+					if (restart_round)
+						restartRound();
+
+					console_print(0, "Player %n joined%s", id, restart_round ? ", restart round!" : "!");
+					chat_print(0, "Player %n joined%s", id, restart_round ? ", restart round!" : "!");
+					}
+			} else {
+				transferUserToSpec(id);
+				return;
 			}
+		}
+		case e_mKnife, e_mCaptain: {
+			transferUserToSpec(id);
 			return;
 		}
+		case e_mTraining: {
+			if (equali(g_szMapName, knifemap)) {
+				rg_round_respawn(id);
+				if (is_check_play()) {
+					g_bNoplay[id] = true;
+					set_task(2.0, "taskPlay", id);
+				}
+				return;
+			}
 
-		if (g_bPlayersListLoaded) {
-			if (!checkPlayer(id))
-				transferUserToSpec(id);
+			if (g_bPlayersListLoaded) {
+				if (!checkPlayer(id))
+					transferUserToSpec(id);
+				else
+					rg_round_respawn(id);
+			}
 			else
 				rg_round_respawn(id);
 		}
-		else
-			rg_round_respawn(id);
 	}
 }
 
@@ -114,26 +159,31 @@ public taskPlay(id) {
 	if (!is_user_connected(id))
 		return;
 
-	new iMenu = menu_create("\rYou play?", "handlePlayMenu");
+	new szMsg[64];
 
-	menu_additem(iMenu, "Yes");
-	menu_additem(iMenu, "No");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_VERIF_TITLE");
+	new hMenu = menu_create(szMsg, "handlePlayMenu");
 
-	menu_setprop(iMenu, MPROP_EXIT, MEXIT_NEVER);
-	menu_display(id, iMenu, 0);
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_YES");
+	menu_additem(hMenu, szMsg, "1");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NO");
+	menu_additem(hMenu, szMsg, "2");
+
+	menu_display(id, hMenu, 0);
 }
 
-public handlePlayMenu(id, iMenu, item) {
+public handlePlayMenu(id, hMenu, item) {
 	if (!is_user_connected(id))
 		return;
 
 	if (item == MENU_EXIT)
 		return;
 
-	menu_destroy(iMenu);
+	menu_destroy(hMenu);
 
 	switch (item) {
 		case 0: cmdPlay(id);
-		case 1: chat_print(0, "%L", id, "STATUS_NOPLAY", id);
+		case 1: chat_print(0, "%L", 0, "STATUS_NOPLAY", id);
 	}
 }

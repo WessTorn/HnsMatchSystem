@@ -33,7 +33,10 @@ stock chooseCapsMenu(id) {
 	if (g_iCurrentMode != e_mCaptain)
 		return;
 
-	new iMenu = menu_create("\yChoose captains", "chooseCapsHandler");
+	new szMsg[64];
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CAP_CHOSE");
+	new hMenu = menu_create(szMsg, "chooseCapsHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
 	get_players(iPlayers, iNum, "ch");
@@ -51,35 +54,35 @@ stock chooseCapsMenu(id) {
 		if (g_bNoplay[iPlayer])
 			add(szBuffer, charsmax(szBuffer), "\r[Noplay] ");
 
-		menu_additem(iMenu, szBuffer, szPlayer);
+		menu_additem(hMenu, szBuffer, szPlayer);
 		szBuffer = "";
 	}
 
-	menu_setprop(iMenu, MPROP_EXITNAME, "Refresh");
-	menu_setprop(iMenu, MPROP_SHOWPAGE, 0);
-	menu_display(id, iMenu, 0);
+	menu_setprop(hMenu, MPROP_EXITNAME, "Refresh");
+	menu_setprop(hMenu, MPROP_SHOWPAGE, 0);
+	menu_display(id, hMenu, 0);
 }
 
-public chooseCapsHandler(id, iMenu, item) {
+public chooseCapsHandler(id, hMenu, item) {
 	if (!is_user_connected(id)) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		return;
 	}
 
 	if (g_iCurrentMode != e_mCaptain) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		return;
 	}
 
 	if (item == MENU_EXIT) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		chooseCapsMenu(id);
 		return;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(iMenu);
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 
 	new iPlayer = str_to_num(szData);
 
@@ -116,7 +119,10 @@ public chooseCapsHandler(id, iMenu, item) {
 }
 
 stock pickMenu(id) {
-	new iMenu = menu_create("\yPick player", "pickHandler");
+	new szMsg[64];
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CAP_PICK");
+	new hMenu = menu_create(szMsg, "pickHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
 	get_players(iPlayers, iNum, "che", "SPECTATOR");
@@ -131,45 +137,45 @@ stock pickMenu(id) {
 		if (g_bNoplay[iPlayer])
 			add(szBuffer, charsmax(szBuffer), "\r[Noplay] ");
 
-		menu_additem(iMenu, szBuffer, szPlayer);
+		menu_additem(hMenu, szBuffer, szPlayer);
 		szBuffer = "";
 	}
 
-	menu_setprop(iMenu, MPROP_EXITNAME, "Refresh");
-	menu_setprop(iMenu, MPROP_SHOWPAGE, false);
-	menu_display(id, iMenu, 0);
+	menu_setprop(hMenu, MPROP_EXITNAME, "Refresh");
+	menu_setprop(hMenu, MPROP_SHOWPAGE, false);
+	menu_display(id, hMenu, 0);
 }
 
-public pickHandler(id, iMenu, item) {
+public pickHandler(id, hMenu, item) {
 	if (!is_user_connected(id)) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		return;
 	}
 
 	if (g_iCurrentMode != e_mCaptain) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		return;
 	}
 
 	if (id != g_iCaptainPick) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		return;
 	}
 
 	if (getUserTeam(id) == TEAM_SPECTATOR) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		return;
 	}
 
 	if (item == MENU_EXIT) {
-		menu_destroy(iMenu);
+		menu_destroy(hMenu);
 		pickMenu(id);
 		return;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
-	menu_item_getinfo(iMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	menu_destroy(iMenu);
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 
 	new iPlayer = str_to_num(szData);
 

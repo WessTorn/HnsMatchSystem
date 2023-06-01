@@ -5,6 +5,15 @@ enum _:PlayersLoad_s {
 
 new Array:g_aPlayersLoadData;
 
+new g_szBuffer[2048];
+
+public PDS_Save() {
+	if (equali(g_szMapName, knifemap)) {
+		if (g_szBuffer[0])
+			PDS_SetString("playerslist", g_szBuffer);
+	}
+}
+
 stock savePlayers(TeamName:team_winners) {
 	new JSON:arrayRoot = json_init_array();
 
@@ -39,7 +48,7 @@ arrayAppendValue(JSON:array, JSON:node) {
 }
 
 loadPlayers() {
-	if (!equali(g_eMatchInfo[e_mMapName], knifemap))
+	if (!equali(g_szMapName, knifemap))
 		g_bPlayersListLoaded = PDS_GetString("playerslist", g_szBuffer, charsmax(g_szBuffer));
 
 	if (g_bPlayersListLoaded) {

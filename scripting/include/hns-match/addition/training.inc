@@ -1,9 +1,9 @@
-new bool:bDamage[33];
-new bool:g_bSaveAngles[33];
+new bool:bDamage[MAX_PLAYERS + 1];
+new bool:g_bSaveAngles[MAX_PLAYERS + 1];
 
-new Float:flCheckpointAngles[33][3];
-new Float:flCheckpoints[33][2][3];
-new bool:flCheckpointAlternate[33];
+new Float:flCheckpointAngles[MAX_PLAYERS + 1][3];
+new Float:flCheckpoints[MAX_PLAYERS + 1][2][3];
+new bool:flCheckpointAlternate[MAX_PLAYERS + 1];
 
 stock checkPoint(id) {
 	if(!is_user_alive(id)) {

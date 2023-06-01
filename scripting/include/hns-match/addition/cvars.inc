@@ -81,7 +81,7 @@ stock is_semiclip() {
 	return get_pcvar_num(g_pSemiclip) ? true : false;
 }
 
-stock set_semiclip(bool:isClip) {
+stock set_cvar_semiclip(bool:isClip) {
 	if (isClip)
 		set_pcvar_num(g_pSemiclip, 1);
 	else
@@ -128,6 +128,6 @@ stock get_knife_map(map[], size) {
 	return get_pcvar_string(g_pKnifeMap, map, size);
 }
 
-stock get_prefix (prefix[], size) {
+stock get_prefix(prefix[], size) {
 	get_pcvar_string(g_pPrefix, prefix, size);
 }

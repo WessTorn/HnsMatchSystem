@@ -13,7 +13,6 @@ stock ham_init() {
 	RegisterHam(Ham_Item_Deploy, "weapon_knife", "hamDeployKnife", 1);
 	RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_knife", "hamKnifePrim");
 
-	playerKilledPre = RegisterHam(Ham_Killed, "player", "fwdPlayerKilledPre", 0);
 	register_menucmd(register_menuid("NadesMenu"), 3, "handleNadesMenu");
 }
 
@@ -38,24 +37,6 @@ public hamKnifePrim(const iPlayer) {
 		return HAM_SUPERCEDE;
 	}
 	return HAM_IGNORED;
-}
-
-public fwdPlayerKilledPre(id) {
-	if (getUserTeam(id) != TEAM_TERRORIST)
-		return;
-
-	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPublic) {
-		new iPlayers[32], iNum, index;
-		get_players(iPlayers, iNum, "ache", "TERRORIST");
-
-		if (iNum == 1) {
-			index = iPlayers[0];
-			g_bLastFlash[index] = true;
-			iGiveNadesTo = index;
-			show_menu(index, 3, "\rDo you need some nades?^n^n\r1. \wYes^n\r2. \wNo", -1, "NadesMenu");
-			DisableHamForward(playerKilledPre);
-		}
-	}
 }
 
 public handleNadesMenu(id, szKey) {

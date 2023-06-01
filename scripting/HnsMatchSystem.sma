@@ -1,8 +1,3 @@
-#define USE_PTS
-
-// Рестарт раунда переписать
-// Семиклип переписать
-
 #include <hns-match/index>
 
 public plugin_precache() {
@@ -12,9 +7,9 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.8", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
+	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.9.1", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
 
-	get_mapname(g_eMatchInfo[e_mMapName], charsmax(g_eMatchInfo[e_mMapName]));
+	get_mapname(g_szMapName, charsmax(g_szMapName));
 
 	cvars_init();
 
@@ -54,8 +49,6 @@ public plugin_init() {
 	loadPlayers();
 
 	g_MsgSync = CreateHudSyncObj();
-
-	g_bFreezePeriod = true;
 	register_dictionary("mixsystem.txt");
 
 	g_tSaveData = TrieCreate();
@@ -85,10 +78,10 @@ public fwdGameNameDesc() {
 
 public fwdClientKill(id) {
 	if (g_iCurrentMode == e_mDM) {
-		chat_print(0, "%L", id, "KILL_NOT");
+		chat_print(id, "%L", id, "KILL_NOT");
 		return FMRES_SUPERCEDE;
 	} else {
-		chat_print(0, "%L", id, "KILL_HIMSELF", id);
+		chat_print(0, "%L", 0, "KILL_HIMSELF", id);
 	}
 	return FMRES_IGNORED;
 }
@@ -129,52 +122,55 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 			}
 		}
 		case e_mMatch: {
-			g_bSurvival = false;
+			g_eMatchInfo[e_sRoundInfo] = ROUND_NOT;
 			if (status == WINSTATUS_TERRORISTS) {
 				new players[MAX_PLAYERS], pnum;
 				get_players(players, pnum, "ace", "CT");
 				if (!pnum) {
 					new Float:roundtime = get_pcvar_float(get_round_time()) * 60.0;
-					g_flSidesTime[g_iCurrentSW] += roundtime - g_flRoundTime;
+					g_eMatchInfo[e_flSidesTime][g_isTeamTT] += roundtime - g_flRoundTime;
 				}
 			}
-			if (g_bGameStarted) {
-				new iWinTeam = -1;
+			if (g_eMatchInfo[e_bStarted]) {
+				new HNS_TEAM:iWinTeam;
+				new bool:bFinish = false;
 				new szTime[24];
-				new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
-				new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
-				if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
-					iWinTeam = !g_iCurrentSW;
-				} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {
-					iWinTeam = g_iCurrentSW;
+				new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]);
+				new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT]);
+				if (g_eMatchInfo[e_flSidesTime][g_isTeamTT] + flTimeToWinTT < g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]) {
+					iWinTeam = HNS_TEAM:!g_isTeamTT;
+					bFinish = true;
+				} else if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] + flTimeToWinCT < g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
+					iWinTeam = g_isTeamTT;
+					bFinish = true;
 				}
-				g_iRoundsPlayed[g_iCurrentSW]++;
-				if (iWinTeam != -1) {
-					MixFinishedMR(iWinTeam == g_iCurrentSW ? 1 : 2);
-				} else if(g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= (get_max_rounds() * 2)) {				
-					if (floatabs(g_flSidesTime[!g_iCurrentSW]-g_flSidesTime[g_iCurrentSW]) <= 1.0)
+				g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++;
+				if (bFinish) {
+					MixFinishedMR(iWinTeam == g_isTeamTT ? 1 : 2);
+				} else if(g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= (get_max_rounds() * 2)) {				
+					if (floatabs(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT]) <= 1.0)
 					{
-						g_iCurrentSW = !g_iCurrentSW;
+						switchHnsTeamValue();
 						rg_swap_all_players();
-						chat_print(0, "%L", "SAME_TIMER");
+						chat_print(0, "%L", 0, "SAME_TIMER");
 						set_max_rounds(get_max_rounds() + 2);
-						g_bLastRound = false;
+						g_eMatchInfo[e_bLastRound] = false;
 					}
-				} else if (g_iRoundsPlayed[g_iCurrentSW] + g_iRoundsPlayed[!g_iCurrentSW] >= (get_max_rounds() * 2) - 1) {
-					if (!g_bLastRound) {
-						g_iCurrentSW = !g_iCurrentSW;
+				} else if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= (get_max_rounds() * 2) - 1) {
+					if (!g_eMatchInfo[e_bLastRound]) {
+						switchHnsTeamValue();
 						rg_swap_all_players();
 					}
-					if (g_flSidesTime[!g_iCurrentSW] > g_flSidesTime[g_iCurrentSW]) {
-						if (!g_bLastRound) {
-							fnConvertTime(g_flSidesTime[!g_iCurrentSW] - g_flSidesTime[g_iCurrentSW], szTime, charsmax(szTime));
+					if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
+						if (!g_eMatchInfo[e_bLastRound]) {
+							fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], szTime, charsmax(szTime));
 							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("%L", LANG_SERVER, "HUD_TIMETOWIN", szTime));
-							g_bLastRound = true;
+							g_eMatchInfo[e_bLastRound] = true;
 						}
 					}
 				} else {
-					if (!g_bLastRound) {
-						g_iCurrentSW = !g_iCurrentSW;
+					if (!g_eMatchInfo[e_bLastRound]) {
+						switchHnsTeamValue()
 						rg_swap_all_players();
 					}
 				}
@@ -222,13 +218,12 @@ public rgResetMaxSpeed(id) {
 
 public rgRestartRound() {
 	remove_task();
-	g_bFreezePeriod = true;
+	g_eMatchInfo[e_sRoundInfo] = ROUND_FREEZE
 
-	if (g_bGameStarted)
+	if (g_eMatchInfo[e_bStarted])
 		cmdShowTimers(0);
 
 	g_flRoundTime = 0.0;
-	EnableHamForward(playerKilledPre);
 
 	new iPlayers[MAX_PLAYERS], iNum;
 
@@ -269,12 +264,11 @@ public taskDestroyBreakables() {
 }
 
 public rgOnRoundFreezeEnd() {
-	g_bFreezePeriod = false;
 	if (g_iCurrentMode != e_mMatch)
 		return;
 
-	if (g_bGameStarted)
-		g_bSurvival = true;
+	if (g_eMatchInfo[e_bStarted])
+		g_eMatchInfo[e_sRoundInfo] = ROUND_START;
 
 	set_task(is_semiclip() ? 3.0 : 5.0, "taskCheckAfk");
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
@@ -295,16 +289,12 @@ public rgFlPlayerFallDamage(id) {
 }
 
 public taskRoundEvent() {
-	if (g_bSurvival) {
-		new iPlayers[32], count;
+	if (g_eMatchInfo[e_sRoundInfo] == ROUND_START) {
+		new iPlayers[MAX_PLAYERS], count;
 		get_players(iPlayers, count, "che", "TERRORIST");
 
-		for(new i; i < 10; i++) {
-			g_iBestAuth[i] = "";
-		}
-
 		g_flRoundTime += 0.25;
-		g_flSidesTime[g_iCurrentSW] += 0.25;
+		g_eMatchInfo[e_flSidesTime][g_isTeamTT] += 0.25;
 		for (new i; i < count; i++) {
 			new id = iPlayers[i];
 			if (!is_user_alive(id))
@@ -315,59 +305,42 @@ public taskRoundEvent() {
 		}
 	}
 	if ((g_flRoundTime / 60.0) >= get_pcvar_float(get_round_time())) {
-		if (g_bGameStarted)
-			g_bSurvival = false;
+		if (g_eMatchInfo[e_bStarted])
+			g_eMatchInfo[e_sRoundInfo] = ROUND_NOT;
 
 		remove_task();
 	}
 	
-	new iWinTeam = -1;
-	new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[g_iCurrentSW]);
-	new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_iRoundsPlayed[!g_iCurrentSW]);
-	if (g_flSidesTime[g_iCurrentSW] + flTimeToWinTT < g_flSidesTime[!g_iCurrentSW]) {
-		iWinTeam = !g_iCurrentSW;
-	} else if (g_flSidesTime[!g_iCurrentSW] + flTimeToWinCT < g_flSidesTime[g_iCurrentSW]) {
-		iWinTeam = g_iCurrentSW;
+	new HNS_TEAM:iWinTeam;
+	new bool:bFinish = false;
+	new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]);
+	new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT]);
+	if (g_eMatchInfo[e_flSidesTime][g_isTeamTT] + flTimeToWinTT < g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]) {
+		iWinTeam = HNS_TEAM:!g_isTeamTT;
+		bFinish = true;
+	} else if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] + flTimeToWinCT < g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
+		iWinTeam = g_isTeamTT;
+		bFinish = true;
 	}
-	if (iWinTeam != -1) {
-		MixFinishedMR(iWinTeam == g_iCurrentSW ? 1 : 2);
+	if (bFinish) {
+		MixFinishedMR(iWinTeam == g_isTeamTT ? 1 : 2);
 	}
 }
 
 public MixFinishedMR(iWinTeam) {
-	g_bGameStarted = false;
-	g_bSurvival = false;
-	g_bLastRound = false;
-	new Float:TimeDiff = floatabs(g_flSidesTime[g_iCurrentSW] - g_flSidesTime[!g_iCurrentSW]);
+	ExecuteForward(g_hForwards[MATCH_FINISHED], _, iWinTeam);
+	new Float:TimeDiff = floatabs(g_eMatchInfo[e_flSidesTime][g_isTeamTT] - g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]);
 	new szTime[24];
 	fnConvertTime(TimeDiff, szTime, 23);
 	chat_print(0, "%L", 0, "MR_WIN", iWinTeam == 1 ? "TT" : "CT", szTime);
 	chat_print(0, "%L", 0, "SHOW_TOP");
 
-	#if defined USE_PTS
-		if (g_flMatchDelay > get_gametime()) {
-			chat_print(0, "^3Not pts (mix time < 10 min)");
-		} else {
-			if (get_num_players_in_match() < 5) {
-				chat_print(0, "^3Not pts (Players <= 5");
-			} else {
-				if (iWinTeam == 1)
-					hns_set_pts_tt();
-				else
-					hns_set_pts_ct()
-			}
-		}
-	#endif
-
 	setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "%L", LANG_SERVER, "HUD_GAMEOVER");
 	taskPrepareMode(e_mTraining);
 
 	g_bPlayersListLoaded = false;
-	g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
-	g_flSidesTime[!g_iCurrentSW] = g_flSidesTime[g_iCurrentSW] = 0.0;
+	arrayset(g_eMatchInfo, 0, MatchInfo_s);
 	ShowTop(0);
-
-	ExecuteForward(g_hForwards[MATCH_FINISHED], _, iWinTeam);
 }
 
 stock get_num_players_in_match() {
@@ -442,7 +415,21 @@ public rgPlayerKilled(victim, attacker) {
 		set_task(float(get_dm_resp()), "RespawnPlayer", victim);
 	}
 
-	if (g_iCurrentMode == e_mMatch) 
+	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPublic) {
+		if (getUserTeam(victim) == TEAM_TERRORIST) {
+			new iPlayers[MAX_PLAYERS], iNum, index;
+			get_players(iPlayers, iNum, "ache", "TERRORIST");
+
+			if (iNum == 1) {
+				index = iPlayers[0];
+				g_bLastFlash[index] = true;
+				iGiveNadesTo = index;
+				show_menu(index, 3, "\rDo you need some nades?^n^n\r1. \wYes^n\r2. \wNo", -1, "NadesMenu");
+			}
+		}
+	}
+
+	if (g_iCurrentMode == e_mMatch || is_user_connected(attacker)) 
 		ExecuteForward(g_StatsFuncs[STATSFUNCS_KD], _, victim, attacker);
 }
 
@@ -481,7 +468,7 @@ public rgPlayerMovePost(const PlayerMove:ppmove, const server) {
 public taskDelayedMode() {
 	get_knife_map(knifemap, charsmax(knifemap));
 
-	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
+	if (equali(knifemap, g_szMapName)) {
 		taskPrepareMode(e_mTraining);
 	} else if (get_last_mode() == 0) {
 		taskPrepareMode(e_mTraining);
@@ -504,18 +491,10 @@ public registerMode() {
 	dllfunc(DLLFunc_Spawn, g_iHostageEnt);
 }
 
-public PDS_Save() {
-	if (equali(g_eMatchInfo[e_mMapName], knifemap)) {
-		if (g_szBuffer[0])
-			PDS_SetString("playerslist", g_szBuffer);
-	}
-}
-
 public client_putinserver(id) {
 	g_bOnOff[id] = false;
 
 	training_putin(id);
-	setPlayerStats(id);
 }
 
 public client_disconnected(id) {
@@ -533,17 +512,13 @@ public RespawnPlayer(id) {
 }
 
 GetRandomCT() {
-	static iPlayers[32], iCTNum
+	static iPlayers[MAX_PLAYERS], iCTNum
 	get_players(iPlayers, iCTNum, "ache", "CT");
 
 	if(!iCTNum)
 		return 0
 
 	return iCTNum > 1 ? iPlayers[random(iCTNum)] : iPlayers[iCTNum - 1];
-}
-
-public is_hooked(id) {
-	return g_bHooked[id];
 }
 
 public taskPrepareMode(mode) {
@@ -555,23 +530,20 @@ public taskPrepareMode(mode) {
 			g_iCurrentMode = e_mTraining;
 			server_cmd("exec %s/training.cfg", szPath);
 			set_last_mode(0);
-			disableSemiclip();
+			set_semiclip(SEMICLIP_OFF);
 		}
 		case e_mKnife: {
 			g_iCurrentMode = e_mKnife;
 			server_cmd("exec %s/knife.cfg", szPath);
 			set_last_mode(0);
-			disableSemiclip();
+			set_semiclip(SEMICLIP_OFF);
 		}
 		case e_mMatch: {
 			g_iCurrentMode = e_mMatch;
-			g_flSidesTime[0] = 0.0;
-			g_flSidesTime[1] = 0.0;
-			g_iRoundsPlayed[0] = 0;
-			g_iRoundsPlayed[1] = 0;
-			g_iCurrentSW = 1;
-			g_bGameStarted = true;
-			g_bLastRound = false;
+
+			arrayset(g_eMatchInfo, 0, MatchInfo_s);
+			g_isTeamTT = HNS_TEAM_A;
+			g_eMatchInfo[e_bStarted] = true;
 
 			server_cmd("exec %s/match.cfg", szPath);
 			set_last_mode(0);
@@ -580,14 +552,12 @@ public taskPrepareMode(mode) {
 				set_cvar_num("mp_freezetime", 5);
 				set_flash_num(1);
 				set_smoke_num(1);
-				set_semiclip(true);
-				enableSemiclip(3);
+				set_semiclip(SEMICLIP_ON, true);
 			} else {
 				set_cvar_num("mp_freezetime", 15);
 				set_flash_num(3);
 				set_smoke_num(1);
-				set_semiclip(false);
-				disableSemiclip();
+				set_semiclip(SEMICLIP_OFF);
 			}
 
 			loadMapCFG();
@@ -607,7 +577,7 @@ public taskPrepareMode(mode) {
 			server_cmd("exec %s/public.cfg", szPath);
 			set_flash_num(1);
 			set_last_mode(1);
-			enableSemiclip(3);
+			set_semiclip(SEMICLIP_ON, true);
 			loadMapCFG();
 		}
 		case e_mDM: {
@@ -615,12 +585,12 @@ public taskPrepareMode(mode) {
 			server_cmd("exec %s/deathmatch.cfg", szPath);
 			set_flash_num(1);
 			set_last_mode(2);
-			enableSemiclip(3);
+			set_semiclip(SEMICLIP_ON, true);
 		}
 		case e_mCaptain: {
 			g_iCurrentMode = e_mCaptain;
 			server_cmd("exec %s/captain.cfg", szPath);
-			enableSemiclip(0);
+			set_semiclip(SEMICLIP_ON);
 		}
 	}
 	restartRound();
@@ -633,41 +603,19 @@ public plugin_cfg() {
 	server_cmd("exec %s", szPath);
 }
 
-public plugin_natives() {
-	register_native("hns_get_prefix", "native_get_prefix");
-
-	register_native("hns_get_mode", "native_get_mode");
-	register_native("hns_set_mode", "native_set_mode");
-}
-
-public native_get_prefix(amxx, params) {
-	enum { argPrefix = 1, argLen };
-	set_string(argPrefix, prefix, get_param(argLen));
-}
-
-public native_get_mode(amxx, params) {
-	return g_iCurrentMode;
-}
-
-public native_set_mode(amxx, params) {
-	enum { argMode = 1 };
-	g_iCurrentMode = get_param(argMode);
-	taskPrepareMode(argMode);
-}
-
 restartRound(Float:delay = 0.5) {
-	if (g_bSurvival) {
-		new iPlayers[32], iNum;
+	if (g_eMatchInfo[e_sRoundInfo] == ROUND_START) {
+		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "ch");
 
-		g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
+		g_eMatchInfo[e_flSidesTime][g_isTeamTT] -= g_flRoundTime;
 
 		for (new i; i < iNum; i++) {
 			new iPlayer = iPlayers[i];
 			ResetPlayerRoundStats(iPlayer);
 		}
 	}
-	g_bSurvival = false;
+	g_eMatchInfo[e_sRoundInfo] = ROUND_NOT;
 	rg_round_end(delay, WINSTATUS_DRAW, ROUND_END_DRAW, "Round Restarted", "none");
 }
 
@@ -678,7 +626,7 @@ stock loadMapCFG() {
 	if (!dir_exists(szPath))
 		mkdir(szPath);
 
-	format(szPath, 127, "%s/mapcfg/%s.cfg", szPath, g_eMatchInfo[e_mMapName]);
+	format(szPath, 127, "%s/mapcfg/%s.cfg", szPath, g_szMapName);
 
 	if (file_exists(szPath))
 		server_cmd("exec %s", szPath);
@@ -686,38 +634,6 @@ stock loadMapCFG() {
 		server_cmd("mp_roundtime 3.5");
 }
 
-fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
-	new szTemp[24];
-	new Float:flSeconds = time, iMinutes;
-
-	iMinutes = floatround(flSeconds / 60.0, floatround_floor);
-	flSeconds -= iMinutes * 60.0;
-	new intpart = floatround(flSeconds, floatround_floor);
-	new Float:decpart = (flSeconds - intpart) * 100.0;
-
-	if (with_intpart) {
-		intpart = floatround(decpart);
-		formatex(szTemp, charsmax(szTemp), "%02i:%02.0f.%d", iMinutes, flSeconds, intpart);
-	} else {
-		formatex(szTemp, charsmax(szTemp), "%02i:%02.0f", iMinutes, flSeconds);
-	}
-
-	formatex(convert_time, len, "%s", szTemp);
-
-	return PLUGIN_HANDLED;
-}
-
-enableSemiclip(team) {
-	server_cmd("semiclip_option semiclip 1");
-	server_cmd("semiclip_option team %d", team);
-	server_cmd("semiclip_option time 0");
-}
-
-disableSemiclip() {
-	server_cmd("semiclip_option semiclip 0");
-	server_cmd("semiclip_option team 0");
-	server_cmd("semiclip_option time 0");
-}
 
 public plugin_end() {
 	TrieDestroy(g_tSaveData);

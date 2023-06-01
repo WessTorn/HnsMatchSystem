@@ -4,6 +4,26 @@
 
 #define _showinfo_included
 
+enum _:Info
+{
+    pts,
+    wins,
+    loss,
+    rank,
+    top,
+    skill[10]
+};
+
+enum _:SKILL_INFO
+{
+    SKILL_PTS,
+    SKILL_LVL[10]
+};
+
+native hns_pts_get_player_info(id, info);
+
+new g_iBestAuth[10][MAX_AUTHID_LENGTH];
+
 addStats() {
 	for (new i = 1; i <= MaxClients; i++) {
 		arrayset(iStats[i], 0, STATS_PLAYER);
@@ -46,8 +66,7 @@ public task_ShowPlayerInfo() {
 				}
 
 				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
-				#if defined USE_PTS
-					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n (#%d)^n\
+				ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n (#%d)^n\
 						%s^n\
 						PTS: %d^n\
 						Wins: %d / Loss: %d",
@@ -55,12 +74,6 @@ public task_ShowPlayerInfo() {
 						g_iCurrentMode == e_mMatch ? szBuffer : "",
 						hns_pts_get_player_info(id, pts),
 						hns_pts_get_player_info(id, wins), hns_pts_get_player_info(id, loss));
-				#else
-					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n^n\
-						%s",
-						id,
-						g_iCurrentMode == e_mMatch ? szBuffer : "");
-				#endif
 
 			}
 		}

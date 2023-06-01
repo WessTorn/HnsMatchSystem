@@ -18,33 +18,33 @@ public taskSurrender() {
 
 	if (!is_user_connected(id)) {
 		resetSurrenderData();
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 		resetSurrenderData();
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (getUserTeam(id) == TEAM_SPECTATOR) {
 		resetSurrenderData();
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (iNum != g_eMatchInfo[e_mTeamSizeTT]) {
 		resetSurrenderData();
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_eSurrenderVotes[e_sYes] == g_eMatchInfo[e_mTeamSizeTT]) {
 		autoLose(getUserTeam(id));
 		resetSurrenderData();
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_eSurrenderVotes[e_sNo] == g_eMatchInfo[e_mTeamSizeTT]) {
 		resetSurrenderData();
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_eSurrenderData[e_sFlTime] == get_vote_time()) {
@@ -53,57 +53,70 @@ public taskSurrender() {
 			chat_print(iPlayer, "%L", id, "SUR_NEED", g_eMatchInfo[e_mTeamSizeTT], g_eMatchInfo[e_mTeamSizeTT]);
 		}
 		resetSurrenderData();
-		return;
+		return PLUGIN_HANDLED;
 	}
 	g_eSurrenderData[e_sFlTime]++;
+
+	return PLUGIN_HANDLED;
 }
 
 stock surrenderMenu(id) {
 	if (!is_user_connected(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused)
-		return;
+		return PLUGIN_HANDLED;
 
 	if (!getUserInMatch(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	new iPlayer = g_eSurrenderData[e_sInitiator];
 	if (getUserTeam(id) != getUserTeam(iPlayer))
-		return;
+		return PLUGIN_HANDLED;
 
-	new iMenu = menu_create(fmt("\ySurrender?^n\dVote by %n", iPlayer), "surrenderMenuHandler");
+	new szMsg[64];
 
-	menu_additem(iMenu, "Yes");
-	menu_additem(iMenu, "No");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_SUR_TITLE", iPlayer);
+	new hMenu = menu_create(szMsg, "surrenderMenuHandler");
 
-	menu_setprop(iMenu, MPROP_EXIT, MEXIT_NEVER);
-	menu_display(id, iMenu, 0);
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_YES");
+	menu_additem(hMenu, szMsg);
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NO");
+	menu_additem(hMenu, szMsg);
+
+	menu_display(id, hMenu, 0);
+	return PLUGIN_HANDLED;
 }
 
-public surrenderMenuHandler(id, iMenu, item) {
-	menu_destroy(iMenu);
+public surrenderMenuHandler(id, hMenu, item) {
+	menu_destroy(hMenu);
 	if (!is_user_connected(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (item == MENU_EXIT)
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused)
-		return;
+		return PLUGIN_HANDLED;
 
 	if (!getUserInMatch(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	new iPlayer = g_eSurrenderData[e_sInitiator];
+
+	if (!is_user_connected(iPlayer))
+		return PLUGIN_HANDLED;
+
 	if (getUserTeam(id) != getUserTeam(iPlayer))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_bSurrenderVoted[id])
-		return;
+		return PLUGIN_HANDLED;
 
 	g_eSurrenderVotes[item]++;
 	g_bSurrenderVoted[id] = true;
+	return PLUGIN_HANDLED;
 }
 
 resetSurrenderData() {
@@ -124,12 +137,7 @@ autoLose(TeamName:iTeam) {
 	chat_print(0, "%L", 0, "SUR_END", iTeam == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 	chat_print(0, "%L", 0, "SHOW_TOP");
 
-	#if defined USE_PTS
-		if (iTeam == TEAM_TERRORIST)
-			hns_set_pts_ct();
-		else
-			hns_set_pts_tt();
-	#endif
+	ExecuteForward(g_hForwards[MATCH_FINISHED], _, iTeam == TEAM_TERRORIST ? 1 : 2);
 
 	setTaskHud(0, 0.0, 1, 255, 255, 0, 4.0, "Game Over");
 	cmdStop(0);

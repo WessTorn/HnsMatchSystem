@@ -26,8 +26,6 @@ enum {
 }
 new g_iCurrentMode;
 
-new g_iGameStops;
-
 enum _:CaptainTeam_s {
 	e_cTT,
 	e_cCT
@@ -35,10 +33,29 @@ enum _:CaptainTeam_s {
 new g_eCaptain[CaptainTeam_s], g_iCaptainPick;
 new bool:g_bCaptainsBattle;
 
+enum HNS_TEAM {
+	HNS_TEAM_B = 0,
+	HNS_TEAM_A
+}
+
+new HNS_TEAM:g_isTeamTT;
+
+enum {
+	ROUND_NOT,
+	ROUND_FREEZE,
+	ROUND_START
+}
+
 enum _:MatchInfo_s {
-	e_mMapName[32],
-	e_mTeamSizeTT
+	bool:e_bStarted,
+	bool:e_bLastRound,
+	e_mTeamSizeTT,
+	e_sRoundInfo,
+	e_iGameStops,
+	Float:e_flSidesTime[HNS_TEAM],
+	e_iRoundsPlayed[HNS_TEAM]
 };
+
 new g_eMatchInfo[MatchInfo_s];
 
 enum _:SurrenderData_s {
@@ -49,40 +66,23 @@ enum _:SurrenderData_s {
 };
 new g_eSurrenderData[SurrenderData_s];
 
-#if defined USE_PTS
-	new Float:g_flMatchDelay;
-#endif
-
-enum _:Cvars_s {
-	e_cKnifeMap[25]
-};
-
-new bool:g_bSurvival;
-new bool:g_bGameStarted;
-new bool:g_bLastRound;
 new bool:g_bHooked[MAX_PLAYERS + 1];
 new bool:g_bNoplay[MAX_PLAYERS + 1];
-new bool:g_bSpec[MAX_PLAYERS + 1];
 new bool:g_bPlayersListLoaded;
 new bool:g_bLastFlash[MAX_PLAYERS + 1];
-new bool:g_bOnOff[33];
-new bool:g_bFreezePeriod = false;
+new bool:g_bOnOff[MAX_PLAYERS + 1];
 
 new Float:g_flRoundTime;
-new Float:g_flSidesTime[2];
 
-new g_iCurrentSW;
-new g_iRoundsPlayed[2];
+new g_szMapName[32]
 new g_iRegisterSpawn;
 new g_iHostageEnt;
-new g_szBuffer[2048];
 
+new bool:g_bSpec[MAX_PLAYERS + 1];
 new TeamName:hTeam[MAX_PLAYERS + 1];
-new HamHook:playerKilledPre;
 
 new g_MsgSync;
 
-new g_iBestAuth[10][MAX_AUTHID_LENGTH];
 
 // const
 new const sndDenySelect[] = "common/wpn_denyselect.wav";

@@ -8,57 +8,69 @@ public mainMatchMenu(id) {
 	if (!is_user_connected(id) || !getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	new hMenu = menu_create("\yHide'n'Seek mix system", "mainMatchMenuHandler");
+	static szMsg[128];
 
-	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MIX_TITLE");
+	new hMenu = menu_create(szMsg, "mainMatchMenuHandler");
+
+	if (equali(knifemap, g_szMapName)) {
 		if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
-			menu_additem(hMenu, "Start captain mod", "1");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_CAP");
 		else if (g_iCurrentMode == e_mKnife)
-			menu_additem(hMenu, "\dStart captain mod", "1");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_NOTCAP");
 		else
-			menu_additem(hMenu, "\rStop captain mod", "1");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCAP");
 	} else {
 		if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
-			menu_additem(hMenu, "\dStart mix match", "1");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_NOTSTART");
 		else if (g_iCurrentMode == e_mTraining)
-			menu_additem(hMenu, "Start mix match", "1");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_MIX");
 		else {
-			if (get_user_flags(id) & ADMIN_BAN)
-				menu_additem(hMenu, "\rStop mix match", "1");
-			else
-				menu_additem(hMenu, "\dStop mix match", "1");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPMIX");
 		}
 	}
 
+	menu_additem(hMenu, szMsg, "1");
 
-	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
+
+	if (equali(knifemap, g_szMapName)) {
 		if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 			if (g_iCurrentMode == e_mKnife)
-				menu_additem(hMenu, "\rStop knife round^n", "2");
+				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPKF");
 			else if (g_iCurrentMode == e_mCaptain)
-				menu_additem(hMenu, "\dStart knife round^n", "2");
+				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_NOTSTARTKF");
 			else
-				menu_additem(hMenu, "Start knife round^n", "2");
+				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STARTKF");
 		}
 	} else {
 		if (g_iCurrentMode == e_mTraining)
-			menu_additem(hMenu, "Start custom mode^n", "2");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_CUSTOM");
 		else if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
-			menu_additem(hMenu, "\rStop custom mode^n", "2");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCUSTOM");
 		else {
 			if (g_iCurrentMode != e_mPaused)
-				menu_additem(hMenu, "Pause match^n", "2");
+				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_PAUSE");
 			else
-				menu_additem(hMenu, "Unpause match^n", "2");
+				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_UNPAUSE");
 		}
 	}
+	
+	menu_additem(hMenu, szMsg, "2");
 
-	menu_additem(hMenu, "Mix system settings^n", "3");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_SETTINGS");
+	menu_additem(hMenu, szMsg, "3");
 
-	menu_additem(hMenu, "Restart round", "4");
-	menu_additem(hMenu, "Swap teams^n", "5");
-	menu_additem(hMenu, "Team Transfer Player", "6");
-	menu_additem(hMenu, "Change map", "7");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_RESTART");
+	menu_additem(hMenu, szMsg, "4");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_SWAP");
+	menu_additem(hMenu, szMsg, "5");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_TEAM");
+	menu_additem(hMenu, szMsg, "6");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_MAP");
+	menu_additem(hMenu, szMsg, "7");
 
 	menu_display(id, hMenu, 0);
 
@@ -72,11 +84,11 @@ public mainMatchMenuHandler(id, hMenu, item) {
 
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	
 	new iKey = str_to_num(szData);
-
 	switch (iKey) {
 		case 1: {
-			if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
+			if (equali(knifemap, g_szMapName)) {
 				if (g_iCurrentMode != e_mCaptain && g_iCurrentMode != e_mKnife)
 					cmdCaptain(id);
 				else if (g_iCurrentMode == e_mKnife)
@@ -90,15 +102,12 @@ public mainMatchMenuHandler(id, hMenu, item) {
 				else if (g_iCurrentMode == e_mTraining)
 					cmdStartRound(id);
 				else {
-					if (get_user_flags(id) & ADMIN_BAN)
-						verifMenu(id);
-					else
-						chat_print(id, "%L", id, "HAS_NOT_STOP");
+					verifMenu(id);
 				}
 			}
 		}
 		case 2: {
-			if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
+			if (equali(knifemap, g_szMapName)) {
 				if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused) {
 					if (g_iCurrentMode == e_mKnife)
 						cmdStop(id);
@@ -141,12 +150,16 @@ public customMenu(id) {
 	if (!is_user_connected(id))
 		return PLUGIN_HANDLED;
 
-	new hMenu = menu_create("\yHide'n'Seek mix system", "customMenuHandler");
+	new szMsg[64];
 
-	menu_additem(hMenu, "Publick", "1");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MIX_TITLE");
+	new hMenu = menu_create(szMsg, "customMenuHandler");
 
-	menu_additem(hMenu, "DeathMatch", "2");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CUSTOM_PUB");
+	menu_additem(hMenu, szMsg, "1");
 
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CUSTOM_DM");
+	menu_additem(hMenu, szMsg, "2");
 
 	menu_display(id, hMenu, 0);
 	return PLUGIN_HANDLED;
@@ -178,39 +191,40 @@ public settingsMatchMenu(id) {
 	if (!is_user_connected(id) || !getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
-	new title[64];
-	formatex(title, 63, "\yMix system settings");
-	new hMenu = menu_create(title, "settingsMatchMenuHandler");
-	new titleRoundtime[64];
+	new szMsg[64];
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MIX_TITLE");
+	new hMenu = menu_create(szMsg, "settingsMatchMenuHandler");
+
 	if (g_iCurrentMode == e_mTraining)
-		formatex(titleRoundtime, 63, "Roundtime: \dcannot changed in training");
+		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ROUNDTIME_TRNG");
 	else
-		formatex(titleRoundtime, 63, "Roundtime: \y%.1f", get_cvar_float("mp_roundtime"));
+		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ROUNDTIME", get_cvar_float("mp_roundtime"));
 
-	new titleFreeztime[64]; formatex(titleFreeztime, 63, "Freezetime: \y%d", get_cvar_num("mp_freezetime"));
+	menu_additem(hMenu, szMsg, "1");
 
-	new titleTimeRound[64];
-	formatex(titleTimeRound, 63, "Maxrounds: \y%d^n", get_max_rounds());
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_FREEZETIME", get_cvar_num("mp_freezetime"));
+	menu_additem(hMenu, szMsg, "2");
 
-	new titleHP[64];
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_MAXROUND", get_max_rounds());
+	menu_additem(hMenu, szMsg, "3");
+
 	if (get_hp_mode() == 100)
-		formatex(titleHP, 63, "1 HP Mode (Skill): \yOff^n");
+		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ONEHP_ON");
 	else
-		formatex(titleHP, 63, "1 HP Mode (Skill): \yOn^n");
+		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ONEHP_OFF");
+	
+	menu_additem(hMenu, szMsg, "4");
 
-	new titleFlahs[64]; formatex(titleFlahs, 63, "Flash: \y%d", get_flash_num());
-	new titleSmoke[64]; formatex(titleSmoke, 63, "Smoke: \y%d^n", get_smoke_num());
-	new titleAA[64]; formatex(titleAA, 63, "Airaccelerate \y%d^n", get_aa_mode());
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_FLASH", get_flash_num());
+	menu_additem(hMenu, szMsg, "5");
 
-	menu_additem(hMenu, titleRoundtime, "1");
-	menu_additem(hMenu, titleFreeztime, "2");
-	menu_additem(hMenu, titleTimeRound, "3");
-	menu_additem(hMenu, titleHP, "4");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_SMOKE", get_smoke_num());
+	menu_additem(hMenu, szMsg, "6");
 
-	menu_additem(hMenu, titleFlahs, "5");
-	menu_additem(hMenu, titleSmoke, "6");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_AA", get_aa_mode());
+	menu_additem(hMenu, szMsg, "7");
 
-	menu_additem(hMenu, titleAA, "7");
 	menu_display(id, hMenu, 0);
 	return PLUGIN_HANDLED;
 }
@@ -226,8 +240,8 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
-	new iKey = str_to_num(szData);
 
+	new iKey = str_to_num(szData);
 	switch (iKey) {
 		case 1: {
 			if (get_cvar_float("mp_roundtime") == 2.5)
@@ -254,14 +268,12 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 			settingsMatchMenu(id);
 		}
 		case 3: {
-			if (get_max_rounds() <= 7)
+			if (get_max_rounds() <= 6)
 				set_max_rounds(8);
 			else if (get_max_rounds() == 8)
-				set_max_rounds(9);
-			else if (get_max_rounds() == 9)
 				set_max_rounds(10);
 			else if (get_max_rounds() >= 10)
-				set_max_rounds(7);
+				set_max_rounds(6);
 
 			settingsMatchMenu(id);
 		}
@@ -312,21 +324,26 @@ public verifMenu(id) {
 	if (!is_user_connected(id))
 		return PLUGIN_HANDLED;
 
-	new hMenu = menu_create("\yVerification^n^n\dAre you sure you want to stop this mod:", "verifMenuHandler");
+	new szMsg[64];
 
-	menu_additem(hMenu, "No");
-	menu_additem(hMenu, "Yes");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_VERIF_TITLE");
+	new hMenu = menu_create(szMsg, "verifMenuHandler");
 
-	menu_setprop(hMenu, MPROP_EXIT, MEXIT_NEVER);
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NO");
+	menu_additem(hMenu, szMsg, "1");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_YES");
+	menu_additem(hMenu, szMsg, "2");
+
 	menu_display(id, hMenu, 0);
 	return PLUGIN_HANDLED;
 }
 
 public verifMenuHandler(id, hMenu, item) {
-	menu_destroy(hMenu);
-
-	if (item == MENU_EXIT)
+	if (item == MENU_EXIT) {
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
+	}
 
 	switch (item) {
 		case 0: {
@@ -344,13 +361,25 @@ public trainingMenu(id) {
 	if (!is_user_connected(id) || g_iCurrentMode != e_mTraining)
 		return PLUGIN_HANDLED;
 
-	new hMenu = menu_create("\yTrainig menu:", "trainingMenuHandler");
+	new szMsg[64];
 
-	menu_additem(hMenu, "Checkpoint", "1");
-	menu_additem(hMenu, "Teleport", "2");
-	menu_additem(hMenu, "No Clip", "3");
-	menu_additem(hMenu, "Respawn", "4");
-	menu_additem(hMenu, "Damage", "5");
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_TRNING_TITLE");
+	new hMenu = menu_create(szMsg, "trainingMenuHandler");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_TRNING_CPNT");
+	menu_additem(hMenu, szMsg, "1");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_TRNING_TLPRT");
+	menu_additem(hMenu, szMsg, "2");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_TRNING_NOCLIP");
+	menu_additem(hMenu, szMsg, "3");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_TRNING_RESPAWN");
+	menu_additem(hMenu, szMsg, "4");
+
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_TRNING_DAMAGE");
+	menu_additem(hMenu, szMsg, "5");
 
 	menu_display(id, hMenu, 0);
 

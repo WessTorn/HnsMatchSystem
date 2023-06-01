@@ -42,8 +42,6 @@ TYPE_BOOST      = ^3%n^1 has activated ^3boost^1 mode
 AA_10           = ^3%n^1 changed ^3airaccelerate^1 to ^310
 AA_100          = ^3%n^1 changed ^3airaccelerate^1 to ^3100
 
-HAS_NOT_STOP    = has no access to stop the game!
-
 SHOW_KNIFEON      = Knife is now set ^3visible.
 SHOW_KNIFEOFF     = Knife is now set ^3invisible.
 
@@ -98,11 +96,58 @@ NOCLIP_OFF      = No Clip ^3disabled^1!
 DAMAGE_ON       = Damage show ^3enabled^1.
 DAMAGE_OFF      = Damage show ^3disabled^1.
 
-MENU_MIX_TITLE    = \yHide'n'Seek match system
-MENU_MAIN_CAP     = Start Captain mode
-MENU_MAIN_NOTCAP  = \dStart Captain mode
-MENU_MAIN_STOPCAP = \rStop Captain mode
+MENU_MIX_TITLE       = \yHide'n'Seek match system
+MENU_MAIN_CAP        = Start Captain mode
+MENU_MAIN_NOTCAP     = \dStart Captain mode
+MENU_MAIN_STOPCAP    = \rStop Captain mode
+MENU_MAIN_NOTSTART   = \dStart mix match
+MENU_MAIN_MIX        = Start mix match
+MENU_MAIN_STOPMIX    = \rStop mix match
+MENU_MAIN_NOSTOPMIX  = \dStop mix match
+MENU_MAIN_STOPKF     = \rStop knife round^n
+MENU_MAIN_NOTSTARTKF = \dStart knife round^n
+MENU_MAIN_STARTKF    = Start knife round^n
+MENU_MAIN_CUSTOM     = Start custom mode^n
+MENU_MAIN_STOPCUSTOM = \rStop custom mode^n
+MENU_MAIN_PAUSE      = Pause match^n
+MENU_MAIN_UNPAUSE    = Unpause match^n
+MENU_MAIN_SETTINGS   = Mix system settings^n
+MENU_MAIN_RESTART    = Restart round
+MENU_MAIN_SWAP       = Swap teams^n
+MENU_MAIN_TEAM       = Team Transfer Player
+MENU_MAIN_MAP        = Change map
 
+MENU_CUSTOM_PUB     = Publick
+MENU_CUSTOM_DM      = DeathMatch
+
+MENU_STNGS_ROUNDTIME_TRNG   = Roundtime: \d[Training]
+MENU_STNGS_ROUNDTIME        = Roundtime: \y%.1f
+MENU_STNGS_FREEZETIME       = Freezetime: \y%d
+MENU_STNGS_MAXROUND         = Maxrounds: \y%d^n
+MENU_STNGS_ONEHP_ON         = 1 HP Mode (Skill): \yOff^n
+MENU_STNGS_ONEHP_OFF        = 1 HP Mode (Skill): \yOn^n
+MENU_STNGS_FLASH            = Flash: \y%d
+MENU_STNGS_SMOKE            = Smoke: \y%d^n
+MENU_STNGS_AA               = Airaccelerate \y%d^n
+
+MENU_VERIF_TITLE = \yVerification menu^n^n\dAre you sure you want to stop this mod:
+
+MENU_TRNING_TITLE = \yTrainig menu
+MENU_TRNING_CPNT = Checkpoint
+MENU_TRNING_TLPRT = Teleport
+MENU_TRNING_NOCLIP = No Clip
+MENU_TRNING_RESPAWN = Respawn
+MENU_TRNING_DAMAGE = Damage
+
+MENU_PLAY_TITLE = \rYou play?
+
+MENU_CAP_CHOSE = \rChoose the captain:
+MENU_CAP_PICK = \rChoose a player:
+
+MENU_SUR_TITLE = \ySurrender?^n\dVote by %n
+
+MENU_YES = Yes
+MENU_NO = No
 
 [ru]
 
@@ -113,7 +158,7 @@ SET_ROUNDTIME   = ^3%n ^1 установил ^3roundtime^1 на ^3%.2f^1 мин�
 SET_MAXROUNDS   = ^3%n ^1у становил ^3maxrounds^1 на ^3%d^1 раундов.
 
 KILL_HIMSELF    = ^3%n^1 убил сам себя.
-KILL_NOT        = Не доступно для режима дезматч.
+KILL_NOT        = Не доступно для режима ДМ.
 
 SUR_WAIT        = Подождите ^3%s^1 чтобы сдаться!
 SUR_PLAYER      = Игрок ^3%n^1 (^3%s^1) захотел сдаться!
@@ -135,9 +180,9 @@ PUB_ACTIVATED   = ^3%n^1 активировал ^3паблик^1 режим.
 PUB_ALREADY     = Паблик режим уже запущен.
 PUB_CANC        = Пожалуйста, отключите другой режим чтобы запустить паблик.
 
-DM_ACTIVATED    = ^3%n^1 активировал ^3дезматч^1 режим.
-DM_ALREADY      = дезматч режим уже запущен.
-DM_CANC         = Пожалуйста, отключите другой режим чтобы запустить дезматч.
+DM_ACTIVATED    = ^3%n^1 активировал ^3ДМ^1 режим.
+DM_ALREADY      = ДМ режим уже запущен.
+DM_CANC         = Пожалуйста, отключите другой режим чтобы запустить ДМ.
 
 TRANSF_SPEC     = ^3%n^1 перевел всех игроков за ^3наблюдателей
 TRANSF_TT       = ^3%n^1 перевел всех игроков за ^3террористов
@@ -148,8 +193,6 @@ TYPE_BOOST      = ^3%n^1 активировал ^3буст^1 режим
 
 AA_10           = ^3%n^1 установил ^3airaccelerate^1 на ^310
 AA_100          = ^3%n^1 установил ^3airaccelerate^1 на ^3100
-
-HAS_NOT_STOP    = Не имеет доступа к остановке игры!
 
 SHOW_KNIFEON      = Нож теперь ^3видимый^1.
 SHOW_KNIFEOFF     = Нож теперь ^3не видимый^1.
@@ -164,7 +207,7 @@ STOP_MIX        = ^3%n^1 остановил ^3микс^1.
 STOP_KNIFE      = ^3%n^1 остановил ^3ножевой раунд^1.
 STOP_PUB        = ^3%n^1 остановил ^3паблик^1 режим.
 STOP_CAP        = ^3%n^1 остановил режим ^3капитанов^1.
-STOP_DM         = ^3%n^1 остановил ^3дезматч^1 режим.
+STOP_DM         = ^3%n^1 остановил ^3ДМ^1 режим.
 
 SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов)
 SCORE_NOT      = Извините, но игра не запущена.
@@ -203,3 +246,55 @@ HUD_STARTMIX2   = Игра началась!^nУдачи и веселой иг�
 HUD_STARTKNIFE  = Начался ножевой раунд!
 HUD_UNPAUSE     = Игра возоблена^nНачало игры!
 HUD_PAUSE       = ИГРА ПРИОСТАНОВЛЕНА
+
+MENU_MIX_TITLE       = \yHide'n'Seek match system
+MENU_MAIN_CAP        = Запустить капитан мод
+MENU_MAIN_NOTCAP     = \dЗапустить капитан мод
+MENU_MAIN_STOPCAP    = \rОстановить капитан мод
+MENU_MAIN_NOTSTART   = \dЗапустить микс
+MENU_MAIN_MIX        = Запустить микс
+MENU_MAIN_STOPMIX    = \rЗавершить микс
+MENU_MAIN_STOPKF     = \Остановить ножевой раунд^n
+MENU_MAIN_NOTSTARTKF = \dЗапустить ножевой раунд^n
+MENU_MAIN_STARTKF    = Запустить ножевой раунд^n
+MENU_MAIN_CUSTOM     = Запустить пользовательский мод^n
+MENU_MAIN_STOPCUSTOM = \rОстановить пользовательский мод^n
+MENU_MAIN_PAUSE      = Приостановить микс^n
+MENU_MAIN_UNPAUSE    = Возобновить микс^n
+MENU_MAIN_SETTINGS   = Настройки микса^n
+MENU_MAIN_RESTART    = Перезапустить раунд
+MENU_MAIN_SWAP       = Поменять команды местами^n
+MENU_MAIN_TEAM       = Команда игрока
+MENU_MAIN_MAP        = Сменить карту
+
+MENU_CUSTOM_PUB     = Паблик
+MENU_CUSTOM_DM      = ДМ
+
+MENU_STNGS_ROUNDTIME_TRNG   = Roundtime: \d[Training]
+MENU_STNGS_ROUNDTIME        = Roundtime: \y%.1f
+MENU_STNGS_FREEZETIME       = Freezetime: \y%d
+MENU_STNGS_MAXROUND         = Maxrounds: \y%d^n
+MENU_STNGS_ONEHP_ON         = 1 HP Mode (Skill): \yOff^n
+MENU_STNGS_ONEHP_OFF        = 1 HP Mode (Skill): \yOn^n
+MENU_STNGS_FLASH            = Flash: \y%d
+MENU_STNGS_SMOKE            = Smoke: \y%d^n
+MENU_STNGS_AA               = Airaccelerate \y%d^n
+
+MENU_VERIF_TITLE = \yМеню подтверждения^n^n\dВы уверены, что хотите остановить матч?
+
+MENU_TRNING_TITLE = \yТренировочное меню
+MENU_TRNING_CPNT = Чекпоинт
+MENU_TRNING_TLPRT = Телепорт
+MENU_TRNING_NOCLIP = Ноклип
+MENU_TRNING_RESPAWN = Возродиться
+MENU_TRNING_DAMAGE = Показать дамаг
+
+MENU_PLAY_TITLE = \rВы играете?
+
+MENU_CAP_CHOSE = \rВыберите капитанов:
+MENU_CAP_PICK = \rВыберите игрока:
+
+MENU_SUR_TITLE = \yСдаться?^n \dГолосовавший %n
+
+MENU_YES = Да
+MENU_NO = Нет

@@ -55,7 +55,7 @@ stock setUserRole(id) {
 	if (g_iCurrentMode > e_mKnife && g_iCurrentMode != e_mCaptain) {
 		switch (team) {
 			case TEAM_TERRORIST: {
-				set_user_footsteps(id, 1);
+				rg_set_user_footsteps(id, true);
 				rg_give_item(id, "weapon_knife");
 
 				if (get_flash_num() >= 1) {
@@ -76,7 +76,7 @@ stock setUserRole(id) {
 				}
 			}
 			case TEAM_CT: {
-				set_user_footsteps(id, 0);
+				rg_set_user_footsteps(id, false);
 				rg_give_item(id, "weapon_knife");
 			}
 		}
@@ -93,7 +93,7 @@ stock transferUserToSpec(id) {
 
 stock transferUsers(TeamName:iTeam) {
 	new Float:flTime;
-	new iPlayers[32], iNum;
+	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "ch");
 	for (new i = 0; i < iNum; i++) {
 		new id = iPlayers[i];

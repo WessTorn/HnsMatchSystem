@@ -52,7 +52,7 @@ public stats_stab(attacker) {
 
 public stats_dmg(id, Float:damage) {
 	g_eRoundStats[id][e_flDmg] += damage;
-	iStats[id][e_flDmg] += damage
+	iStats[id][e_flDmg] += damage;
 }
 
 public stats_flashedtime(attacker, Float:fadeHold) {
@@ -61,40 +61,33 @@ public stats_flashedtime(attacker, Float:fadeHold) {
 }
 
 public stats_prethink(id) {
-	static Float:origin[3];
-	static Float:velocity[3];
-	static Float:last_updated[MAX_PLAYERS + 1];
-	static Float:frametime;
-	get_entvar(id, var_origin, origin);
-	get_entvar(id, var_velocity, velocity);
+	static Float:flOrigin[3];
+	static Float:flVelocity[3];
+	static Float:flLastUpdated[MAX_PLAYERS + 1];
+	static Float:flFrameTine;
 
-	frametime = get_gametime() - last_updated[id];
-	if (frametime > 1.0)
-	{
-		frametime = 1.0;
+	get_entvar(id, var_origin, flOrigin);
+	get_entvar(id, var_velocity, flVelocity);
+
+	flFrameTine = get_gametime() - flLastUpdated[id];
+
+	if (flFrameTine > 1.0) {
+		flFrameTine = 1.0;
 	}
-	if (!g_bFreezePeriod)
-	{
-
-		if (is_user_alive(id))
-		{
-			if (getUserTeam(id) == TEAM_TERRORIST)
-			{
-				if (vector_length(velocity) * frametime >= get_distance_f(origin, last_position[id]))
-				{
-					velocity[2] = 0.0;
-					if (vector_length(velocity) > 125.0)
-					{
-						g_eRoundStats[id][e_flRunDistance] += vector_length(velocity) * frametime;
-						iStats[id][e_flRunDistance] += vector_length(velocity) * frametime;
+	
+	if (g_eMatchInfo[e_sRoundInfo] == ROUND_START) {
+		if (is_user_alive(id) && getUserTeam(id) == TEAM_TERRORIST) {
+			if (vector_length(flVelocity) * flFrameTine >= get_distance_f(flOrigin, last_position[id])) {
+					flVelocity[2] = 0.0;
+					if (vector_length(flVelocity) > 125.0) {
+						g_eRoundStats[id][e_flRunDistance] += vector_length(flVelocity) * flFrameTine;
+						iStats[id][e_flRunDistance] += vector_length(flVelocity) * flFrameTine;
 					}
 				}
-
-			}
 		}
 	}
-	last_updated[id] = get_gametime();
-	xs_vec_copy(origin, last_position[id]);
+	flLastUpdated[id] = get_gametime();
+	xs_vec_copy(flOrigin, last_position[id]);
 }
 
 public stats_kd(victim, attacker) {
@@ -139,7 +132,7 @@ public setPlayerData() {
 public setPlayerStats(id) {
 	TrieGetArray(g_tSaveData, getUserKey(id), iStats[id], STATS_PLAYER);
 	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
-		if (iStats[id][e_iSaveGameStops] < g_iGameStops) {
+		if (iStats[id][e_iSaveGameStops] < g_eMatchInfo[e_iGameStops]) {
 			if (iStats[id][e_flSaveSurviveTime]) {
 				iStats[id][e_flSurviveTime] -= iStats[id][e_flSaveSurviveTime];
 				iStats[id][e_flSaveSurviveTime] = 0.0;
@@ -155,14 +148,6 @@ public setPlayerStats(id) {
 		} else {
 			if (iStats[id][e_iKills] || iStats[id][e_iDeaths])
 				SetScoreInfo(id);
-		}
-
-		if (iStats[id][e_flSaveDiscTime] > get_gametime()) {
-			new iPlayers[MAX_PLAYERS], iNum;
-			get_players(iPlayers, iNum, "he", iStats[id][e_szSaveTeam]);
-
-			if (iNum < g_eMatchInfo[e_mTeamSizeTT])
-				set_task(0.3, "task_SetTeam", id + TASK_SET_TEAM);
 		}
 	} else
 		arrayset(iStats[id], 0, STATS_PLAYER);
@@ -185,49 +170,12 @@ public savePlayerStats(id) {
 			iStats[id][e_iSaveDeaths] = g_eRoundStats[id][e_iDeaths];
 		}
 
-		iStats[id][e_iSaveGameStops] = g_iGameStops;
+		iStats[id][e_iSaveGameStops] = g_eMatchInfo[e_iGameStops];
 
 		console_print(0, "Player %n was disconnected..", id);
 		chat_print(0, "Player %n was disconnected..", id);
 	}
 	TrieSetArray(g_tSaveData, getUserKey(id), iStats[id], STATS_PLAYER);
-}
-
-public task_SetTeam(id) {
-	id -= TASK_SET_TEAM;
-
-	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused)
-		return;
-
-	rg_set_user_team(id, iStats[id][e_szSaveTeam][0] == 'T' ? TEAM_TERRORIST : TEAM_CT);
-
-	if (!iStats[id][e_bSaveAlive] || g_iCurrentMode == e_mPaused) {
-		console_print(0, "Player %n joined!", id);
-		chat_print(0, "Player %n joined!", id);
-
-		if (g_iCurrentMode == e_mPaused)
-			rg_round_respawn(id);
-
-		return;
-	}
-
-	new iPlayers[MAX_PLAYERS], iNum, bool:restart_round;
-	get_players(iPlayers, iNum, "ahe", iStats[id][e_szSaveTeam]);
-
-	new bid;
-	for (new i; i < iNum; i++) {
-		new iPlayer = iPlayers[i];
-
-		if (Float:get_entvar(iPlayer, var_health) < RETRY_HP) bid++;
-	}
-
-	restart_round = iNum == g_eMatchInfo[e_mTeamSizeTT] - 1 && !bid ? true : false;
-
-	if (restart_round)
-		restartRound();
-
-	console_print(0, "Player %n joined%s", id, restart_round ? ", restart round!" : "!");
-	chat_print(0, "Player %n joined%s", id, restart_round ? ", restart round!" : "!");
 }
 
 stock SetScoreInfo(id) {

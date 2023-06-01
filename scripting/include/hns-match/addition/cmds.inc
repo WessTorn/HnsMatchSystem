@@ -158,16 +158,11 @@ public cmdStartRound(id) {
 		chat_print(id, "%L", id, "NOT_START_MIX");
 		return;
 	} else {
-		if (equali(g_eMatchInfo[e_mMapName], knifemap))
+		if (equali(g_szMapName, knifemap))
 			return;
 
 		chat_print(0, "%L", 0, "START_MIX", id);
 		g_eSurrenderData[e_sFlDelay] = get_gametime() + get_sur_delay();
-		#if defined USE_PTS
-			g_flMatchDelay = get_gametime() + 600; // Сделать кваром
-		#endif
-
-		g_iGameStops = 0;
 
 		setPlayerData();
 
@@ -209,7 +204,7 @@ public cmdCaptain(id) {
 	if (!getUserInAccess(id))
 		return;
 
-	if (!equali(g_eMatchInfo[e_mMapName], knifemap))
+	if (!equali(g_szMapName, knifemap))
 		return;
 
 	if (g_iCurrentMode != e_mTraining)
@@ -235,10 +230,7 @@ public cmdStop(id) {
 
 	if (!id) {
 		if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused) {
-			g_bGameStarted = false;
-			g_bSurvival = false;
-			g_bPlayersListLoaded = false;
-			g_bLastRound = false;
+			arrayset(g_eMatchInfo, 0, MatchInfo_s);
 			taskPrepareMode(e_mTraining);
 			ExecuteForward(g_hForwards[MATCH_CANCELED], _);
 			return;
@@ -252,11 +244,7 @@ public cmdStop(id) {
 	switch (g_iCurrentMode) {
 		case e_mPaused, e_mMatch: {
 			chat_print(0, "%L", 0, "STOP_MIX", id);
-			g_bGameStarted = false;
-			g_bLastRound = false;
-			g_bSurvival = false;
-			g_bPlayersListLoaded = false;
-			g_iRoundsPlayed[!g_iCurrentSW] = g_iRoundsPlayed[g_iCurrentSW] = 0;
+			arrayset(g_eMatchInfo, 0, MatchInfo_s);
 			ExecuteForward(g_hForwards[MATCH_CANCELED], _);
 		}
 		case e_mKnife: {
@@ -284,22 +272,18 @@ public cmdSkillMode(id) {
 
 	chat_print(0, "%L", 0, "TYPE_SKILL", id);
 
-	if (equali(knifemap, g_eMatchInfo[e_mMapName])) {
-		enableSemiclip(0);
-	} else {
-		if (g_iCurrentMode == e_mTraining)
-			enableSemiclip(0);
-		else
-			enableSemiclip(3);
-	}
-
 	if (g_iCurrentMode == e_mMatch) {
 		set_cvar_num("mp_freezetime", 5);
-		set_flash_num(1);
+		set_flash_num(2);
 		set_smoke_num(1);
 	}
 
-	set_semiclip(true);
+	if (g_iCurrentMode == e_mTraining)
+		set_semiclip(SEMICLIP_ON);
+	else
+		set_semiclip(SEMICLIP_ON, true);
+
+	set_cvar_semiclip(true);
 
 	return PLUGIN_HANDLED;
 }
@@ -315,8 +299,9 @@ public cmdBoostMode(id) {
 		set_flash_num(3);
 		set_smoke_num(1);
 	}
-	set_semiclip(false);
-	disableSemiclip();
+
+	set_semiclip(SEMICLIP_OFF);
+	set_cvar_semiclip(false);
 
 	return PLUGIN_HANDLED;
 }
@@ -354,7 +339,7 @@ public cmdRestartRound(id) {
 	removeHook(id);
 
 	if (g_iCurrentMode == e_mMatch)
-		g_iGameStops++;
+		g_eMatchInfo[e_iGameStops]++;
 
 	return PLUGIN_HANDLED;
 }
@@ -368,10 +353,14 @@ public cmdSwapTeams(id) {
 	restartRound();
 	rg_swap_all_players();
 	removeHook(id);
-	g_iCurrentSW = !g_iCurrentSW;
+
+	if (g_isTeamTT == HNS_TEAM_A)
+		g_isTeamTT = HNS_TEAM_B
+	else
+		g_isTeamTT = HNS_TEAM_A
 
 	if (g_iCurrentMode == e_mMatch)
-		g_iGameStops++;
+		g_eMatchInfo[e_iGameStops]++;
 
 	return PLUGIN_HANDLED;
 }
@@ -383,14 +372,14 @@ public cmdStartPause(id) {
 	if (g_iCurrentMode == e_mMatch) {
 
 		if (id)
-			g_iGameStops++;
+			g_eMatchInfo[e_iGameStops]++;
 
-		new iPlayers[32], iNum;
+		new iPlayers[MAX_PLAYERS], iNum;
 
 		g_iCurrentMode = e_mPaused;
 
-		if (g_bGameStarted) {
-			g_flSidesTime[g_iCurrentSW] -= g_flRoundTime;
+		if (g_eMatchInfo[e_bStarted]) {
+			g_eMatchInfo[e_flSidesTime][g_isTeamTT] -= g_flRoundTime;
 
 			get_players(iPlayers, iNum, "ch");
 			for (new i; i < iNum; i++) {
@@ -399,8 +388,8 @@ public cmdStartPause(id) {
 				arrayset(g_eRoundStats[iPlayer], 0, STATS_PLAYER);
 			}
 
-			g_bSurvival = false;
-			g_bGameStarted = false;
+			g_eMatchInfo[e_sRoundInfo] = ROUND_NOT;
+			g_eMatchInfo[e_bStarted] = false;
 		} else {
 			if (id)
 				chat_print(id,  "%L", id, "GAME_NOTSTARTED");
@@ -423,7 +412,6 @@ public cmdStartPause(id) {
 
 		rg_send_audio(0, "fvox/deactivated.wav");
 		server_cmd("sv_alltalk 1"); //  Переделать!
-		disableSemiclip();
 	}
 	return PLUGIN_HANDLED;
 }
@@ -447,7 +435,7 @@ public cmdStopPause(id) {
 		}
 
 		rg_send_audio(0, "fvox/activated.wav");
-		g_bGameStarted = true;
+		g_eMatchInfo[e_bStarted] = true;
 
 		setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_UNPAUSE");
 
@@ -456,10 +444,10 @@ public cmdStopPause(id) {
 
 		if (is_semiclip() == 1) {
 			set_cvar_num("mp_freezetime", 5);
-			enableSemiclip(3);
+			set_semiclip(SEMICLIP_ON, true);
 		} else {
 			set_cvar_num("mp_freezetime", 15);
-			disableSemiclip();
+			set_semiclip(SEMICLIP_OFF);
 		}
 
 		loadMapCFG();
@@ -511,24 +499,22 @@ public cmdSurrender(id) {
 }
 
 public cmdShowTimers(id) {
-	if (g_bGameStarted || g_iCurrentMode == e_mPaused) {
-		new timeToWin[2][24];
-		fnConvertTime(g_flSidesTime[g_iCurrentSW], timeToWin[0], 23);
-		fnConvertTime(g_flSidesTime[!g_iCurrentSW], timeToWin[1], 23);
+	if (g_eMatchInfo[e_bStarted] || g_iCurrentMode == e_mPaused) {
+		new timeToWin[HNS_TEAM][24];
+		fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_B], timeToWin[HNS_TEAM_B], 23);
+		fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_A], timeToWin[HNS_TEAM_A], 23);
 
 		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
 		get_players(iPlayers, TTsize, "ce", "TERRORIST");
 		get_players(iPlayers, CTSize, "ce", "CT");
-		fnConvertTime(g_flSidesTime[0], timeToWin[0], 23);
-		fnConvertTime(g_flSidesTime[1], timeToWin[1], 23);
-		if (!g_iCurrentSW) {
+		if (g_isTeamTT == HNS_TEAM_A) {
 			chat_print(id, "%L", id, "SCORE_TIME",
-				timeToWin[0], TTsize, CTSize, timeToWin[1],
-				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
+				timeToWin[HNS_TEAM_A], TTsize, CTSize, timeToWin[HNS_TEAM_B],
+				(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B]) + 1, get_max_rounds() * 2);
 		} else {
 			chat_print(id, "%L", id, "SCORE_TIME",
-				timeToWin[1], TTsize, CTSize, timeToWin[0],
-				(g_iRoundsPlayed[!g_iCurrentSW] + g_iRoundsPlayed[g_iCurrentSW]) + 1, get_max_rounds() * 2);
+				timeToWin[HNS_TEAM_B], TTsize, CTSize, timeToWin[HNS_TEAM_A],
+				(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A]) + 1, get_max_rounds() * 2);
 		}
 	} else {
 		chat_print(id, "%L", id, "SCORE_NOT");
@@ -597,12 +583,12 @@ public cmdClipMode(id) {
 		chat_print(id, "%L", id, "TRAINING_NOTALIVE")
 		return PLUGIN_HANDLED
 	} else {
-		if(!get_user_noclip(id)) {
-			set_user_noclip(id, 1);
+		if(get_entvar(id, var_movetype) != MOVETYPE_NOCLIP) {
+			set_entvar(id, var_movetype, MOVETYPE_NOCLIP);
 			chat_print(id, "%L", id, "NOCLIP_OFF");
 		}
 		else {
-			set_user_noclip(id, 0);
+			set_entvar(id, var_movetype, MOVETYPE_WALK);
 			chat_print(id, "%L", id, "NOCLIP_ON");
 		}
 	}

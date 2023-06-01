@@ -54,7 +54,7 @@ public taskAfk() {
 		new szTime[16];
 
 		if (eAfkData[id][is_afk]) {
-			if (TeamName:get_member(id, m_iTeam) == TEAM_SPECTATOR || !is_user_alive(id)) {
+			if (getUserTeam(id) == TEAM_SPECTATOR || !is_user_alive(id)) {
 				arrayset(eAfkData[id], 0, AfkData_s);
 				arrayset(flAfkOrigin[id], 0.0, sizeof(flAfkOrigin[]));
 				iPlayersAfk--;

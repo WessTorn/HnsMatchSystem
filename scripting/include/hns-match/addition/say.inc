@@ -31,7 +31,7 @@ public sayHandle(id) {
 
 		if (is_str_num(szTarget)) {
 			set_round_time(szTarget);
-			chat_print(0, "%L", id, "SET_ROUNDTIME", id, str_to_float(szTarget));
+			chat_print(0, "%L", 0, "SET_ROUNDTIME", id, str_to_float(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -47,7 +47,7 @@ public sayHandle(id) {
 
 		if (str_to_num(szTarget) > 0) {
 			set_max_rounds(str_to_num(szTarget));
-			chat_print(0, "%L", id, "SET_MAXROUNDS", id, str_to_num(szTarget));
+			chat_print(0, "%L", 0, "SET_MAXROUNDS", id, str_to_num(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
