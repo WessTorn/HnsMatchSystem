@@ -45,7 +45,7 @@ public taskAfk() {
 	}
 
 	new iPlayers[MAX_PLAYERS], iNum, szBuffer[512];
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 
 	add(szBuffer, charsmax(szBuffer), "AFK Players [wait time]:^n");
 
@@ -87,7 +87,7 @@ ResetAfkData() {
 	iPlayersAfk = 0;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];

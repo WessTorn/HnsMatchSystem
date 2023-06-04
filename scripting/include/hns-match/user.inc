@@ -19,7 +19,7 @@ stock bool:getUserInMatch(id) {
 		return false;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -94,7 +94,7 @@ stock transferUserToSpec(id) {
 stock transferUsers(TeamName:iTeam) {
 	new Float:flTime;
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 	for (new i = 0; i < iNum; i++) {
 		new id = iPlayers[i];
 		if (is_user_connected(id)) {

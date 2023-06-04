@@ -18,7 +18,7 @@ stock savePlayers(TeamName:team_winners) {
 	new JSON:arrayRoot = json_init_array();
 
 	new iPlayers[MAX_PLAYERS], iNum, szAuth[24];
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];

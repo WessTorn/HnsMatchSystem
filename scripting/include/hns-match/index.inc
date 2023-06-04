@@ -12,6 +12,10 @@
 #include <json>
 #include <PersistentDataStorage>
 
+#if defined USE_PTS
+	#include <hns_matchsystem_pts>
+#endif
+
 #include <hns-match/globals>
 #include <hns-match/utils>
 #include <hns-match/forward>

@@ -381,7 +381,7 @@ public cmdStartPause(id) {
 		if (g_eMatchInfo[e_bStarted]) {
 			g_eMatchInfo[e_flSidesTime][g_isTeamTT] -= g_flRoundTime;
 
-			get_players(iPlayers, iNum, "ch");
+			get_players(iPlayers, iNum, "h");
 			for (new i; i < iNum; i++) {
 				new iPlayer = iPlayers[i];
 				ResetPlayerRoundStats(iPlayer);
@@ -535,22 +535,26 @@ public cmdPick(id) {
 }
 
 public cmdTeamSpec(id) {
-	if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM) { // Переделать
-		g_bSpec[id] = !g_bSpec[id];
+	if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM || g_iCurrentMode == e_mTraining) { // Переделать
+		g_eSpecBack[id][sb_isSpec] = !g_eSpecBack[id][sb_isSpec];
 
-		if (g_bSpec[id]) {
+		if (g_eSpecBack[id][sb_isSpec]) {
 			if (getUserTeam(id) == TEAM_SPECTATOR) {
-				g_bSpec[id] = false;
+				g_eSpecBack[id][sb_isSpec] = false;
 				return;
 			}
-			hTeam[id] = getUserTeam(id);
+			g_eSpecBack[id][sb_hTeam] = getUserTeam(id);
 			transferUserToSpec(id);
 		} else {
 			if (getUserTeam(id) != TEAM_SPECTATOR) {
-				g_bSpec[id] = true;
+				g_eSpecBack[id][sb_isSpec] = true;
 				return;
 			}
-			rg_set_user_team(id, hTeam[id]);
+			rg_set_user_team(id, g_eSpecBack[id][sb_hTeam]);
+
+			if ( g_iCurrentMode == e_mTraining) {
+				rg_round_respawn(id);
+			}
 		}
 	}
 }

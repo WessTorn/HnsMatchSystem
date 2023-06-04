@@ -4,24 +4,6 @@
 
 #define _showinfo_included
 
-enum _:Info
-{
-    pts,
-    wins,
-    loss,
-    rank,
-    top,
-    skill[10]
-};
-
-enum _:SKILL_INFO
-{
-    SKILL_PTS,
-    SKILL_LVL[10]
-};
-
-native hns_pts_get_player_info(id, info);
-
 new g_iBestAuth[10][MAX_AUTHID_LENGTH];
 
 addStats() {
@@ -64,16 +46,24 @@ public task_ShowPlayerInfo() {
 					fnConvertTime(iStats[id][e_flSurviveTime], szTime, charsmax(szTime), false);
 					formatex(szBuffer, charsmax(szBuffer), "Survive time: %s^nStabs: %d", szTime, iStats[id][e_iStabs]);
 				}
+				
+				#if defined USE_PTS
+					set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
+					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n (#%d)^n\
+							%s^n\
+							PTS: %d^n\
+							Wins: %d / Loss: %d",
+							id, hns_pts_get_player_info(id, top),
+							g_iCurrentMode == e_mMatch ? szBuffer : "",
+							hns_pts_get_player_info(id, pts),
+							hns_pts_get_player_info(id, wins), hns_pts_get_player_info(id, loss));
+				#else
+					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n^n\
+						%s",
+						id,
+						g_iCurrentMode == e_mMatch ? szBuffer : "");
+				#endif
 
-				set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
-				ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n (#%d)^n\
-						%s^n\
-						PTS: %d^n\
-						Wins: %d / Loss: %d",
-						id, hns_pts_get_player_info(id, rank),
-						g_iCurrentMode == e_mMatch ? szBuffer : "",
-						hns_pts_get_player_info(id, pts),
-						hns_pts_get_player_info(id, wins), hns_pts_get_player_info(id, loss));
 
 			}
 		}
@@ -84,7 +74,7 @@ public ShowTop(player) {
 	if (!player) {
 		new Float:flBestTime[10];
 		new iPlayers[MAX_PLAYERS], iNum;
-		get_players(iPlayers, iNum, "ch");
+		get_players(iPlayers, iNum, "h");
 		new iBid = 0;
 		for (new i; i < iNum; i++) {
 			new id = iPlayers[i];

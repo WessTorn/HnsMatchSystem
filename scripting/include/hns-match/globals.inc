@@ -11,7 +11,6 @@ new g_PluginId;
 stock knifemap[24];
 
 const RETRY_TIME = 30;
-new Float:g_flRetry;
 const TASK_SET_TEAM = 23456;
 const Float:RETRY_HP = 95.0;
 
@@ -78,8 +77,12 @@ new g_szMapName[32]
 new g_iRegisterSpawn;
 new g_iHostageEnt;
 
-new bool:g_bSpec[MAX_PLAYERS + 1];
-new TeamName:hTeam[MAX_PLAYERS + 1];
+enum SPEC_BACK {
+	bool:sb_isSpec,
+	TeamName:sb_hTeam
+}
+
+new g_eSpecBack[MAX_PLAYERS + 1][SPEC_BACK]
 
 new g_MsgSync;
 

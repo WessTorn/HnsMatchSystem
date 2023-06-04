@@ -78,7 +78,11 @@ public mainMatchMenu(id) {
 }
 
 public mainMatchMenuHandler(id, hMenu, item) {
+	if (!is_user_connected(id))
+		return PLUGIN_HANDLED;
+		
 	if (item == MENU_EXIT) {
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 
@@ -143,6 +147,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 			client_cmd(id, "amx_mapmenu");
 		}
 	}
+	menu_destroy(hMenu);
 	return PLUGIN_HANDLED;
 }
 
@@ -388,6 +393,7 @@ public trainingMenu(id) {
 
 public trainingMenuHandler(id, hMenu, item) {
 	if (item == MENU_EXIT) {
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 
@@ -417,5 +423,7 @@ public trainingMenuHandler(id, hMenu, item) {
 			trainingMenu(id);
 		}
 	}
+	
+	menu_destroy(hMenu);
 	return PLUGIN_HANDLED;
 }

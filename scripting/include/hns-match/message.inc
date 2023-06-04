@@ -4,6 +4,8 @@
 
 #define _message_included
 
+new iNumPlayers;
+
 stock message_init() {
 	register_message(get_user_msgid("HostagePos"), "msgHostagePos");
 	register_message(get_user_msgid("ShowMenu"), "msgShowMenu");
@@ -54,6 +56,13 @@ bool:shouldAutoJoin(id) {
 setForceTeamJoinTask(id, menu_msgid) {
 	static param_menu_msgid[2];
 	param_menu_msgid[0] = menu_msgid;
+
+	setPlayerStats(id);
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "e", iStats[id][e_szSaveTeam]);
+	iNumPlayers = iNum;
+
 	set_task(0.1, "taskForceTeamJoin", id, param_menu_msgid, sizeof param_menu_msgid);
 }
 
@@ -63,6 +72,7 @@ public taskForceTeamJoin(menu_msgid[], id) {
 
 	forceTeamJoin(id, menu_msgid[0], "5", "5");
 }
+
 
 stock forceTeamJoin(id, menu_msgid, team[] = "5", class[] = "0") {
 	static jointeam[] = "jointeam";
@@ -78,7 +88,7 @@ stock forceTeamJoin(id, menu_msgid, team[] = "5", class[] = "0") {
 	engclient_cmd(id, joinclass, class);
 	set_msg_block(menu_msgid, msg_block);
 
-	setPlayerStats(id);
+	//setPlayerStats(id);
 
 	set_task(0.2, "taskSetPlayerTeam", id);
 }
@@ -89,41 +99,21 @@ public taskSetPlayerTeam(id) {
 
 	switch(g_iCurrentMode) {
 		case e_mMatch, e_mPaused: {
-			if (iStats[id][e_flSaveDiscTime] > get_gametime()) {
-				new iPlayers[MAX_PLAYERS], iNum;
-				get_players(iPlayers, iNum, "he", iStats[id][e_szSaveTeam]);
-
-				if (iNum < g_eMatchInfo[e_mTeamSizeTT]) {
+			if (iStats[id][isPlrInMatch]) {
+				if (iNumPlayers < g_eMatchInfo[e_mTeamSizeTT]) {
 					rg_set_user_team(id, iStats[id][e_szSaveTeam][0] == 'T' ? TEAM_TERRORIST : TEAM_CT);
 
-					if (!iStats[id][e_bSaveAlive] || g_iCurrentMode == e_mPaused) {
-						console_print(0, "Player %n joined!", id);
-						chat_print(0, "Player %n joined!", id);
+					if (g_iCurrentMode == e_mPaused)
+						rg_round_respawn(id);
 
-						if (g_iCurrentMode == e_mPaused)
-							rg_round_respawn(id);
+					console_print(0, "Player %n joined!", id);
+					chat_print(0, "Player %n joined!", id);
 
-						return;
-					}
-
-					new iPlayers[MAX_PLAYERS], iNum, bool:restart_round;
-					get_players(iPlayers, iNum, "ahe", iStats[id][e_szSaveTeam]);
-
-					new bid;
-					for (new i; i < iNum; i++) {
-						new iPlayer = iPlayers[i];
-
-						if (Float:get_entvar(iPlayer, var_health) < RETRY_HP) bid++;
-					}
-
-					restart_round = iNum == g_eMatchInfo[e_mTeamSizeTT] - 1 && !bid ? true : false;
-
-					if (restart_round)
-						restartRound();
-
-					console_print(0, "Player %n joined%s", id, restart_round ? ", restart round!" : "!");
-					chat_print(0, "Player %n joined%s", id, restart_round ? ", restart round!" : "!");
-					}
+				} else {
+					iStats[id][isPlrInMatch] = false;
+					transferUserToSpec(id);
+					return;
+				}
 			} else {
 				transferUserToSpec(id);
 				return;

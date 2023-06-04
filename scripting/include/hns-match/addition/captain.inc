@@ -9,7 +9,7 @@ stock captainStart(id) {
 	g_iCurrentMode = e_mCaptain;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -25,21 +25,21 @@ stock captainStart(id) {
 
 stock chooseCapsMenu(id) {
 	if (!is_user_connected(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (!getUserInAccess(id))
-		return;
+		return PLUGIN_HANDLED;
 
 	if (g_iCurrentMode != e_mCaptain)
-		return;
+		return PLUGIN_HANDLED;
 
 	new szMsg[64];
 
 	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CAP_CHOSE");
-	new hMenu = menu_create(szMsg, "сhooseCapsHandler");
+	new hMenu = menu_create(szMsg, "chooseCapsHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 
 	new szBuffer[256];
 	for (new i; i < iNum; i++) {
@@ -51,6 +51,12 @@ stock chooseCapsMenu(id) {
 		num_to_str(iPlayer, szPlayer, charsmax(szPlayer));
 		add(szBuffer, charsmax(szBuffer), fmt("%n ", iPlayer));
 
+		#if defined USE_PTS
+			new szPts[16];
+			formatex(szPts, charsmax(szPts), "\d%d (%s) ", hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
+			add(szBuffer, charsmax(szBuffer), szPts);
+		#endif
+
 		if (g_bNoplay[iPlayer])
 			add(szBuffer, charsmax(szBuffer), "\r[Noplay] ");
 
@@ -61,23 +67,24 @@ stock chooseCapsMenu(id) {
 	menu_setprop(hMenu, MPROP_EXITNAME, "Refresh");
 	menu_setprop(hMenu, MPROP_SHOWPAGE, 0);
 	menu_display(id, hMenu, 0);
+	return PLUGIN_HANDLED;
 }
 
 public chooseCapsHandler(id, hMenu, item) {
 	if (!is_user_connected(id)) {
 		menu_destroy(hMenu);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_iCurrentMode != e_mCaptain) {
 		menu_destroy(hMenu);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (item == MENU_EXIT) {
 		menu_destroy(hMenu);
 		chooseCapsMenu(id);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
@@ -88,22 +95,32 @@ public chooseCapsHandler(id, hMenu, item) {
 
 	if (!is_user_connected(iPlayer)) {
 		chooseCapsMenu(id);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_bNoplay[iPlayer]) {
 		chooseCapsMenu(id);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (!g_eCaptain[e_cTT]) {
 		g_eCaptain[e_cTT] = iPlayer;
-		chat_print(0, "%L", 0, "CAP_FIRST", iPlayer);
+		
+		#if defined USE_PTS
+			chat_print(0, "%L", 0, "CAP_FIRST_PTS", iPlayer, hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
+		#else
+			chat_print(0, "%L", 0, "CAP_FIRST", iPlayer);
+		#endif
 
 		chooseCapsMenu(id);
 	} else if (!g_eCaptain[e_cCT]) {
 		g_eCaptain[e_cCT] = iPlayer;
-		chat_print(0, "%L", 0, "CAP_SECOND", iPlayer);
+
+		#if defined USE_PTS
+			chat_print(0, "%L", 0, "CAP_SECOND_PTS", iPlayer, hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
+		#else
+			chat_print(0, "%L", 0, "CAP_SECOND", iPlayer);
+		#endif
 
 		if (is_user_connected(g_eCaptain[e_cTT]) && is_user_connected(g_eCaptain[e_cCT])) {
 			rg_set_user_team(g_eCaptain[e_cTT], TEAM_TERRORIST);
@@ -116,16 +133,25 @@ public chooseCapsHandler(id, hMenu, item) {
 			resetCaptainData();
 		}
 	}
+	return PLUGIN_HANDLED;
 }
 
 stock pickMenu(id) {
+	if (!is_user_connected(id)) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentMode != e_mCaptain) {
+		return PLUGIN_HANDLED;
+	}
+
 	new szMsg[64];
 
 	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CAP_PICK");
 	new hMenu = menu_create(szMsg, "pickHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
-	get_players(iPlayers, iNum, "che", "SPECTATOR");
+	get_players(iPlayers, iNum, "he", "SPECTATOR");
 
 	new szBuffer[256];
 	for (new i; i < iNum; i++) {
@@ -133,6 +159,12 @@ stock pickMenu(id) {
 
 		num_to_str(iPlayer, szPlayer, charsmax(szPlayer));
 		add(szBuffer, charsmax(szBuffer), fmt("%n ", iPlayer));
+
+		#if defined USE_PTS
+			new szPts[16];
+			formatex(szPts, charsmax(szPts), "\d%d (%s) ", hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
+			add(szBuffer, charsmax(szBuffer), szPts);
+		#endif
 
 		if (g_bNoplay[iPlayer])
 			add(szBuffer, charsmax(szBuffer), "\r[Noplay] ");
@@ -144,33 +176,35 @@ stock pickMenu(id) {
 	menu_setprop(hMenu, MPROP_EXITNAME, "Refresh");
 	menu_setprop(hMenu, MPROP_SHOWPAGE, false);
 	menu_display(id, hMenu, 0);
+
+	return PLUGIN_HANDLED;
 }
 
 public pickHandler(id, hMenu, item) {
 	if (!is_user_connected(id)) {
 		menu_destroy(hMenu);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_iCurrentMode != e_mCaptain) {
 		menu_destroy(hMenu);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (id != g_iCaptainPick) {
 		menu_destroy(hMenu);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (getUserTeam(id) == TEAM_SPECTATOR) {
 		menu_destroy(hMenu);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (item == MENU_EXIT) {
 		menu_destroy(hMenu);
 		pickMenu(id);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
@@ -181,15 +215,20 @@ public pickHandler(id, hMenu, item) {
 
 	if (!is_user_connected(iPlayer)) {
 		pickMenu(id);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	if (g_bNoplay[iPlayer]) {
 		pickMenu(id);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", 0, "PLAYER_CHOOSE", id, iPlayer);
+	#if defined USE_PTS
+		chat_print(0, "%L", 0, "PLAYER_CHOOSE_PTS", id, iPlayer, hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
+	#else
+		chat_print(0, "%L", 0, "PLAYER_CHOOSE", id, iPlayer);
+	#endif
+
 	rg_set_user_team(iPlayer, getUserTeam(id));
 	rg_round_respawn(iPlayer);
 
@@ -198,7 +237,7 @@ public pickHandler(id, hMenu, item) {
 	pickMenu(g_iCaptainPick);
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 
 	new iTotalPlayers;
 	for (new i; i < iNum; i++) {
@@ -213,6 +252,8 @@ public pickHandler(id, hMenu, item) {
 		resetCaptainData();
 		chat_print(0, "%L", 0, "TEAM_FULL");
 	}
+
+	return PLUGIN_HANDLED;
 }
 
 resetCaptainData() {

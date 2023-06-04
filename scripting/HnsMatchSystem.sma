@@ -1,3 +1,5 @@
+#define USE_PTS
+
 #include <hns-match/index>
 
 public plugin_precache() {
@@ -7,7 +9,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.9.1", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
+	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.9.3", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
 
 	get_mapname(g_szMapName, charsmax(g_szMapName));
 
@@ -79,6 +81,9 @@ public fwdGameNameDesc() {
 public fwdClientKill(id) {
 	if (g_iCurrentMode == e_mDM) {
 		chat_print(id, "%L", id, "KILL_NOT");
+		return FMRES_SUPERCEDE;
+	} else if (g_iCurrentMode != e_mMatch && g_eMatchInfo[e_sRoundInfo] != ROUND_START && g_eRoundStats[id][e_flSurviveTime] < 90.0) {
+		chat_print(id, "%L", id, "KILL_NOT_MIX");
 		return FMRES_SUPERCEDE;
 	} else {
 		chat_print(0, "%L", 0, "KILL_HIMSELF", id);
@@ -227,13 +232,13 @@ public rgRestartRound() {
 
 	new iPlayers[MAX_PLAYERS], iNum;
 
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 	for (new j; j < iNum; j++) {
 		new id = iPlayers[j];
 		arrayset(g_eRoundStats[id], 0, STATS_PLAYER);
 	}
 
-	get_players(iPlayers, iNum, "che", "TERRORIST");
+	get_players(iPlayers, iNum, "he", "TERRORIST");
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 		if (g_bLastFlash[iPlayer]) {
@@ -249,9 +254,6 @@ public rgRestartRound() {
 	}
 
 	set_task(1.0, "taskDestroyBreakables");
-
-	if (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused)
-		g_flRetry = get_gametime() + RETRY_TIME;
 }
 
 public taskDestroyBreakables() {
@@ -274,9 +276,6 @@ public rgOnRoundFreezeEnd() {
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 
 	set_task(0.25, "taskRoundEvent", .flags = "b");
-	
-	if (g_iCurrentMode == e_mPaused)
-		g_flRetry = get_gametime() + RETRY_TIME;
 }
 
 public rgFlPlayerFallDamage(id) {
@@ -291,7 +290,7 @@ public rgFlPlayerFallDamage(id) {
 public taskRoundEvent() {
 	if (g_eMatchInfo[e_sRoundInfo] == ROUND_START) {
 		new iPlayers[MAX_PLAYERS], count;
-		get_players(iPlayers, count, "che", "TERRORIST");
+		get_players(iPlayers, count, "he", "TERRORIST");
 
 		g_flRoundTime += 0.25;
 		g_eMatchInfo[e_flSidesTime][g_isTeamTT] += 0.25;
@@ -345,7 +344,7 @@ public MixFinishedMR(iWinTeam) {
 
 stock get_num_players_in_match() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
+	get_players(iPlayers, iNum, "h");
 	new numGameplr;
 	for (new i; i < iNum; i++) {
 		new tempid = iPlayers[i];
@@ -429,7 +428,7 @@ public rgPlayerKilled(victim, attacker) {
 		}
 	}
 
-	if (g_iCurrentMode == e_mMatch || is_user_connected(attacker)) 
+	if (g_iCurrentMode == e_mMatch) 
 		ExecuteForward(g_StatsFuncs[STATSFUNCS_KD], _, victim, attacker);
 }
 
@@ -606,7 +605,7 @@ public plugin_cfg() {
 restartRound(Float:delay = 0.5) {
 	if (g_eMatchInfo[e_sRoundInfo] == ROUND_START) {
 		new iPlayers[MAX_PLAYERS], iNum;
-		get_players(iPlayers, iNum, "ch");
+		get_players(iPlayers, iNum, "h");
 
 		g_eMatchInfo[e_flSidesTime][g_isTeamTT] -= g_flRoundTime;
 

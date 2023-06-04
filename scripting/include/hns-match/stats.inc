@@ -25,8 +25,8 @@ enum _:STATS_PLAYER
 	e_iSaveKills,
 	e_iSaveDeaths,
 	e_iSaveGameStops,
-	e_szSaveTeam[16],
-	e_bSaveAlive
+	bool:isPlrInMatch,
+	e_szSaveTeam[16]
 };
 
 new g_eRoundStats[MAX_PLAYERS + 1][STATS_PLAYER];
@@ -91,12 +91,14 @@ public stats_prethink(id) {
 }
 
 public stats_kd(victim, attacker) {
-	iStats[victim][e_iDeaths]++;
-	g_eRoundStats[victim][e_iDeaths]++;
+	if (is_user_connected(victim)) {
+		iStats[victim][e_iDeaths]++;
+		g_eRoundStats[victim][e_iDeaths]++;
+	}
 
-	if (attacker != victim) {
+	if (is_user_connected(attacker) && attacker != victim) {
 		iStats[attacker][e_iKills]++;
-		g_eRoundStats[attacker][e_iDeaths]++;
+		g_eRoundStats[attacker][e_iKills]++;
 	}
 }
 
@@ -157,12 +159,9 @@ public savePlayerStats(id) {
 	if (!is_entity(id))
 		return;
 
-	iStats[id][e_flSaveDiscTime] = 0.0;
-
 	if ((getUserTeam(id) == TEAM_TERRORIST || getUserTeam(id) == TEAM_CT) && (g_iCurrentMode == e_mMatch || g_iCurrentMode == e_mPaused)) {
-		iStats[id][e_flSaveDiscTime] = g_flRetry;
+		iStats[id][isPlrInMatch] = true;
 		iStats[id][e_flSaveSurviveTime] = g_eRoundStats[id][e_flSurviveTime];
-		iStats[id][e_bSaveAlive] = Float:get_entvar(id, var_health) >= RETRY_HP && g_iCurrentMode != e_mPaused ? true : false;
 		copy(iStats[id][e_szSaveTeam], charsmax(iStats[][e_szSaveTeam]), fmt("%s", getUserTeam(id) == TEAM_TERRORIST ? "TERRORIST" : "CT"));
 
 		if (g_eRoundStats[id][e_iKills] || g_eRoundStats[id][e_iDeaths]) {
