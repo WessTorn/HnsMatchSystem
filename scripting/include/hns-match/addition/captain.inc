@@ -36,7 +36,7 @@ stock chooseCapsMenu(id) {
 	new szMsg[64];
 
 	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CAP_CHOSE");
-	new hMenu = menu_create(szMsg, "chooseCapsHandler");
+	new hMenu = menu_create(szMsg, "сhooseCapsHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
 	get_players(iPlayers, iNum, "ch");
