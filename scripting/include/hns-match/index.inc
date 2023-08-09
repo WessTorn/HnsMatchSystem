@@ -12,15 +12,11 @@
 #include <json>
 #include <PersistentDataStorage>
 
-#if defined USE_PTS
-	#include <hns_matchsystem_pts>
-#endif
-
 #include <hns-match/globals>
 #include <hns-match/utils>
 #include <hns-match/forward>
 #include <hns-match/stats>
-#include <hns-match/ham>
+#include <hns-match/knife>
 #include <hns-match/message>
 #include <hns-match/save>
 #include <hns-match/user>
@@ -32,6 +28,7 @@
 #include <hns-match/addition/surrender>
 #include <hns-match/addition/afk>
 #include <hns-match/addition/hookOnOff>
+#include <hns-match/addition/pts>
 #include <hns-match/addition/captain>
 #include <hns-match/addition/hnsmenu>
 #include <hns-match/addition/showinfo>

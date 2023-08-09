@@ -4,7 +4,7 @@
 
 #define _captain_included
 
-stock captainStart(id) {
+public captainStart(id) {
 	resetCaptainData();
 	g_iCurrentMode = e_mCaptain;
 
@@ -23,7 +23,7 @@ stock captainStart(id) {
 	chat_print(0, "%L", 0, "CAP_CHOOSE", id);
 }
 
-stock chooseCapsMenu(id) {
+public chooseCapsMenu(id) {
 	if (!is_user_connected(id))
 		return PLUGIN_HANDLED;
 
@@ -51,11 +51,11 @@ stock chooseCapsMenu(id) {
 		num_to_str(iPlayer, szPlayer, charsmax(szPlayer));
 		add(szBuffer, charsmax(szBuffer), fmt("%n ", iPlayer));
 
-		#if defined USE_PTS
+		if (g_ePlayerPtsData[iPlayer][e_bInit]) {
 			new szPts[16];
-			formatex(szPts, charsmax(szPts), "\d%d (%s) ", hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
+			formatex(szPts, charsmax(szPts), "\d%d (%s) ", g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
 			add(szBuffer, charsmax(szBuffer), szPts);
-		#endif
+		}
 
 		if (g_bNoplay[iPlayer])
 			add(szBuffer, charsmax(szBuffer), "\r[Noplay] ");
@@ -106,21 +106,19 @@ public chooseCapsHandler(id, hMenu, item) {
 	if (!g_eCaptain[e_cTT]) {
 		g_eCaptain[e_cTT] = iPlayer;
 		
-		#if defined USE_PTS
-			chat_print(0, "%L", 0, "CAP_FIRST_PTS", iPlayer, hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
-		#else
+		if (g_ePlayerPtsData[iPlayer][e_bInit])
+			chat_print(0, "%L", 0, "CAP_FIRST_PTS", iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
+		else
 			chat_print(0, "%L", 0, "CAP_FIRST", iPlayer);
-		#endif
 
 		chooseCapsMenu(id);
 	} else if (!g_eCaptain[e_cCT]) {
 		g_eCaptain[e_cCT] = iPlayer;
 
-		#if defined USE_PTS
-			chat_print(0, "%L", 0, "CAP_SECOND_PTS", iPlayer, hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
-		#else
+		if (g_ePlayerPtsData[iPlayer][e_bInit])
+			chat_print(0, "%L", 0, "CAP_SECOND_PTS", iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
+		else
 			chat_print(0, "%L", 0, "CAP_SECOND", iPlayer);
-		#endif
 
 		if (is_user_connected(g_eCaptain[e_cTT]) && is_user_connected(g_eCaptain[e_cCT])) {
 			rg_set_user_team(g_eCaptain[e_cTT], TEAM_TERRORIST);
@@ -136,12 +134,16 @@ public chooseCapsHandler(id, hMenu, item) {
 	return PLUGIN_HANDLED;
 }
 
-stock pickMenu(id) {
+public pickMenu(id) {
 	if (!is_user_connected(id)) {
 		return PLUGIN_HANDLED;
 	}
 
 	if (g_iCurrentMode != e_mCaptain) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (id != g_iCaptainPick) {
 		return PLUGIN_HANDLED;
 	}
 
@@ -160,11 +162,11 @@ stock pickMenu(id) {
 		num_to_str(iPlayer, szPlayer, charsmax(szPlayer));
 		add(szBuffer, charsmax(szBuffer), fmt("%n ", iPlayer));
 
-		#if defined USE_PTS
+		if (g_ePlayerPtsData[iPlayer][e_bInit]) {
 			new szPts[16];
-			formatex(szPts, charsmax(szPts), "\d%d (%s) ", hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
+			formatex(szPts, charsmax(szPts), "\d%d (%s) ", g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
 			add(szBuffer, charsmax(szBuffer), szPts);
-		#endif
+		}
 
 		if (g_bNoplay[iPlayer])
 			add(szBuffer, charsmax(szBuffer), "\r[Noplay] ");
@@ -223,11 +225,10 @@ public pickHandler(id, hMenu, item) {
 		return PLUGIN_HANDLED;
 	}
 
-	#if defined USE_PTS
-		chat_print(0, "%L", 0, "PLAYER_CHOOSE_PTS", id, iPlayer, hns_pts_get_player_info(iPlayer, pts), get_skill_player(hns_pts_get_player_info(iPlayer, pts)));
-	#else
+	if (g_ePlayerPtsData[iPlayer][e_bInit])
+		chat_print(0, "%L", 0, "PLAYER_CHOOSE_PTS", id, iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
+	else
 		chat_print(0, "%L", 0, "PLAYER_CHOOSE", id, iPlayer);
-	#endif
 
 	rg_set_user_team(iPlayer, getUserTeam(id));
 	rg_round_respawn(iPlayer);

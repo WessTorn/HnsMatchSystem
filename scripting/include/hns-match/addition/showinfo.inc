@@ -47,24 +47,22 @@ public task_ShowPlayerInfo() {
 					formatex(szBuffer, charsmax(szBuffer), "Survive time: %s^nStabs: %d", szTime, iStats[id][e_iStabs]);
 				}
 				
-				#if defined USE_PTS
+				if (g_ePlayerPtsData[id][e_bInit]) {
 					set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.20, .holdtime = 1.0);
 					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n (#%d)^n\
 							%s^n\
 							PTS: %d^n\
 							Wins: %d / Loss: %d",
-							id, hns_pts_get_player_info(id, top),
+							id, g_ePlayerPtsData[id][e_iTop],
 							g_iCurrentMode == e_mMatch ? szBuffer : "",
-							hns_pts_get_player_info(id, pts),
-							hns_pts_get_player_info(id, wins), hns_pts_get_player_info(id, loss));
-				#else
+							g_ePlayerPtsData[id][e_iPts],
+							g_ePlayerPtsData[id][e_iWins], g_ePlayerPtsData[id][e_iLoss]);
+				} else {
 					ShowSyncHudMsg(iPlayer, g_MsgSync, "Player: %n^n\
 						%s",
 						id,
 						g_iCurrentMode == e_mMatch ? szBuffer : "");
-				#endif
-
-
+				}
 			}
 		}
 	}

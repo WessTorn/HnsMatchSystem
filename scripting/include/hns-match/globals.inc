@@ -6,6 +6,8 @@
 
 #define access ADMIN_MAP
 
+#define TASK_TIMER 54345
+
 new g_PluginId;
 
 stock knifemap[24];
@@ -82,9 +84,20 @@ enum SPEC_BACK {
 	TeamName:sb_hTeam
 }
 
-new g_eSpecBack[MAX_PLAYERS + 1][SPEC_BACK]
+new g_eSpecBack[MAX_PLAYERS + 1][SPEC_BACK];
 
 new g_MsgSync;
+
+enum _:PTS_DATA {
+	bool:e_bInit,
+	e_iPts,
+    e_iWins,
+    e_iLoss,
+    e_iTop,
+	e_szRank[10]
+};
+
+new g_ePlayerPtsData[MAX_PLAYERS + 1][PTS_DATA];
 
 
 // const

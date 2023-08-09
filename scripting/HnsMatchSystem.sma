@@ -1,5 +1,3 @@
-#define USE_PTS
-
 #include <hns-match/index>
 
 public plugin_precache() {
@@ -9,7 +7,7 @@ public plugin_precache() {
 }
 
 public plugin_init() {
-	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.9.3", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
+	g_PluginId = register_plugin("Hide'n'Seek Match System", "1.2.9.4", "OpenHNS"); // Спасибо: Cultura, Garey, Medusa, Ruffman, Conor, Juice
 
 	get_mapname(g_szMapName, charsmax(g_szMapName));
 
@@ -43,6 +41,7 @@ public plugin_init() {
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
 	RegisterHookChain(RG_PM_Move, "rgPlayerMovePost", true);
+	RegisterHookChain(RH_SV_DropClient, "rgDropClient", false);
 
 	set_task(0.5, "taskDelayedMode");
 
@@ -82,7 +81,7 @@ public fwdClientKill(id) {
 	if (g_iCurrentMode == e_mDM) {
 		chat_print(id, "%L", id, "KILL_NOT");
 		return FMRES_SUPERCEDE;
-	} else if (g_iCurrentMode != e_mMatch && g_eMatchInfo[e_sRoundInfo] != ROUND_START && g_eRoundStats[id][e_flSurviveTime] < 90.0) {
+	} else if (g_iCurrentMode == e_mMatch && g_eMatchInfo[e_sRoundInfo] != ROUND_NOT && g_flRoundTime < 90.0) {
 		chat_print(id, "%L", id, "KILL_NOT_MIX");
 		return FMRES_SUPERCEDE;
 	} else {
@@ -109,15 +108,16 @@ public fwdSpawn(entid) {
 }
 
 public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
-	if (event == ROUND_TARGET_SAVED || event == ROUND_HOSTAGE_NOT_RESCUED) {
-		SetHookChainArg(1, ATYPE_INTEGER, WINSTATUS_TERRORISTS);
-		SetHookChainArg(2, ATYPE_INTEGER, ROUND_TERRORISTS_ESCAPED);
-	}
-
 	if (event == ROUND_GAME_COMMENCE) {
 		set_member_game(m_bGameStarted, true);
 		SetHookChainReturn(ATYPE_BOOL, false);
 		return HC_SUPERCEDE;
+	}
+
+	if (status == WINSTATUS_DRAW && event == ROUND_END_DRAW)
+	{
+		// round restarted, dont do shit
+		return HC_CONTINUE;
 	}
 
 	switch (g_iCurrentMode) {
@@ -127,56 +127,58 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 			}
 		}
 		case e_mMatch: {
+			remove_task(TASK_TIMER);
 			g_eMatchInfo[e_sRoundInfo] = ROUND_NOT;
-			if (status == WINSTATUS_TERRORISTS) {
-				new players[MAX_PLAYERS], pnum;
-				get_players(players, pnum, "ace", "CT");
-				if (!pnum) {
-					new Float:roundtime = get_pcvar_float(get_round_time()) * 60.0;
-					g_eMatchInfo[e_flSidesTime][g_isTeamTT] += roundtime - g_flRoundTime;
-				}
-			}
 			if (g_eMatchInfo[e_bStarted]) {
-				new HNS_TEAM:iWinTeam;
-				new bool:bFinish = false;
-				new szTime[24];
-				new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]);
-				new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT]);
-				if (g_eMatchInfo[e_flSidesTime][g_isTeamTT] + flTimeToWinTT < g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]) {
-					iWinTeam = HNS_TEAM:!g_isTeamTT;
-					bFinish = true;
-				} else if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] + flTimeToWinCT < g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
-					iWinTeam = g_isTeamTT;
-					bFinish = true;
-				}
 				g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++;
-				if (bFinish) {
-					MixFinishedMR(iWinTeam == g_isTeamTT ? 1 : 2);
-				} else if(g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= (get_max_rounds() * 2)) {				
-					if (floatabs(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT]) <= 1.0)
-					{
+				if (status != WINSTATUS_CTS) {
+					if (get_round_time() - 1.0 > g_flRoundTime / 60.0) {
+						new Float:roundtime = get_round_time() * 60.0;
+
+						g_eMatchInfo[e_flSidesTime][g_isTeamTT] += roundtime - g_flRoundTime;
+
+						new iPlayers[MAX_PLAYERS], iNum;
+						get_players(iPlayers, iNum, "ache", "TERRORIST");
+
+						for (new i; i < iNum; i++) {
+							new id = iPlayers[i];
+							iStats[id][e_flSurviveTime] += roundtime - g_flRoundTime;
+						}
+					}
+				}
+
+				if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= get_max_rounds() * 2) {
+					new HNS_TEAM:win_team = HNS_TEAM:-1;
+					if (g_eMatchInfo[e_flSidesTime][g_isTeamTT] > g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]) {
+						win_team = g_isTeamTT;
+					} else if (g_eMatchInfo[e_flSidesTime][g_isTeamTT] < g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]) {
+						win_team = HNS_TEAM:!g_isTeamTT;
+					}
+
+					if (win_team != HNS_TEAM:-1)
+						MixFinishedMR(win_team == g_isTeamTT ? 1 : 2);
+					else {
 						switchHnsTeamValue();
 						rg_swap_all_players();
 						chat_print(0, "%L", 0, "SAME_TIMER");
 						set_max_rounds(get_max_rounds() + 2);
-						g_eMatchInfo[e_bLastRound] = false;
-					}
-				} else if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= (get_max_rounds() * 2) - 1) {
-					if (!g_eMatchInfo[e_bLastRound]) {
-						switchHnsTeamValue();
-						rg_swap_all_players();
-					}
-					if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
-						if (!g_eMatchInfo[e_bLastRound]) {
-							fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], szTime, charsmax(szTime));
-							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("%L", LANG_SERVER, "HUD_TIMETOWIN", szTime));
-							g_eMatchInfo[e_bLastRound] = true;
-						}
 					}
 				} else {
-					if (!g_eMatchInfo[e_bLastRound]) {
-						switchHnsTeamValue()
-						rg_swap_all_players();
+					switchHnsTeamValue();
+					rg_swap_all_players();
+					if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= (get_max_rounds() * 2) - 1) {
+						new sTime[24];
+						if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - Float:(get_max_rounds() * 60.0) > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
+							// variant kogda tt josko proebivaut (bolwe 4em roundtime)
+							fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], sTime, charsmax(sTime));
+							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, "КТ Победили!^n ТТ не хватило %s что-бы победить! ^n(More than roundtime)", sTime);
+						} else if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
+							// samii default variant
+							fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], sTime, charsmax(sTime));
+							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("%L", LANG_SERVER, "HUD_TIMETOWIN", sTime));
+						} else {
+							setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, "ТТ Победили!^n КТ таймер меньше, чем у команды ТТ!");
+						}
 					}
 				}
 			}
@@ -221,8 +223,8 @@ public rgResetMaxSpeed(id) {
 	return HC_CONTINUE;
 }
 
-public rgRestartRound() {
-	remove_task();
+public rgRestartRound() { // Сделать красиво
+	remove_task(TASK_TIMER);
 	g_eMatchInfo[e_sRoundInfo] = ROUND_FREEZE
 
 	if (g_eMatchInfo[e_bStarted])
@@ -275,7 +277,7 @@ public rgOnRoundFreezeEnd() {
 	set_task(is_semiclip() ? 3.0 : 5.0, "taskCheckAfk");
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 
-	set_task(0.25, "taskRoundEvent", .flags = "b");
+	set_task(0.25, "taskRoundEvent", .id = TASK_TIMER, .flags = "b");
 }
 
 public rgFlPlayerFallDamage(id) {
@@ -303,30 +305,23 @@ public taskRoundEvent() {
 			g_eRoundStats[id][e_flSurviveTime] += 0.25;
 		}
 	}
-	if ((g_flRoundTime / 60.0) >= get_pcvar_float(get_round_time())) {
+	if (g_flRoundTime / 60.0 >= get_round_time()) {
 		if (g_eMatchInfo[e_bStarted])
 			g_eMatchInfo[e_sRoundInfo] = ROUND_NOT;
 
-		remove_task();
+		remove_task(TASK_TIMER);
 	}
-	
-	new HNS_TEAM:iWinTeam;
-	new bool:bFinish = false;
-	new Float:flTimeToWinTT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]);
-	new Float:flTimeToWinCT = Float:(get_pcvar_float(get_round_time()) * 60.0) * (get_max_rounds() - g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT]);
-	if (g_eMatchInfo[e_flSidesTime][g_isTeamTT] + flTimeToWinTT < g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]) {
-		iWinTeam = HNS_TEAM:!g_isTeamTT;
-		bFinish = true;
-	} else if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] + flTimeToWinCT < g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
-		iWinTeam = g_isTeamTT;
-		bFinish = true;
-	}
-	if (bFinish) {
-		MixFinishedMR(iWinTeam == g_isTeamTT ? 1 : 2);
+
+	if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= (get_max_rounds() * 2) - 1) {
+		if (g_eMatchInfo[e_flSidesTime][g_isTeamTT] > g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] || g_eMatchInfo[e_flSidesTime][g_isTeamTT] < (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - get_round_time() * 60.0)) {
+			new HNS_TEAM:iWinTeam = g_eMatchInfo[e_flSidesTime][g_isTeamTT] > g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] ? g_isTeamTT : HNS_TEAM:!g_isTeamTT;
+			MixFinishedMR(iWinTeam == g_isTeamTT ? 1 : 2);
+		}
 	}
 }
 
 public MixFinishedMR(iWinTeam) {
+	remove_task(TASK_TIMER);
 	ExecuteForward(g_hForwards[MATCH_FINISHED], _, iWinTeam);
 	new Float:TimeDiff = floatabs(g_eMatchInfo[e_flSidesTime][g_isTeamTT] - g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]);
 	new szTime[24];
@@ -496,8 +491,10 @@ public client_putinserver(id) {
 	training_putin(id);
 }
 
-public client_disconnected(id) {
+public rgDropClient(id) {
 	g_bHooked[id] = false;
+
+	arrayset(g_ePlayerPtsData[id], 0, PTS_DATA);
 
 	savePlayerStats(id);
 }

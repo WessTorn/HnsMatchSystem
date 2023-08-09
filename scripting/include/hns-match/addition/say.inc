@@ -47,7 +47,7 @@ public sayHandle(id) {
 
 		if (str_to_num(szTarget) > 0) {
 			set_max_rounds(str_to_num(szTarget));
-			chat_print(0, "%L", 0, "SET_MAXROUNDS", id, str_to_num(szTarget));
+			chat_print(0, "%L", 0, "SET_MAXROUNDS", id, str_to_num(szTarget), str_to_num(szTarget) * 2);
 		}
 		return PLUGIN_CONTINUE;
 	}

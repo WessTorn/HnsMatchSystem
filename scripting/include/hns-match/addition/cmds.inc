@@ -19,6 +19,7 @@ stock cmds_init() {
 
 	RegisterSayCmd("pub", 		"public", 		"cmdPubMode", 		access, "Public mode");
 	RegisterSayCmd("dm", 		"deathmatch", 	"cmdDMMode", 		access, "DeathMatch mode");
+	RegisterSayCmd("bld", 		"blend", 		"cmdBlend", 		access, "Blend teams");
 	RegisterSayCmd("specall", 	"specall", 		"cmdTransferSpec", 	access, "Spec Transfer");
 	RegisterSayCmd("ttall", 	"ttall", 		"cmdTransferTT", 	access, "TT Transfer");
 	RegisterSayCmd("ctall", 	"ctall", 		"cmdTransferCT", 	access, "CT Transfer");
@@ -36,7 +37,7 @@ stock cmds_init() {
 	RegisterSayCmd("live", 		"unpause", 		"cmdStopPause",		access, "Unpause");
 	RegisterSayCmd("surrender", "sur", 			"cmdSurrender", 	0, "Surrender vote");
 	RegisterSayCmd("score", 	"s", 			"cmdShowTimers", 	0, "Score");
-	RegisterSayCmd("pick", 		"pick", 		"cmdPick", 			0, "Pick player");
+	RegisterSayCmd("pick", 		"pick", 		"pickMenu", 		0, "Pick player");
 	RegisterSayCmd("back", 		"spec", 		"cmdTeamSpec", 		0, "Spec/Back player");
 	RegisterSayCmd("np", 		"noplay", 		"cmdNoplay", 		0, "No play");
 	RegisterSayCmd("ip", 		"play", 		"cmdPlay", 			0, "Play");
@@ -120,6 +121,36 @@ public cmdDMMode(id) {
 	chat_print(0, "%L", 0, "DM_ACTIVATED", id);
 	removeHook(id);
 
+	return PLUGIN_HANDLED;
+}
+
+public cmdBlend(id) {
+	if (g_iCurrentMode != e_mPublic && g_iCurrentMode != e_mDM) 
+		return PLUGIN_HANDLED; 
+
+	chat_print(0, "%L", 0, "BLEND_TEAMS", id);
+
+	new Players[MAX_PLAYERS], Num;
+	get_players(Players, Num, "ch");
+
+	for (new i; i < Num; i++) {
+		if (!getUserTeam(Players[i])) {
+			Players[i--] = Players[--Num];
+		}
+	}
+
+	new Player, Team = random(2) ? 1 : 2;
+	new Random;
+
+	while (Num) {
+		Random = random(Num);
+		Player = Players[Random];
+		rg_set_user_team(Player, TeamName:Team);
+		Players[Random] = Players[--Num];
+		Team = (Team % 2 + 1);
+	}
+
+	restartRound();
 	return PLUGIN_HANDLED;
 }
 
@@ -274,7 +305,7 @@ public cmdSkillMode(id) {
 
 	if (g_iCurrentMode == e_mMatch) {
 		set_cvar_num("mp_freezetime", 5);
-		set_flash_num(2);
+		set_flash_num(1);
 		set_smoke_num(1);
 	}
 
@@ -500,9 +531,13 @@ public cmdSurrender(id) {
 
 public cmdShowTimers(id) {
 	if (g_eMatchInfo[e_bStarted] || g_iCurrentMode == e_mPaused) {
-		new timeToWin[HNS_TEAM][24];
+		new timeToWin[HNS_TEAM][24], diffTime[24];
 		fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_B], timeToWin[HNS_TEAM_B], 23);
 		fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_A], timeToWin[HNS_TEAM_A], 23);
+
+		new Float:TimeDiff = floatabs(g_eMatchInfo[e_flSidesTime][g_isTeamTT] - g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]);
+		fnConvertTime(TimeDiff, diffTime, 23, false);
+
 
 		new iPlayers[MAX_PLAYERS], TTsize, CTSize;
 		get_players(iPlayers, TTsize, "ce", "TERRORIST");
@@ -510,28 +545,17 @@ public cmdShowTimers(id) {
 		if (g_isTeamTT == HNS_TEAM_A) {
 			chat_print(id, "%L", id, "SCORE_TIME",
 				timeToWin[HNS_TEAM_A], TTsize, CTSize, timeToWin[HNS_TEAM_B],
-				(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B]) + 1, get_max_rounds() * 2);
+				(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B]) + 1, get_max_rounds() * 2,
+				diffTime);
 		} else {
 			chat_print(id, "%L", id, "SCORE_TIME",
 				timeToWin[HNS_TEAM_B], TTsize, CTSize, timeToWin[HNS_TEAM_A],
-				(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A]) + 1, get_max_rounds() * 2);
+				(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A]) + 1, get_max_rounds() * 2,
+				diffTime);
 		}
 	} else {
 		chat_print(id, "%L", id, "SCORE_NOT");
 	}
-}
-
-public cmdPick(id) {
-	if (!is_user_connected(id))
-		return;
-
-	if (g_iCurrentMode != e_mCaptain)
-		return;
-
-	if (id != g_iCaptainPick)
-		return;
-
-	pickMenu(id);
 }
 
 public cmdTeamSpec(id) {

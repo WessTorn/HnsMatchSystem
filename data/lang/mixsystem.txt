@@ -3,7 +3,7 @@ STATUS_NOPLAY   = ^3%n^1 is ^3not available^1 for pick [^3NOPLAY^1]
 STATUS_PLAY     = ^3%n^1 is now ^3available^1 for pick [^3PLAY^1]
 
 SET_ROUNDTIME   = ^3%n ^1 set ^3roundtime^1 to ^3%.2f^1 minutes.
-SET_MAXROUNDS   = ^3%n ^1 set ^3maxrounds^1 to ^3%d^1 rounds.
+SET_MAXROUNDS   = ^3%n ^1 set ^3maxrounds^1 to ^3%d^1 (^3%d^1 rounds).
 
 KILL_HIMSELF    = ^3%n^1 killed himself
 KILL_NOT        = Kill during deathmatch is not available.
@@ -33,6 +33,8 @@ DM_ACTIVATED    = ^3%n^1 has activated ^3deatchmatch^1 mode.
 DM_ALREADY      = deatchmatch mode is already running.
 DM_CANC         = Please disable other mode before deathmatch.
 
+BLEND_TEAMS     = ^3%n^1 blend teams.
+
 TRANSF_SPEC     = ^3%n^1 transfered all players to ^3spectators
 TRANSF_TT       = ^3%n^1 transfered all players to ^3terrorist's
 TRANSF_CT       = ^3%n^1 transfered all players to ^3counter-terrorist's
@@ -59,7 +61,7 @@ STOP_PUB        = ^3%n^1 stopped ^3public^1 mode
 STOP_CAP        = ^3%n^1 stopped ^3captain^1 mode
 STOP_DM         = ^3%n^1 stopped ^3deathmatch^1 mode
 
-SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds)
+SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds) (^3%s^1 diff)
 SCORE_NOT       = Sorry, but game ain't started atm
 
 SAME_TIMER      = Same Timers! OVERTIME! Playing +2 Rounds
@@ -101,10 +103,10 @@ DAMAGE_ON       = Damage show ^3enabled^1.
 DAMAGE_OFF      = Damage show ^3disabled^1.
 
 MENU_MIX_TITLE       = \yHide'n'Seek match system
-MENU_MAIN_CAP        = Start Captain mode
-MENU_MAIN_NOTCAP     = \dStart Captain mode
-MENU_MAIN_STOPCAP    = \rStop Captain mode
-MENU_MAIN_NOTSTART   = \dStart mix match
+MENU_MAIN_CAP        = Start captain mode
+MENU_MAIN_NOTCAP     = \dStart captain mode
+MENU_MAIN_STOPCAP    = \rStop captain mode
+MENU_MAIN_STOPCUSTOM = \rStop custom mode
 MENU_MAIN_MIX        = Start mix match
 MENU_MAIN_STOPMIX    = \rStop mix match
 MENU_MAIN_NOSTOPMIX  = \dStop mix match
@@ -112,7 +114,7 @@ MENU_MAIN_STOPKF     = \rStop knife round^n
 MENU_MAIN_NOTSTARTKF = \dStart knife round^n
 MENU_MAIN_STARTKF    = Start knife round^n
 MENU_MAIN_CUSTOM     = Start custom mode^n
-MENU_MAIN_STOPCUSTOM = \rStop custom mode^n
+MENU_MAIN_BLEND      = Blend Teams^n
 MENU_MAIN_PAUSE      = Pause match^n
 MENU_MAIN_UNPAUSE    = Unpause match^n
 MENU_MAIN_SETTINGS   = Mix system settings^n
@@ -127,7 +129,7 @@ MENU_CUSTOM_DM      = DeathMatch
 MENU_STNGS_ROUNDTIME_TRNG   = Roundtime: \d[Training]
 MENU_STNGS_ROUNDTIME        = Roundtime: \y%.1f
 MENU_STNGS_FREEZETIME       = Freezetime: \y%d
-MENU_STNGS_MAXROUND         = Maxrounds: \y%d^n
+MENU_STNGS_MAXROUND         = Maxrounds: \y%d \d(%d rounds) ^n
 MENU_STNGS_ONEHP_ON         = 1 HP Mode (Skill): \yOff^n
 MENU_STNGS_ONEHP_OFF        = 1 HP Mode (Skill): \yOn^n
 MENU_STNGS_FLASH            = Flash: \y%d
@@ -159,7 +161,7 @@ STATUS_NOPLAY   = ^3%n^1 выставил статус ^1не играю^1. [^3N
 STATUS_PLAY     = ^3%n^1 выставил статус ^1играю^1. [^3PLAY^1]
 
 SET_ROUNDTIME   = ^3%n ^1 установил ^3roundtime^1 на ^3%.2f^1 минут.
-SET_MAXROUNDS   = ^3%n ^1у становил ^3maxrounds^1 на ^3%d^1 раундов.
+SET_MAXROUNDS   = ^3%n ^1у становил ^3maxrounds^1 на ^3%d^1 (^3%d^1 раундов).
 
 KILL_HIMSELF    = ^3%n^1 убил сам себя.
 KILL_NOT        = Не доступно для режима ДМ.
@@ -189,6 +191,8 @@ DM_ACTIVATED    = ^3%n^1 активировал ^3ДМ^1 режим.
 DM_ALREADY      = ДМ режим уже запущен.
 DM_CANC         = Пожалуйста, отключите другой режим чтобы запустить ДМ.
 
+BLEND_TEAMS     = ^3%n^1 смешал команды.
+
 TRANSF_SPEC     = ^3%n^1 перевел всех игроков за ^3наблюдателей
 TRANSF_TT       = ^3%n^1 перевел всех игроков за ^3террористов
 TRANSF_CT       = ^3%n^1 перевел всех игроков за ^3контр-3террористов
@@ -214,7 +218,7 @@ STOP_PUB        = ^3%n^1 остановил ^3паблик^1 режим.
 STOP_CAP        = ^3%n^1 остановил режим ^3капитанов^1.
 STOP_DM         = ^3%n^1 остановил ^3ДМ^1 режим.
 
-SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов)
+SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов) (^3%s^1 разрыв)
 SCORE_NOT      = Извините, но игра не запущена.
 
 SAME_TIMER     = Время равное! ОВЕРТАЙМ! Начало доп. игры (+2 раунда).
@@ -259,14 +263,14 @@ MENU_MIX_TITLE       = \yHide'n'Seek match system
 MENU_MAIN_CAP        = Запустить капитан мод
 MENU_MAIN_NOTCAP     = \dЗапустить капитан мод
 MENU_MAIN_STOPCAP    = \rОстановить капитан мод
-MENU_MAIN_NOTSTART   = \dЗапустить микс
+MENU_MAIN_STOPCUSTOM = \rОстановить пользовательский мод
 MENU_MAIN_MIX        = Запустить микс
 MENU_MAIN_STOPMIX    = \rЗавершить микс
-MENU_MAIN_STOPKF     = \Остановить ножевой раунд^n
+MENU_MAIN_STOPKF     = \rОстановить ножевой раунд^n
 MENU_MAIN_NOTSTARTKF = \dЗапустить ножевой раунд^n
 MENU_MAIN_STARTKF    = Запустить ножевой раунд^n
 MENU_MAIN_CUSTOM     = Запустить пользовательский мод^n
-MENU_MAIN_STOPCUSTOM = \rОстановить пользовательский мод^n
+MENU_MAIN_BLEND      = Смешать команды^n
 MENU_MAIN_PAUSE      = Приостановить микс^n
 MENU_MAIN_UNPAUSE    = Возобновить микс^n
 MENU_MAIN_SETTINGS   = Настройки микса^n
@@ -281,7 +285,7 @@ MENU_CUSTOM_DM      = ДМ
 MENU_STNGS_ROUNDTIME_TRNG   = Roundtime: \d[Training]
 MENU_STNGS_ROUNDTIME        = Roundtime: \y%.1f
 MENU_STNGS_FREEZETIME       = Freezetime: \y%d
-MENU_STNGS_MAXROUND         = Maxrounds: \y%d^n
+MENU_STNGS_MAXROUND         = Maxrounds: \y%d \d(%d раундов)^n
 MENU_STNGS_ONEHP_ON         = 1 HP Mode (Skill): \yOff^n
 MENU_STNGS_ONEHP_OFF        = 1 HP Mode (Skill): \yOn^n
 MENU_STNGS_FLASH            = Flash: \y%d
@@ -303,6 +307,8 @@ MENU_CAP_CHOSE = \rВыберите капитанов:
 MENU_CAP_PICK = \rВыберите игрока:
 
 MENU_SUR_TITLE = \yСдаться?^n \dГолосовавший %n
+
+MENU_NADES_TITLE = Do you need some nades? 
 
 MENU_YES = Да
 MENU_NO = Нет

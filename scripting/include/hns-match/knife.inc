@@ -13,6 +13,7 @@ stock ham_init() {
 	RegisterHam(Ham_Item_Deploy, "weapon_knife", "hamDeployKnife", 1);
 	RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_knife", "hamKnifePrim");
 
+
 	register_menucmd(register_menuid("NadesMenu"), 3, "handleNadesMenu");
 }
 

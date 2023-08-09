@@ -33,8 +33,8 @@ stock cvars_init() {
 	g_pPrefix			= register_cvar("hns_prefix", "Match", FCVAR_ARCHIVE | FCVAR_SERVER);
 }
 
-stock get_round_time() {
-	return g_pRoundTime;
+stock Float:get_round_time() {
+	return get_pcvar_float(g_pRoundTime);
 }
 
 stock set_round_time(str[]) {

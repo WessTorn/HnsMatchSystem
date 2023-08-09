@@ -22,7 +22,7 @@ public mainMatchMenu(id) {
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCAP");
 	} else {
 		if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_NOTSTART");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCUSTOM");
 		else if (g_iCurrentMode == e_mTraining)
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_MIX");
 		else {
@@ -46,7 +46,7 @@ public mainMatchMenu(id) {
 		if (g_iCurrentMode == e_mTraining)
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_CUSTOM");
 		else if (g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCUSTOM");
+			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_BLEND");
 		else {
 			if (g_iCurrentMode != e_mPaused)
 				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_PAUSE");
@@ -78,18 +78,18 @@ public mainMatchMenu(id) {
 }
 
 public mainMatchMenuHandler(id, hMenu, item) {
-	if (!is_user_connected(id))
-		return PLUGIN_HANDLED;
-		
 	if (item == MENU_EXIT) {
 		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 
+	menu_destroy(hMenu);
+
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
 	
 	new iKey = str_to_num(szData);
+	
 	switch (iKey) {
 		case 1: {
 			if (equali(knifemap, g_szMapName)) {
@@ -101,7 +101,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 					cmdStop(id);
 			} else {
 				if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM)) {
-					return 0;
+					cmdStop(id);
 				}
 				else if (g_iCurrentMode == e_mTraining)
 					cmdStartRound(id);
@@ -122,7 +122,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 				if (g_iCurrentMode == e_mTraining)
 					customMenu(id);
 				else if ((g_iCurrentMode == e_mPublic || g_iCurrentMode == e_mDM))
-					cmdStop(id);
+					cmdBlend(id);
 				else {
 					if (g_iCurrentMode != e_mPaused)
 						cmdStartPause(id);
@@ -147,7 +147,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 			client_cmd(id, "amx_mapmenu");
 		}
 	}
-	menu_destroy(hMenu);
+
 	return PLUGIN_HANDLED;
 }
 
@@ -211,7 +211,7 @@ public settingsMatchMenu(id) {
 	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_FREEZETIME", get_cvar_num("mp_freezetime"));
 	menu_additem(hMenu, szMsg, "2");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_MAXROUND", get_max_rounds());
+	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_MAXROUND", get_max_rounds(), get_max_rounds() * 2);
 	menu_additem(hMenu, szMsg, "3");
 
 	if (get_hp_mode() == 100)
@@ -249,11 +249,11 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 	new iKey = str_to_num(szData);
 	switch (iKey) {
 		case 1: {
-			if (get_cvar_float("mp_roundtime") == 2.5)
+			if (get_cvar_float("mp_roundtime") <= 2.5)
 				set_cvar_float("mp_roundtime", 3.0);
-			else if (get_cvar_float("mp_roundtime") == 3.0)
+			else if (get_cvar_float("mp_roundtime") <= 3.0)
 				set_cvar_float("mp_roundtime", 3.5);
-			else if (get_cvar_float("mp_roundtime") == 3.5)
+			else if (get_cvar_float("mp_roundtime") <= 3.5)
 				set_cvar_float("mp_roundtime", 4.0);
 			else if (get_cvar_float("mp_roundtime") >= 4.0)
 				set_cvar_float("mp_roundtime", 2.5);
@@ -263,9 +263,9 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 		case 2: {
 			if (get_cvar_num("mp_freezetime") == 0)
 				set_cvar_num("mp_freezetime", 5);
-			else if (get_cvar_num("mp_freezetime") == 5)
+			else if (get_cvar_num("mp_freezetime") <= 5)
 				set_cvar_num("mp_freezetime", 10);
-			else if (get_cvar_num("mp_freezetime") == 10)
+			else if (get_cvar_num("mp_freezetime") <= 10)
 				set_cvar_num("mp_freezetime", 15);
 			else if (get_cvar_num("mp_freezetime") >= 15)
 				set_cvar_num("mp_freezetime", 0);
@@ -275,7 +275,7 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 		case 3: {
 			if (get_max_rounds() <= 6)
 				set_max_rounds(8);
-			else if (get_max_rounds() == 8)
+			else if (get_max_rounds() <= 8)
 				set_max_rounds(10);
 			else if (get_max_rounds() >= 10)
 				set_max_rounds(6);
@@ -293,9 +293,9 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 		case 5: {
 			if (get_flash_num() == 0)
 				set_flash_num(1);
-			else if (get_flash_num() == 1)
+			else if (get_flash_num() <= 1)
 				set_flash_num(2);
-			else if (get_flash_num() == 2)
+			else if (get_flash_num() <= 2)
 				set_flash_num(3);
 			else if (get_flash_num() >= 3)
 				set_flash_num(0);
@@ -303,7 +303,7 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 			settingsMatchMenu(id);
 		}
 		case 6: {
-			if (get_smoke_num() == 1)
+			if (get_smoke_num() <= 1)
 				set_smoke_num(2);
 			else if (get_smoke_num() >= 2)
 				set_smoke_num(1);
