@@ -10,49 +10,38 @@
 
 new g_PluginId;
 
-stock knifemap[24];
-
-const RETRY_TIME = 30;
-const TASK_SET_TEAM = 23456;
-const Float:RETRY_HP = 95.0;
-
-enum {
-	e_mTraining,
-	e_mPaused,
-	e_mKnife,
-	e_mCaptain,
-	e_mMatch,
-	e_mPublic,
-	e_mDM
+enum MATCH_STATUS
+{
+	MATCH_NONE,
+	MATCH_CAPTAINPICK,
+	MATCH_CAPTAINKNIFE,
+	MATCH_TEAMPICK,
+	MATCH_TEAMKNIFE,
+	MATCH_MAPPICK,
+	MATCH_WAITCONNECT,
+	MATCH_STARTED
 }
-new g_iCurrentMode;
+new MATCH_STATUS:g_iMatchStatus;
 
-enum _:CaptainTeam_s {
-	e_cTT,
-	e_cCT
-};
-new g_eCaptain[CaptainTeam_s], g_iCaptainPick;
-new bool:g_bCaptainsBattle;
+enum MODE_STATES
+{
+    STATE_DISABLED,
+    STATE_PREPARE,
+    STATE_PAUSED,
+    STATE_ENABLED
+}
+new MODE_STATES:g_eMatchState;
 
 enum HNS_TEAM {
-	HNS_TEAM_B = 0,
+	HNS_TEAM_B,
 	HNS_TEAM_A
 }
 
 new HNS_TEAM:g_isTeamTT;
 
-enum {
-	ROUND_NOT,
-	ROUND_FREEZE,
-	ROUND_START
-}
-
 enum _:MatchInfo_s {
-	bool:e_bStarted,
-	bool:e_bLastRound,
+	e_mTeamSize,
 	e_mTeamSizeTT,
-	e_sRoundInfo,
-	e_iGameStops,
 	Float:e_flSidesTime[HNS_TEAM],
 	e_iRoundsPlayed[HNS_TEAM]
 };
@@ -67,52 +56,23 @@ enum _:SurrenderData_s {
 };
 new g_eSurrenderData[SurrenderData_s];
 
-new bool:g_bHooked[MAX_PLAYERS + 1];
 new bool:g_bNoplay[MAX_PLAYERS + 1];
 new bool:g_bPlayersListLoaded;
-new bool:g_bLastFlash[MAX_PLAYERS + 1];
-new bool:g_bOnOff[MAX_PLAYERS + 1];
 
 new Float:g_flRoundTime;
 
 new g_szMapName[32]
-new g_iRegisterSpawn;
 new g_iHostageEnt;
-
-enum SPEC_BACK {
-	bool:sb_isSpec,
-	TeamName:sb_hTeam
-}
-
-new g_eSpecBack[MAX_PLAYERS + 1][SPEC_BACK];
-
-new g_MsgSync;
-
-enum _:PTS_DATA {
-	bool:e_bInit,
-	e_iPts,
-    e_iWins,
-    e_iLoss,
-    e_iTop,
-	e_szRank[10]
-};
-
-new g_ePlayerPtsData[MAX_PLAYERS + 1][PTS_DATA];
-
 
 // const
 new const sndDenySelect[] = "common/wpn_denyselect.wav";
 new const sndUseSound[] = "buttons/blip1.wav";
-new const szDefaultEntities[][] = {
-	"func_hostage_rescue",
-	"func_bomb_target",
-	"info_bomb_target",
-	"hostage_entity",
-	"info_vip_start",
-	"func_vip_safetyzone",
-	"func_escapezone",
-	"armoury_entity",
-	"monster_scentist"
-}
 
-new g_hResetBugForward;
+enum _: Forwards {
+	MATCH_START,
+	MATCH_RESET_ROUND,
+	MATCH_FINISH,
+	MATCH_CANCEL
+};
+
+new g_hForwards[Forwards];

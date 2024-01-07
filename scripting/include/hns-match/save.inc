@@ -8,17 +8,20 @@ new Array:g_aPlayersLoadData;
 new g_szBuffer[2048];
 
 public PDS_Save() {
-	if (equali(g_szMapName, knifemap)) {
+	if (equali(g_szMapName, g_iSettings[KNIFEMAP])) {
 		if (g_szBuffer[0])
 			PDS_SetString("playerslist", g_szBuffer);
 	}
+	PDS_SetCell("match_status",	 g_iMatchStatus);
+	PDS_SetCell("match_mode",		g_iCurrentMode);
+	PDS_SetCell("match_gameplay",   g_iCurrentGameplay);
 }
 
 stock savePlayers(TeamName:team_winners) {
 	new JSON:arrayRoot = json_init_array();
 
 	new iPlayers[MAX_PLAYERS], iNum, szAuth[24];
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -48,7 +51,7 @@ arrayAppendValue(JSON:array, JSON:node) {
 }
 
 loadPlayers() {
-	if (!equali(g_szMapName, knifemap))
+	if (!equali(g_szMapName, g_iSettings[KNIFEMAP]))
 		g_bPlayersListLoaded = PDS_GetString("playerslist", g_szBuffer, charsmax(g_szBuffer));
 
 	if (g_bPlayersListLoaded) {
@@ -111,6 +114,7 @@ stock bool:checkPlayer(id) {
 	new szAuth[24]; get_user_authid(id, szAuth, charsmax(szAuth));
 	for (new i; i < iSize; i++) {
 		ArrayGetArray(g_aPlayersLoadData, i, eTempPlayer);
+		console_print(0, "%s! %s", eTempPlayer[e_pAuth], eTempPlayer[e_pTeam]);
 		if (equal(szAuth, eTempPlayer[e_pAuth])) {
 			rg_set_user_team(id, eTempPlayer[e_pTeam]);
 			return true;

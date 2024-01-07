@@ -4,9 +4,7 @@
 
 #define _message_included
 
-new iNumPlayers;
-
-stock message_init() {
+stock auto_join_init() {
 	register_message(get_user_msgid("HostagePos"), "msgHostagePos");
 	register_message(get_user_msgid("ShowMenu"), "msgShowMenu");
 	register_message(get_user_msgid("VGUIMenu"), "msgVguiMenu");
@@ -57,12 +55,6 @@ setForceTeamJoinTask(id, menu_msgid) {
 	static param_menu_msgid[2];
 	param_menu_msgid[0] = menu_msgid;
 
-	setPlayerStats(id);
-
-	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "e", iStats[id][e_szSaveTeam]);
-	iNumPlayers = iNum;
-
 	set_task(0.1, "taskForceTeamJoin", id, param_menu_msgid, sizeof param_menu_msgid);
 }
 
@@ -88,8 +80,6 @@ stock forceTeamJoin(id, menu_msgid, team[] = "5", class[] = "0") {
 	engclient_cmd(id, joinclass, class);
 	set_msg_block(menu_msgid, msg_block);
 
-	//setPlayerStats(id);
-
 	set_task(0.2, "taskSetPlayerTeam", id);
 }
 
@@ -98,19 +88,16 @@ public taskSetPlayerTeam(id) {
 		return;
 
 	switch(g_iCurrentMode) {
-		case e_mMatch, e_mPaused: {
-			if (iStats[id][isPlrInMatch]) {
-				if (iNumPlayers < g_eMatchInfo[e_mTeamSizeTT]) {
-					rg_set_user_team(id, iStats[id][e_szSaveTeam][0] == 'T' ? TEAM_TERRORIST : TEAM_CT);
-
-					if (g_iCurrentMode == e_mPaused)
+		case MODE_MIX: {
+			loadPlayers();
+			if (g_bPlayersListLoaded) {
+				if (checkPlayer(id)) {
+					if (g_eMatchState == STATE_PAUSED)
 						rg_round_respawn(id);
 
 					console_print(0, "Player %n joined!", id);
 					chat_print(0, "Player %n joined!", id);
-
 				} else {
-					iStats[id][isPlrInMatch] = false;
 					transferUserToSpec(id);
 					return;
 				}
@@ -119,17 +106,13 @@ public taskSetPlayerTeam(id) {
 				return;
 			}
 		}
-		case e_mKnife, e_mCaptain: {
+		case MODE_KNIFE: {
 			transferUserToSpec(id);
 			return;
 		}
-		case e_mTraining: {
-			if (equali(g_szMapName, knifemap)) {
+		case MODE_TRAINING: {
+			if (equali(g_szMapName, g_iSettings[KNIFEMAP])) {
 				rg_round_respawn(id);
-				if (is_check_play()) {
-					g_bNoplay[id] = true;
-					set_task(2.0, "taskPlay", id);
-				}
 				return;
 			}
 
@@ -142,38 +125,5 @@ public taskSetPlayerTeam(id) {
 			else
 				rg_round_respawn(id);
 		}
-	}
-}
-
-public taskPlay(id) {
-	if (!is_user_connected(id))
-		return;
-
-	new szMsg[64];
-
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_VERIF_TITLE");
-	new hMenu = menu_create(szMsg, "handlePlayMenu");
-
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_YES");
-	menu_additem(hMenu, szMsg, "1");
-
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NO");
-	menu_additem(hMenu, szMsg, "2");
-
-	menu_display(id, hMenu, 0);
-}
-
-public handlePlayMenu(id, hMenu, item) {
-	if (!is_user_connected(id))
-		return;
-
-	if (item == MENU_EXIT)
-		return;
-
-	menu_destroy(hMenu);
-
-	switch (item) {
-		case 0: cmdPlay(id);
-		case 1: chat_print(0, "%L", 0, "STATUS_NOPLAY", id);
 	}
 }

@@ -4,6 +4,8 @@
 
 #define _afk_included
 
+const TASK_AFK = 77832;
+
 enum _:AfkData_s {
 	bool:is_afk,
 	afk_timer
@@ -14,7 +16,7 @@ new iPlayersAfk;
 new Float:flAfkOrigin[MAX_PLAYERS + 1][3];
 
 public taskCheckAfk() {
-	if (g_iCurrentMode != e_mMatch) {
+	if (g_iCurrentMode != MODE_MIX) {
 		ResetAfkData();
 		return;
 	}
@@ -32,14 +34,17 @@ public taskCheckAfk() {
 	}
 
 	if (iPlayersAfk) {
-		cmdStartPause(0);
-		chat_print(0, "%L", 0, "AFK_PAUSE", iPlayersAfk);
-		set_task(1.0, "taskAfk", .flags = "b");
+		if(task_exists(TASK_AFK))
+            remove_task(TASK_AFK);
+
+		mix_pause();
+		chat_print(0, "%L", LANG_PLAYER, "AFK_PAUSE", iPlayersAfk);
+		set_task(1.0, "taskAfk", .id = TASK_AFK, .flags = "b");
 	}
 }
 
 public taskAfk() {
-	if (g_iCurrentMode != e_mPaused) {
+	if (g_eMatchState != STATE_PAUSED) {
 		ResetAfkData();
 		return;
 	}
@@ -74,11 +79,14 @@ public taskAfk() {
 	}
 
 	if (!iPlayersAfk) {
-		cmdStopPause(0);
-		chat_print(0, "%L", 0, "AFK_UNPAUSE");
+		mix_unpause();
+		chat_print(0, "%L", LANG_PLAYER, "AFK_UNPAUSE");
+
+		if(task_exists(TASK_AFK))
+            remove_task(TASK_AFK);
 	} else {
-		set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.15, .y = 0.20, .holdtime = 1.0);
-		ShowSyncHudMsg(0, g_MsgSync, "%s", szBuffer);
+		set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.23, .holdtime = 1.0);
+		show_hudmessage(0, "%s", szBuffer);
 	}
 }
 

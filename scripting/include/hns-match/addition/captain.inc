@@ -4,13 +4,19 @@
 
 #define _captain_included
 
-public captainStart(id) {
+enum _:CaptainTeam_s {
+	e_cTT,
+	e_cCT
+};
+new g_eCaptain[CaptainTeam_s], g_iCaptainPick;
+
+public captain_start(id) {
 	resetCaptainData();
-	g_iCurrentMode = e_mCaptain;
+
+	g_iMatchStatus = MATCH_CAPTAINPICK;
 
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "h");
-
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 
@@ -19,18 +25,17 @@ public captainStart(id) {
 
 		transferUserToSpec(iPlayer);
 	}
+	
 	chooseCapsMenu(id);
-	chat_print(0, "%L", 0, "CAP_CHOOSE", id);
+
+	chat_print(0, "%L", LANG_PLAYER, "CAP_CHOOSE", id);
 }
 
 public chooseCapsMenu(id) {
 	if (!is_user_connected(id))
 		return PLUGIN_HANDLED;
 
-	if (!getUserInAccess(id))
-		return PLUGIN_HANDLED;
-
-	if (g_iCurrentMode != e_mCaptain)
+	if (g_iMatchStatus != MATCH_CAPTAINPICK)
 		return PLUGIN_HANDLED;
 
 	new szMsg[64];
@@ -76,7 +81,7 @@ public chooseCapsHandler(id, hMenu, item) {
 		return PLUGIN_HANDLED;
 	}
 
-	if (g_iCurrentMode != e_mCaptain) {
+	if (g_iMatchStatus != MATCH_CAPTAINPICK) {
 		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
@@ -107,27 +112,28 @@ public chooseCapsHandler(id, hMenu, item) {
 		g_eCaptain[e_cTT] = iPlayer;
 		
 		if (g_ePlayerPtsData[iPlayer][e_bInit])
-			chat_print(0, "%L", 0, "CAP_FIRST_PTS", iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
+			chat_print(0, "%L", LANG_PLAYER, "CAP_FIRST_PTS", iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
 		else
-			chat_print(0, "%L", 0, "CAP_FIRST", iPlayer);
+			chat_print(0, "%L", LANG_PLAYER, "CAP_FIRST", iPlayer);
 
 		chooseCapsMenu(id);
 	} else if (!g_eCaptain[e_cCT]) {
 		g_eCaptain[e_cCT] = iPlayer;
 
 		if (g_ePlayerPtsData[iPlayer][e_bInit])
-			chat_print(0, "%L", 0, "CAP_SECOND_PTS", iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
+			chat_print(0, "%L", LANG_PLAYER, "CAP_SECOND_PTS", iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
 		else
-			chat_print(0, "%L", 0, "CAP_SECOND", iPlayer);
+			chat_print(0, "%L", LANG_PLAYER, "CAP_SECOND", iPlayer);
 
 		if (is_user_connected(g_eCaptain[e_cTT]) && is_user_connected(g_eCaptain[e_cCT])) {
 			rg_set_user_team(g_eCaptain[e_cTT], TEAM_TERRORIST);
 			rg_set_user_team(g_eCaptain[e_cCT], TEAM_CT);
 
-			g_bCaptainsBattle = true;
-			pfKnifeRound(0);
+			g_iMatchStatus = MATCH_CAPTAINKNIFE;
+
+			kniferound_start();
 		} else {
-			chat_print(0, "%L", 0, "CAP_HAS_LEFT");
+			chat_print(0, "%L", LANG_PLAYER, "CAP_HAS_LEFT");
 			resetCaptainData();
 		}
 	}
@@ -139,7 +145,7 @@ public pickMenu(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	if (g_iCurrentMode != e_mCaptain) {
+	if (g_iMatchStatus != MATCH_TEAMPICK) {
 		return PLUGIN_HANDLED;
 	}
 
@@ -188,7 +194,7 @@ public pickHandler(id, hMenu, item) {
 		return PLUGIN_HANDLED;
 	}
 
-	if (g_iCurrentMode != e_mCaptain) {
+	if (g_iMatchStatus != MATCH_TEAMPICK) {
 		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
@@ -226,9 +232,9 @@ public pickHandler(id, hMenu, item) {
 	}
 
 	if (g_ePlayerPtsData[iPlayer][e_bInit])
-		chat_print(0, "%L", 0, "PLAYER_CHOOSE_PTS", id, iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
+		chat_print(0, "%L", LANG_PLAYER, "PLAYER_CHOOSE_PTS", id, iPlayer, g_ePlayerPtsData[iPlayer][e_iPts], g_ePlayerPtsData[iPlayer][e_szRank]);
 	else
-		chat_print(0, "%L", 0, "PLAYER_CHOOSE", id, iPlayer);
+		chat_print(0, "%L", LANG_PLAYER, "PLAYER_CHOOSE", id, iPlayer);
 
 	rg_set_user_team(iPlayer, getUserTeam(id));
 	rg_round_respawn(iPlayer);
@@ -251,7 +257,9 @@ public pickHandler(id, hMenu, item) {
 
 	if (iTotalPlayers == 10) {
 		resetCaptainData();
-		chat_print(0, "%L", 0, "TEAM_FULL");
+		chat_print(0, "%L", LANG_PLAYER, "TEAM_FULL");
+		g_iMatchStatus = MATCH_TEAMKNIFE;
+		kniferound_start();
 	}
 
 	return PLUGIN_HANDLED;
@@ -259,7 +267,6 @@ public pickHandler(id, hMenu, item) {
 
 resetCaptainData() {
 	g_iCaptainPick = 0;
-	g_bCaptainsBattle = false;
 
 	for (new i; i < sizeof(g_eCaptain); i++) {
 		if (is_user_connected(g_eCaptain[i])) {
@@ -268,6 +275,4 @@ resetCaptainData() {
 
 		g_eCaptain[i] = 0;
 	}
-
-	taskPrepareMode(e_mTraining);
 }

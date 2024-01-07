@@ -8,14 +8,8 @@ stock TeamName:getUserTeam(id) {
 	return get_member(id, m_iTeam);
 }
 
-stock getUserKey(id) {
-	new szAuth[24];
-	get_user_authid(id, szAuth, charsmax(szAuth));
-	return szAuth;
-}
-
 stock bool:getUserInMatch(id) {
-	if (g_iCurrentMode != e_mMatch && g_iCurrentMode != e_mPaused)
+	if (g_iCurrentMode != MODE_MIX)
 		return false;
 
 	new iPlayers[MAX_PLAYERS], iNum;
@@ -46,45 +40,6 @@ stock setUserGodmode(index, godmode = 0) {
 	return 1;
 }
 
-stock setUserRole(id) {
-	if (!is_user_connected(id))
-		return;
-
-	new TeamName:team = getUserTeam(id);
-	rg_remove_all_items(id);
-	if (g_iCurrentMode > e_mKnife && g_iCurrentMode != e_mCaptain) {
-		switch (team) {
-			case TEAM_TERRORIST: {
-				rg_set_user_footsteps(id, true);
-				rg_give_item(id, "weapon_knife");
-
-				if (get_flash_num() >= 1) {
-					rg_give_item(id, "weapon_flashbang");
-					rg_set_user_bpammo(id, WEAPON_FLASHBANG, get_flash_num());
-				}
-
-				if (get_smoke_num() >= 1) {
-					rg_give_item(id, "weapon_smokegrenade");
-					rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, get_smoke_num());
-				}
-
-				if (g_iCurrentMode == e_mDM) {
-					if (get_hp_mode() == 100)
-						set_entvar(id, var_health, 100.0);
-					else
-						set_entvar(id, var_health, 1.0);
-				}
-			}
-			case TEAM_CT: {
-				rg_set_user_footsteps(id, false);
-				rg_give_item(id, "weapon_knife");
-			}
-		}
-	} else {
-		rg_give_item(id, "weapon_knife");
-	}
-}
-
 stock transferUserToSpec(id) {
 	setTeam(id, TEAM_SPECTATOR);
 	set_entvar(id, var_solid, SOLID_NOT);
@@ -108,9 +63,6 @@ stock transferUsers(TeamName:iTeam) {
 			new taskParams[2];
 			taskParams[0] = id;
 			taskParams[1] = _:iTeam;
-
-			if (task_exists(id))
-				remove_task(id);
 
 			set_task(flTime, "taskToTeam", id, taskParams, sizeof taskParams);
 		}
@@ -148,4 +100,17 @@ setTeam(id, TeamName:iTeam) {
 			rg_internal_cmd(id, "jointeam", "6");
 		}
 	}
+}
+
+
+stock get_num_players_in_match() {
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "h");
+	new numGameplr;
+	for (new i; i < iNum; i++) {
+		new tempid = iPlayers[i];
+		if (getUserTeam(tempid) == TEAM_SPECTATOR) continue;
+		numGameplr++;
+	}
+	return numGameplr;
 }

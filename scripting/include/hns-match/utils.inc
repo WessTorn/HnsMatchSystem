@@ -9,17 +9,15 @@ enum {
 	SEMICLIP_OFF
 }
 
-stock prefix[24];
-
 stock chat_print(const id, const message[], any:...) {
 	new msgFormated[191];
 
 	vformat(msgFormated, charsmax(msgFormated), message, 3);
 
-	if (!prefix[0])
+	if (!g_iSettings[PREFIX][0])
 		client_print_color(id, print_team_blue, "%s", msgFormated);
 	else
-		client_print_color(id, print_team_blue, "[^3%s^1] %s", prefix, msgFormated);
+		client_print_color(id, print_team_blue, "[^3%s^1] %s", g_iSettings[PREFIX], msgFormated);
 }
 
 stock set_semiclip(opt, bool:enemy = false) {
@@ -57,9 +55,84 @@ stock fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
 	return PLUGIN_HANDLED;
 }
 
-stock switchHnsTeamValue() {
-	if (g_isTeamTT == HNS_TEAM_A)
-		g_isTeamTT = HNS_TEAM_B
+stock setTaskHud(id, Float:Time, Dhud, Red, Green, Blue, Float:HoldTime, const Text[], any: ...) {
+	new szMessage[128]; vformat(szMessage, charsmax(szMessage), Text, 9);
+	new szArgs[7];
+	szArgs[0] = id;
+	szArgs[1] = encodeText(szMessage);
+	szArgs[2] = Red;
+	szArgs[3] = Green;
+	szArgs[4] = Blue;
+	szArgs[5] = Dhud;
+	szArgs[6] = _:HoldTime;
+	if (Time > 0.0)
+		set_task(Time, "taskHudMessage", 89000, szArgs, 7);
 	else
-		g_isTeamTT = HNS_TEAM_A
+		taskHudMessage(szArgs);
+}
+
+public taskHudMessage(Params[]) {
+	new id, Text[128], RRR, GGG, BBB, dhud, Float:HoldTime;
+	id = Params[0];
+	decodeText(Params[1], Text, charsmax(Text));
+	RRR = Params[2];
+	GGG = Params[3];
+	BBB = Params[4];
+	dhud = Params[5];
+	HoldTime = Float:Params[6];
+	if (!id || is_user_connected(id)) {
+		if (dhud) {
+			set_dhudmessage(RRR, GGG, BBB, -1.0, 0.2, 0, 0.0, HoldTime, 0.1, 0.1);
+
+			show_dhudmessage(id, Text);
+		} else {
+			set_hudmessage(RRR, GGG, BBB, -1.0, 0.2, 0, 0.0, HoldTime, 0.1, 0.1, -1);
+			show_hudmessage(id, Text);
+		}
+	}
+}
+
+stock encodeText(const text[]) {
+	return engfunc(EngFunc_AllocString, text);
+}
+
+stock decodeText(const text, string[], const length) {
+	global_get(glb_pStringBase, text, string, length);
+}
+
+stock loadMapCFG() {
+	new szPath[128];
+	get_configsdir(szPath, 127);
+	format(szPath, 127, "%s/mixsystem", szPath);
+	if (!dir_exists(szPath))
+		mkdir(szPath);
+
+	format(szPath, 127, "%s/mapcfg/%s.cfg", szPath, g_szMapName);
+
+	if (file_exists(szPath)) {
+		server_cmd("exec %s", szPath);
+	} else {
+		if (g_iSettings[HNSBOOST]) {
+			set_cvar_num("mp_freezetime", 15);
+			set_cvar_float("mp_roundtime", 3.5);
+			g_iSettings[FLASH] = 3;
+			g_iSettings[SMOKE] = 1;
+		} else {
+			set_cvar_num("mp_freezetime", 5);
+			set_cvar_float("mp_roundtime", 2.5);
+			g_iSettings[FLASH] = 1;
+			g_iSettings[SMOKE] = 1;
+		}
+	}
+}
+
+rg_remove_entity(const Zone[]) {
+	new iEntity = 0;
+	while ((iEntity = rg_find_ent_by_class(iEntity, Zone))) {
+		set_entvar(iEntity, var_flags, get_entvar(iEntity, var_flags) | FL_KILLME);
+		set_entvar(iEntity, var_nextthink, get_gametime());
+	}
+	
+	set_member_game(m_bMapHasBuyZone, true);
+	set_member_game(m_bMapHasBombZone, false);
 }

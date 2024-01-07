@@ -1,3 +1,14 @@
+enum _:PTS_DATA {
+	bool:e_bInit,
+	e_iPts,
+    e_iWins,
+    e_iLoss,
+    e_iTop,
+	e_szRank[10]
+};
+
+new g_ePlayerPtsData[MAX_PLAYERS + 1][PTS_DATA];
+
 forward hns_pts_init_player(id, iPts, iWins, iLoss, iTop);
 
 public hns_pts_init_player(id, iPts, iWins, iLoss, iTop) {
