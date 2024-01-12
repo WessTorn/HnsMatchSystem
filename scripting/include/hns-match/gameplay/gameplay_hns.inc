@@ -180,7 +180,7 @@ public hns_round_start()
 
 public hns_round_end(bool:win_ct)
 {
-	if (g_iCurrentMode != MODE_MIX) {
+	if (g_iCurrentMode != MODE_MIX && g_iCurrentMode != MODE_ZM) {
 		if (win_ct)
 		{
 			rg_swap_all_players();

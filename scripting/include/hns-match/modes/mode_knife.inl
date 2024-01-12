@@ -4,6 +4,7 @@ public kniferound_init()
 	g_ModFuncs[MODE_KNIFE][MODEFUNC_END]              = CreateOneForward(g_PluginId, "kniferound_stop");
 	g_ModFuncs[MODE_KNIFE][MODEFUNC_ROUNDSTART]	   = CreateOneForward(g_PluginId, "kniferound_roundstart");
 	g_ModFuncs[MODE_KNIFE][MODEFUNC_ROUNDEND]		 = CreateOneForward(g_PluginId, "kniferound_roundend", FP_CELL);
+	g_ModFuncs[MODE_KNIFE][MODEFUNC_PLAYER_JOIN]      = CreateOneForward(g_PluginId, "kniferound_player_join", FP_CELL);
 }
 
 public kniferound_start()
@@ -22,11 +23,13 @@ public kniferound_stop() {
 public kniferound_roundstart() {
 	switch (g_iMatchStatus) {
 		case MATCH_CAPTAINKNIFE: {
-			setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "Captain knife round started.");
+			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "Captain knife round started.");
+			chat_print(0, "%L", LANG_PLAYER, "START_KNIFE");
 			ChangeGameplay(GAMEPLAY_KNIFE);
 		}
 		case MATCH_TEAMKNIFE: {
-			setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "Team knife round started.");
+			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "Team knife round started.");
+			chat_print(0, "%L", LANG_PLAYER, "START_KNIFE");
 			ChangeGameplay(GAMEPLAY_KNIFE);
 		}
 		default: {
@@ -40,7 +43,7 @@ public kniferound_roundend(bool:win_ct) {
 		case MATCH_CAPTAINKNIFE: {
 			g_iCaptainPick = win_ct ? g_eCaptain[e_cCT] : g_eCaptain[e_cTT];
 
-			setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, fmt("%L", LANG_SERVER, "HUD_CAPWIN", g_iCaptainPick));
+			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, fmt("%L", LANG_SERVER, "HUD_CAPWIN", g_iCaptainPick));
 
 			training_start();
 
@@ -49,7 +52,7 @@ public kniferound_roundend(bool:win_ct) {
 			pickMenu(g_iCaptainPick);
 		}
 		case MATCH_TEAMKNIFE: {
-			setTaskHud(0, 2.0, 1, 255, 255, 0, 3.0, "Team %s Win", win_ct ? "CTS" : "Terrorists");
+			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "Team %s Win", win_ct ? "CTS" : "Terrorists");
 
 			savePlayers(win_ct ? TEAM_CT : TEAM_TERRORIST);
 			training_start();
@@ -58,4 +61,8 @@ public kniferound_roundend(bool:win_ct) {
 		}
 	}
 	ChangeGameplay(GAMEPLAY_TRAINING);
+}
+
+public kniferound_player_join(id) {
+	transferUserToSpec(id);
 }

@@ -1,3 +1,8 @@
+const TASK_WAIT = 12319;
+const TASK_STARTED = 13339;
+
+new Float:flWaitPlayersTime;
+
 public mode_init()
 {
 	//set_task(30.0, "Task_CheckTime", 120, .flags = "b");
@@ -16,6 +21,10 @@ public delayed_mode() {
 	} else if (g_iMatchStatus == MATCH_MAPPICK || g_iMatchStatus == MATCH_WAITCONNECT) {
 		g_iMatchStatus = MATCH_WAITCONNECT;
 		training_start();
+		if (g_aPlayersLoadData) {
+			flWaitPlayersTime = 180.0;
+			set_task(1.0, "wait_players", .id = TASK_WAIT, .flags = "b");
+		}
 	} else if (g_iCurrentGameplay == GAMEPLAY_HNS && g_iCurrentMode == MODE_PUB) {
 		pub_start();
 	} else if (g_iCurrentGameplay == GAMEPLAY_HNS && g_iCurrentMode == MODE_DM) {
@@ -24,6 +33,38 @@ public delayed_mode() {
 		g_iMatchStatus = MATCH_NONE;
 		training_start();
 	}
+}
+
+public wait_players() {
+	if (g_iMatchStatus == MATCH_STARTED)
+	{
+		remove_task(TASK_WAIT);
+		return PLUGIN_HANDLED;
+	}
+
+	if (task_exists(TASK_STARTED)) {
+		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "LAST SECONDS BEFORE THE START.");
+	} else {
+		new iNum = get_num_players_in_match();
+
+		if (iNum >= ArraySize(g_aPlayersLoadData)) {
+			set_task(15.0, "mix_start", TASK_STARTED);
+			return PLUGIN_HANDLED;
+		}
+
+		flWaitPlayersTime -= 1.0;
+
+		new sTime[24];
+		fnConvertTime(flWaitPlayersTime, sTime, charsmax(sTime));
+		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%s^nWaiting for %d players.", sTime, ArraySize(g_aPlayersLoadData) - iNum);
+
+		if (flWaitPlayersTime <= 0.0)
+		{
+			remove_task(TASK_WAIT);
+		}
+	}
+
+	return PLUGIN_HANDLED;
 }
 
 public Task_CheckTime()

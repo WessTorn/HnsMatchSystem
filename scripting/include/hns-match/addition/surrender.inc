@@ -14,7 +14,7 @@ new bool:g_bSurrenderVoted[MAX_PLAYERS + 1];
 public taskSurrender() {
 	new id = g_eSurrenderData[e_sInitiator];
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "he", getUserTeam(id) == TEAM_TERRORIST ? "TERRORIST" : "CT");
+	get_players(iPlayers, iNum, "che", getUserTeam(id) == TEAM_TERRORIST ? "TERRORIST" : "CT");
 
 	if (!is_user_connected(id)) {
 		resetSurrenderData();
@@ -121,7 +121,7 @@ public surrenderMenuHandler(id, hMenu, item) {
 
 resetSurrenderData() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -139,6 +139,6 @@ autoLose(TeamName:iTeam) {
 
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, iTeam == TEAM_TERRORIST ? 2 : 1);
 
-	setTaskHud(0, 0.0, 1, 255, 255, 0, 4.0, "Game Over");
-	//ShowTop(0);
+	setTaskHud(0, 0.0, 1, 255, 255, 255, 4.0, "Game Over");
+	MixFinishedMR(iTeam == TEAM_TERRORIST ? 2 : 1);
 }

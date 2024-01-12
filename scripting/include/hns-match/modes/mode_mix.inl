@@ -8,6 +8,8 @@ public mix_init() {
 	g_ModFuncs[MODE_MIX][MODEFUNC_FREEZEEND]        = CreateOneForward(g_PluginId, "mix_freezeend");
 	g_ModFuncs[MODE_MIX][MODEFUNC_RESTARTROUND]     = CreateOneForward(g_PluginId, "mix_restartround");
 	g_ModFuncs[MODE_MIX][MODEFUNC_SWAP]             = CreateOneForward(g_PluginId, "mix_swap");
+	g_ModFuncs[MODE_MIX][MODEFUNC_PLAYER_JOIN]      = CreateOneForward(g_PluginId, "mix_player_join", FP_CELL);
+	g_ModFuncs[MODE_MIX][MODEFUNC_PLAYER_LEAVE]     = CreateOneForward(g_PluginId, "mix_player_leave", FP_CELL);
 }
 
 public mix_start()
@@ -27,14 +29,13 @@ public mix_start()
 	loadMapCFG();
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "e", "TERRORIST");
+	get_players(iPlayers, iNum, "ce", "TERRORIST");
 	g_eMatchInfo[e_mTeamSizeTT] = iNum;
-
 	g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 
 	rg_send_audio(0, "plats/elevbell1.wav");
-	setTaskHud(0, 0.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX1");
-	setTaskHud(0, 3.1, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX2");
+	setTaskHud(0, 0.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX1");
+	setTaskHud(0, 3.1, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX2");
 
 	//addStats();
 
@@ -71,6 +72,17 @@ public mix_pause() {
 	mix_reverttimer();
 	ChangeGameplay(GAMEPLAY_TRAINING);
 	//restartRound(0.5);
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ac");
+	for (new i; i < iNum; i++) {
+		new iPlayer = iPlayers[i];
+		rg_remove_all_items(iPlayer);
+		rg_give_item(iPlayer, "weapon_knife");
+		setUserGodmode(iPlayer, true);
+		rg_reset_maxspeed(iPlayer);
+	}
+
 	set_task(1.0, "taskHudPaused", .flags = "b");
 	rg_send_audio(0, "fvox/deactivated.wav");
 	server_cmd("sv_alltalk 1");
@@ -78,7 +90,7 @@ public mix_pause() {
 
 public taskHudPaused() { // убить таск
 	if (g_eMatchState == STATE_PAUSED) {
-		setTaskHud(0, 0.0, 1, 255, 255, 0, 1.0, "%L", LANG_SERVER, "HUD_PAUSE");
+		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%L", LANG_SERVER, "HUD_PAUSE");
 	}
 }
 
@@ -90,7 +102,7 @@ public mix_unpause() {
 	g_eMatchState = STATE_PREPARE;
 	restartRound(1.0);
 	ChangeGameplay(GAMEPLAY_HNS);
-	setTaskHud(0, 1.0, 1, 255, 255, 0, 3.0, "%L", LANG_SERVER, "HUD_UNPAUSE");
+	setTaskHud(0, 1.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_UNPAUSE");
 	rg_send_audio(0, "fvox/activated.wav");
 	server_cmd("sv_alltalk 3");
 }
@@ -125,10 +137,13 @@ public mix_roundstart()
 	g_flRoundTime = 0.0;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "he", "TERRORIST");
+	get_players(iPlayers, iNum, "che", "TERRORIST");
 	g_eMatchInfo[e_mTeamSizeTT] = iNum;
 
 	iNum = get_num_players_in_match();
+
+	server_print("get_num_players_in_match %d", iNum);
+	server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
 
 	if (iNum < g_eMatchInfo[e_mTeamSize]) {
 		// Pause Need Players
@@ -139,8 +154,6 @@ public mix_roundstart()
 		if (iNum >= 2) {
 			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 		}
-		savePlayers(TEAM_TERRORIST);
-		PDS_SetString("playerslist", g_szBuffer);
 	}
 
 	ResetAfkData();
@@ -155,14 +168,13 @@ public MixFinishedMR(iWinTeam) {
 	new szTime[24];
 	fnConvertTime(TimeDiff, szTime, 23);
 	chat_print(0, "%L", LANG_PLAYER, "MR_WIN", iWinTeam == 1 ? "TT" : "CT", szTime);
-	chat_print(0, "%L", LANG_PLAYER, "SHOW_TOP");
-
-	setTaskHud(0, 1.0, 1, 255, 255, 0, 4.0, "%L", LANG_SERVER, "HUD_GAMEOVER");
+	
+	setTaskHud(0, 1.0, 1, 255, 255, 255, 4.0, "%L", LANG_SERVER, "HUD_GAMEOVER");
 	training_start();
 
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
-	//ShowTop(0);
+	TrieDestroy(g_tPlayerData);
 	remove_task(TASK_TIMER);
 }
 
@@ -178,7 +190,11 @@ public mix_roundend(bool:win_ct)
 	remove_task(TASK_TIMER);
 
 	g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++;
-	if (!win_ct) {
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ache", "CT");
+
+	if (!iNum) {
 		if (get_round_time() - 1.0 > g_flRoundTime / 60.0) {
 			new Float:roundtime = get_round_time() * 60.0;
 
@@ -208,13 +224,13 @@ public mix_roundend(bool:win_ct)
 			if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - Float:(g_iSettings[MAXROUNDS] * 60.0) > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
 				// variant kogda tt josko proebivaut (bolwe 4em roundtime)
 				fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], sTime, charsmax(sTime));
-				setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, "КТ Победили!^n ТТ не хватило %s что-бы победить! ^n(More than roundtime)", sTime);
+				setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, "КТ Победили!^n ТТ не хватило %s что-бы победить! ^n(More than roundtime)", sTime);
 			} else if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
 				// samii default variant
 				fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], sTime, charsmax(sTime));
-				setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, fmt("%L", LANG_SERVER, "HUD_TIMETOWIN", sTime));
+				setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, fmt("%L", LANG_SERVER, "HUD_TIMETOWIN", sTime));
 			} else {
-				setTaskHud(0, 3.0, 1, 255, 153, 0, 5.0, "ТТ Победили!^n КТ таймер меньше, чем у команды ТТ!");
+				setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, "ТТ Победили!^n КТ таймер меньше, чем у команды ТТ!");
 			}
 		}
 	}
@@ -257,4 +273,34 @@ public mix_reverttimer()
 	g_eMatchInfo[e_flSidesTime][g_isTeamTT] -= g_flRoundTime;
 
 	ExecuteForward(g_hForwards[MATCH_RESET_ROUND], _);
+}
+
+public mix_player_join(id) {
+	TrieGetArray(g_tPlayerData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
+	if (g_ePlayerData[id][PLAYER_MATCH]) {
+		new iScore = g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + 1;
+		
+		if (iScore == g_ePlayerData[id][PLAYER_SAVE_SCORE]) {
+			rg_set_user_team(id, g_ePlayerData[id][PLAYER_TEAM][0] == 'T' ? TEAM_TERRORIST : TEAM_CT);
+		} else {
+			rg_set_user_team(id, g_ePlayerData[id][PLAYER_TEAM][0] == 'T' ? TEAM_CT : TEAM_TERRORIST);
+		}
+
+		if (g_eMatchState == STATE_PAUSED)
+			rg_round_respawn(id);
+	} else {
+		transferUserToSpec(id);
+		return;
+	}
+}
+
+public mix_player_leave(id) {
+	if (getUserTeam(id) == TEAM_TERRORIST || getUserTeam(id) == TEAM_CT) {
+		g_ePlayerData[id][PLAYER_MATCH] = true;
+		copy(g_ePlayerData[id][PLAYER_TEAM], charsmax(g_ePlayerData[][PLAYER_TEAM]), fmt("%s", getUserTeam(id) == TEAM_TERRORIST ? "TERRORIST" : "CT"));
+		g_ePlayerData[id][PLAYER_SAVE_SCORE] = g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + 1;
+	} else {
+		g_ePlayerData[id][PLAYER_MATCH] = false;
+	}
+	TrieSetArray(g_tPlayerData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
 }

@@ -16,7 +16,6 @@ public plugin_init() {
 	InitGameModes();
 
 	cmds_init();
-	auto_join_init();
 
 	register_forward(FM_EmitSound, "fwdEmitSoundPre", 0);
 	register_forward(FM_ClientKill, "fwdClientKill");
@@ -31,9 +30,16 @@ public plugin_init() {
 	RegisterHookChain(RG_CBasePlayer_Killed, "rgPlayerKilled", true);
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
 	RegisterHookChain(RG_CBasePlayer_MakeBomber, "rgPlayerMakeBomber", false);
-	RegisterHookChain(RH_SV_DropClient, "rgDropClient", false);
 
 	RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_knife", "Knife_PrimaryAttack", false);
+
+	register_message(get_user_msgid("HostagePos"), "msgHostagePos");
+	register_message(get_user_msgid("ShowMenu"), "msgShowMenu");
+	register_message(get_user_msgid("VGUIMenu"), "msgVguiMenu");
+	register_message(get_user_msgid("HideWeapon"), "msgHideWeapon");
+	
+
+	set_msg_block(get_user_msgid("HudTextArgs"), BLOCK_SET);
 
 	g_aPlayersLoadData = ArrayCreate(PlayersLoad_s);
 	loadPlayers();
@@ -41,6 +47,8 @@ public plugin_init() {
 	forward_init();
 
 	registerMode();
+
+	g_tPlayerData = TrieCreate();
 
 	register_dictionary("mixsystem.txt");
 }
@@ -86,8 +94,6 @@ public MATCH_STATUS:native_get_status(amxx, params) {
 public MODE_STATES:native_get_state(amxx, params) {
 	return g_eMatchState;
 }
-
-
 
 public fwdEmitSoundPre(id, iChannel, szSample[], Float:volume, Float:attenuation, fFlags, pitch) {
 	if (equal(szSample, "weapons/knife_deploy1.wav")) {
@@ -230,7 +236,10 @@ public registerMode() {
 	dllfunc(DLLFunc_Spawn, g_iHostageEnt);
 }
 
-public rgDropClient(id) {
+public client_disconnected(id) {
+	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_PLAYER_LEAVE])
+		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_PLAYER_LEAVE], _, id);
+
 	arrayset(g_ePlayerPtsData[id], 0, PTS_DATA);
 }
 
@@ -247,6 +256,197 @@ public Knife_PrimaryAttack(ent)
 	return HAM_IGNORED;
 }
 
+public msgHostagePos(msgid, dest, id) {
+	return PLUGIN_HANDLED;
+}
+
+public msgShowMenu(msgid, dest, id) {
+	if (!shouldAutoJoin(id))
+		return PLUGIN_CONTINUE;
+
+	static team_select[] = "#Team_Select";
+	static menu_text_code[sizeof team_select];
+	get_msg_arg_string(4, menu_text_code, sizeof menu_text_code - 1);
+	if (!equal(menu_text_code, team_select))
+		return (PLUGIN_CONTINUE);
+
+	setForceTeamJoinTask(id, msgid);
+
+	return PLUGIN_HANDLED;
+}
+
+public msgVguiMenu(msgid, dest, id) {
+	if (get_msg_arg_int(1) != 2 || !shouldAutoJoin(id))
+		return (PLUGIN_CONTINUE);
+
+	setForceTeamJoinTask(id, msgid);
+
+	return PLUGIN_HANDLED;
+}
+
+public msgHideWeapon(msgid, dest, id) {
+	const money = (1 << 5);
+	set_msg_arg_int(1, ARG_BYTE, get_msg_arg_int(1) | money);
+}
+
+bool:shouldAutoJoin(id) {
+	return (!get_user_team(id) && !task_exists(id));
+}
+
+setForceTeamJoinTask(id, menu_msgid) {
+	static param_menu_msgid[2];
+	param_menu_msgid[0] = menu_msgid;
+
+	set_task(0.1, "taskForceTeamJoin", id, param_menu_msgid, sizeof param_menu_msgid);
+}
+
+public taskForceTeamJoin(menu_msgid[], id) {
+	if (get_user_team(id))
+		return;
+
+	forceTeamJoin(id, menu_msgid[0], "5", "5");
+}
+
+
+stock forceTeamJoin(id, menu_msgid, team[] = "5", class[] = "0") {
+	static jointeam[] = "jointeam";
+	if (class[0] == '0') {
+		engclient_cmd(id, jointeam, team);
+		return;
+	}
+
+	static msg_block, joinclass[] = "joinclass";
+	msg_block = get_msg_block(menu_msgid);
+	set_msg_block(menu_msgid, BLOCK_SET);
+	engclient_cmd(id, jointeam, team);
+	engclient_cmd(id, joinclass, class);
+	set_msg_block(menu_msgid, msg_block);
+
+	set_task(0.2, "taskSetPlayerTeam", id);
+}
+
+public taskSetPlayerTeam(id) {
+	if (!is_user_connected(id))
+		return;
+
+	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_PLAYER_JOIN])
+		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_PLAYER_JOIN], _, id);
+}
+
+public PDS_Save() {
+	if (equali(g_szMapName, g_iSettings[KNIFEMAP])) {
+		if (g_szBuffer[0])
+			PDS_SetString("playerslist", g_szBuffer);
+	}
+	PDS_SetCell("match_status",	 g_iMatchStatus);
+	PDS_SetCell("match_mode",		g_iCurrentMode);
+	PDS_SetCell("match_gameplay",   g_iCurrentGameplay);
+}
+
+stock savePlayers(TeamName:team_winners) {
+	new JSON:arrayRoot = json_init_array();
+
+	new iPlayers[MAX_PLAYERS], iNum, szAuth[24];
+	get_players(iPlayers, iNum, "ch");
+
+	for (new i; i < iNum; i++) {
+		new id = iPlayers[i];
+
+		if (getUserTeam(id) == TEAM_SPECTATOR) continue;
+
+		get_user_authid(id, szAuth, charsmax(szAuth));
+
+		arrayAppendValue(arrayRoot, json_init_string(fmt("player_%i", i + 1)));
+
+		new JSON:object = json_init_object();
+		json_object_set_string(object, "e_pAuth", fmt("%s", szAuth));
+		new TeamName:iTeam = TeamName:getUserTeam(id) == team_winners ? TEAM_TERRORIST : TEAM_CT;
+		json_object_set_number(object, "e_pTeam", _:iTeam);
+		arrayAppendValue(arrayRoot, object);
+		json_free(object);
+	}
+
+	json_serial_to_string(arrayRoot, g_szBuffer, charsmax(g_szBuffer), true);
+	json_free(arrayRoot);
+}
+
+arrayAppendValue(JSON:array, JSON:node) {
+	json_array_append_value(array, node);
+	json_free(node);
+}
+
+loadPlayers() {
+	if (!equali(g_szMapName, g_iSettings[KNIFEMAP]))
+		g_bPlayersListLoaded = PDS_GetString("playerslist", g_szBuffer, charsmax(g_szBuffer));
+
+	if (g_bPlayersListLoaded) {
+		new JSON:arrayRoot = json_parse(g_szBuffer);
+
+		if (!json_is_array(arrayRoot)) {
+			if (arrayRoot != Invalid_JSON)
+				json_free(arrayRoot);
+
+			server_print("Root value is not array!");
+			return;
+		}
+		decodeArray(arrayRoot);
+		json_free(arrayRoot);
+	}
+}
+
+decodeArray(&JSON:array) {
+	new JSON:arrayValue;
+	for (new i = 0; i < json_array_get_count(array); i++) {
+		arrayValue = json_array_get_value(array, i);
+
+		if (json_get_type(arrayValue) == JSONObject)
+			decodeObject(arrayValue);
+
+		json_free(arrayValue);
+	}
+}
+
+decodeObject(&JSON:object) {
+	new szKey[30];
+	new JSON:objValue;
+	new eTempPlayer[PlayersLoad_s], iSave;
+	for (new i = 0; i < json_object_get_count(object); i++) {
+		json_object_get_name(object, i, szKey, charsmax(szKey));
+		objValue = json_object_get_value_at(object, i);
+
+		switch (json_get_type(objValue)) {
+			case JSONString: {
+				json_get_string(objValue, eTempPlayer[e_pAuth], charsmax(eTempPlayer[e_pAuth]));
+				iSave++;
+			}
+			case JSONNumber: {
+				eTempPlayer[e_pTeam] = json_get_number(objValue);
+				iSave++;
+			}
+		}
+
+		if (iSave == 2) {
+			ArrayPushArray(g_aPlayersLoadData, eTempPlayer);
+			arrayset(eTempPlayer, 0, PlayersLoad_s);
+			iSave = 0;
+		}
+		json_free(objValue);
+	}
+}
+
+stock bool:checkPlayer(id) {
+	new eTempPlayer[PlayersLoad_s], iSize = ArraySize(g_aPlayersLoadData);
+	new szAuth[24]; get_user_authid(id, szAuth, charsmax(szAuth));
+	for (new i; i < iSize; i++) {
+		ArrayGetArray(g_aPlayersLoadData, i, eTempPlayer);
+		if (equal(szAuth, eTempPlayer[e_pAuth])) {
+			rg_set_user_team(id, eTempPlayer[e_pTeam]);
+			return true;
+		}
+	}
+	return false;
+}
+
 public plugin_cfg() {
 	new szPath[PLATFORM_MAX_PATH];
 	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
@@ -260,5 +460,6 @@ restartRound(Float:delay = 0.5) {
 
 
 public plugin_end() {
+	TrieDestroy(g_tPlayerData);
 	ArrayDestroy(g_aPlayersLoadData);
 }

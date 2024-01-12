@@ -1,0 +1,98 @@
+[en]
+
+PTS_RANK = %s Your rank is ^3%d^1 (Pts: ^3%d^1 | Wins: ^3%d^1 | Loss: ^3%d^1 | Skill: ^3%s^1)
+PTS_NOT_TIME = %s Pts not counted, playing time is less than 15 minutes.
+PTS_NOT_PLR = %s Pts not counted, less than 6 players.
+PTS_SET_TT = %s Team ^3TT^1 set ^3+15^1 pts.
+PTS_SET_CT = %s Team ^3CT^1 set ^3+15^1 pts.
+
+WTR_LEAVE = %s ^3%n^1 (watcher) is left, wait him or chose new watcher (say ^4rnw^1)...
+WTR_DELETE = %s ^3%n^1 removes ^3%n^1 watcher privileges.
+WTR_DELETE_STEAM = %s ^3%n^1 removes from ^3%n^1 (steamid) watcher privileges.
+WTR_PLR_DISC = %s Player you chose is disconnected.
+WTR_CHOOSE_NEW = %s ^3%n^1 choose ^3%n^1 as new server watcher.
+WTR_NOT_ADM = %s Can't start vote if admin is online.
+WTR_NOT_NEED = %s Need more people on server to vote for watcher... (^3need > 3^1)
+WTR_ALR_VOTE = %s You already voted. Need ^3%d^1 to start vote.
+WTR_VOTE = %s ^3%n^1 wanna change Watcher! Need ^3%d^1 to start vote.
+WTR_START = %s Starting vote for new watcher!
+WTR_VOTE_CANCL = %s You have cancel your vote for new Watcher vote.
+WTR_VOTE_CHOOSE = %s ^3%n^1 voted for ^3%n^1 (^3%d^1)!
+WTR_VOTE_DISC = %s Can't vote player disconnected or can't find!
+WTR_NEW_RANDOM = %s New Watcher ^3%n^1 has randomly choosed between ^3%d^1 players!
+WTR_NEW = %s New Watcher - ^3%n^1 (^3%d^1 votes)
+
+WTR_MENU_NEW = \rChoose new watcher:
+WTR_MENU_CHOSE = \rVote for new watcher:
+WTR_MENU_MANAGMENT = \rWatcher managment
+WTR_MENU_DEL = Remove current watcher
+WTR_MENU_ADD = Choose new watcher
+
+KNIFE_HIDE = Hide knife
+KNIFE_CT = Hide for \yCT \r%s
+KNIFE_TT = Hide for \yTT \r%s
+
+MENU_TRNING_TITLE = \yTrainig menu
+MENU_TRNING_CPNT = Checkpoint
+MENU_TRNING_TLPRT = Teleport
+MENU_TRNING_NOCLIP = No Clip
+MENU_TRNING_RESPAWN = Respawn
+MENU_TRNING_DAMAGE = Damage
+
+TRNING_NOT_ALIVE = %s You must be alive to use this command!
+TRNING_CPNT_SAVE = %s Checkpoint saved!
+TRNING_TLPRT_NOT = %s You haven't got any checkpoints!
+TRNING_STUCK_NOT = %s You must have another checkpoint to use stuck!
+
+TRNING_DMG = %s You have taken ^3%i^1 damage.
+
+[ru]
+
+PTS_RANK = %s Ваш ранг: ^3%d^1 (Птс: ^3%d^1 | Побед: ^3%d^1 | Поражений: ^3%d^1 | Скилл: ^3%s^1)
+PTS_NOT_TIME = %s Птс не засчитан, время игры меньше 15 минут.
+PTS_NOT_PLR = %s Птс не засчитан, меньше 6-ти игроков.
+PTS_SET_TT = %s Команда ^3TT^1 получила ^3+15^1 птс.
+PTS_SET_CT = %s Команда ^3КT^1 получила ^3+15^1 птс.
+
+WTR_LEAVE = %s ^3%n^1 (watcher) ливнул, подождите его или выберите нового watcher'a (say ^3rnw^1)
+WTR_DELETE = %s ^3%n^3 удалил c ^3%n привилегию watcher.
+WTR_DELETE_STEAM = %s ^3%n^1 снял c ^3%s^1 (Стим) привилегию watcher.
+WTR_PLR_DISC = %s Выбранный вами игрок отключен.
+WTR_CHOOSE_NEW = %s ^3%n^1 выбрал ^3%n^1 в качестве нового Watcher'a
+WTR_NOT_ADM = %s Нельзя начать голосование, когда админ находится на сервере.
+WTR_NOT_NEED = %s Нужно больше людей, чтобы проголосовать за нового Watcher'a. (^3нужно > 3^1)
+WTR_ALR_VOTE = %s Вы уже проголосовали, нужно + ^4%d^1, чтобы начать голосование.
+WTR_VOTE = %s ^3%n^1 написал ^3/rnw^1 ! Нужно еще ^3%d^1 голоса чтобы начать голосование.
+WTR_START = %s Начинается голосование за нового watcher'a!
+WTR_VOTE_CANCL = %s Вы отменили свой голос за нового watcher'a.
+WTR_VOTE_CHOOSE = %s ^3%n^1 проголосовал за ^3%n^1 (^3%d^1)!
+WTR_VOTE_DISC = %s Невозможно проголосовать, игрок отключен или недоступен!
+WTR_NEW_RANDOM = %s Новый watcher ^3%n^1 был выбран случайно между ^3%d^1 игроков!
+WTR_NEW = %s Новый watcher - ^3%n^1 с ^3%d^1 голосами!
+
+WTR_MENU_NEW = \rВыберите нового watcher'a:
+WTR_MENU_CHOSE = \rПроголосуйте за watcher'a:
+WTR_MENU_MANAGMENT = \rУправление watcher'кой
+WTR_MENU_DEL = Удалить текущего watcher'a
+WTR_MENU_ADD = Добавить нового watcher'a
+
+KNIFE_HIDE = Спрятать нож
+KNIFE_CT = Спрятать у \yКТ \r%s
+KNIFE_TT = Спрятать у \yТТ \r%s
+
+MENU_YES = Да
+MENU_NO = Нет
+
+MENU_TRNING_TITLE = \yТренировочное меню
+MENU_TRNING_CPNT = Чекпоинт
+MENU_TRNING_TLPRT = Телепорт
+MENU_TRNING_NOCLIP = Ноклип
+MENU_TRNING_RESPAWN = Возродиться
+MENU_TRNING_DAMAGE = Показать дамаг
+
+TRNING_NOT_ALIVE = %s Вы должны быть живы, чтобы использовать эту команду!
+TRNING_CPNT_SAVE = %s Чекпоинт сохранена!
+TRNING_TLPRT_NOT = %s У вас нет чекпоинтов!
+TRNING_STUCK_NOT = %s У вас должен быть другой чекпоинт, чтобы использовать stuck!
+
+TRNING_DMG = %s Вы получили  ^3%i^1 урона.

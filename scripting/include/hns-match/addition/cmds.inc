@@ -17,6 +17,7 @@ stock cmds_init() {
 
 	RegisterSayCmd("pub", 		"public", 		"cmdPubMode", 		access, "Public mode");
 	RegisterSayCmd("dm", 		"deathmatch", 	"cmdDMMode", 		access, "DeathMatch mode");
+	RegisterSayCmd("zm", 		"zombie", 		"cmdZMMode", 		access, "DeathMatch mode");
 	RegisterSayCmd("bld", 		"blend", 		"cmdBlend", 		access, "Blend teams");
 	RegisterSayCmd("specall", 	"specall", 		"cmdTransferSpec", 	access, "Spec Transfer");
 	RegisterSayCmd("ttall", 	"ttall", 		"cmdTransferTT", 	access, "TT Transfer");
@@ -103,13 +104,17 @@ public blockCmd(id) {
 }
 
 public cmdPubMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode == MODE_PUB) {
 		chat_print(id, "%L", id, "PUB_ALREADY");
 		return PLUGIN_HANDLED;
 	}
 
 	if (g_iCurrentMode != MODE_TRAINING) {
-		chat_print(id, "%L", id, "PUB_CANC", id);
+		chat_print(id, "%L", id, "PUB_CANC");
 		return PLUGIN_HANDLED;
 	}
 
@@ -121,16 +126,17 @@ public cmdPubMode(id) {
 }
 
 public cmdDMMode(id) {
-	if (!getUserInAccess(id))
+	if (!getUserInAccess(id)) {
 		return PLUGIN_HANDLED;
+	}
 
 	if (g_iCurrentMode == MODE_DM) {
-		chat_print(id, "%L", id, "DM_ALREADY", id);
+		chat_print(id, "%L", id, "DM_ALREADY");
 		return PLUGIN_HANDLED;
 	}
 
 	if (g_iCurrentMode != MODE_TRAINING) {
-		chat_print(id, "%L", id, "DM_CANC", id);
+		chat_print(id, "%L", id, "DM_CANC");
 		return PLUGIN_HANDLED;
 	}
 
@@ -141,7 +147,33 @@ public cmdDMMode(id) {
 	return PLUGIN_HANDLED;
 }
 
+public cmdZMMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentMode == MODE_ZM) {
+		chat_print(id, "Zombie mode is already running.");
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentMode != MODE_TRAINING) {
+		chat_print(id, "Please disable other mode before zombie.");
+		return PLUGIN_HANDLED;
+	}
+
+	chat_print(0, "^3%n^1 has activated ^3zombie^1 mode.", id);
+
+	zm_start();
+
+	return PLUGIN_HANDLED;
+}
+
 public cmdBlend(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode != MODE_PUB && g_iCurrentMode != MODE_DM) 
 		return PLUGIN_HANDLED; 
 
@@ -172,6 +204,10 @@ public cmdBlend(id) {
 }
 
 public cmdTransferSpec(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+	
 	if (g_iCurrentMode == MODE_MIX) {
 		return PLUGIN_HANDLED;
 	}
@@ -184,6 +220,10 @@ public cmdTransferSpec(id) {
 }
 
 public cmdTransferTT(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode == MODE_MIX) {
 		return PLUGIN_HANDLED;
 	}
@@ -196,6 +236,10 @@ public cmdTransferTT(id) {
 }
 
 public cmdTransferCT(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode == MODE_MIX) {
 		return PLUGIN_HANDLED;
 	}
@@ -208,6 +252,10 @@ public cmdTransferCT(id) {
 }
 
 public cmdStartMatch(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode != MODE_TRAINING) {
 		chat_print(id, "%L", id, "NOT_START_MIX");
 		return PLUGIN_HANDLED;
@@ -225,6 +273,10 @@ public cmdStartMatch(id) {
 }
 
 public cmdKnifeRound(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode != MODE_TRAINING) {
 		chat_print(id, "%L", id, "NOT_START_KNIFE");
 		return PLUGIN_HANDLED;
@@ -242,6 +294,10 @@ public cmdKnifeRound(id) {
 }
 
 public cmdCaptain(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (!equali(g_szMapName, g_iSettings[KNIFEMAP])) {
 		chat_print(id, "Доступно только на ножевой карте.");
 		return PLUGIN_HANDLED;
@@ -257,15 +313,24 @@ public cmdCaptain(id) {
 }
 
 public cmdStopMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode == MODE_MIX) {
-		//verifMenu(id);
-		cmdStop(id);
+		verifMenu(id);
 	} else {
 		cmdStop(id);
 	}
+
+	return PLUGIN_HANDLED;
 }
 
 public cmdStop(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus == MATCH_NONE) {
 		return PLUGIN_HANDLED;
 	}
@@ -303,6 +368,10 @@ public cmdStop(id) {
 			training_start();
 			chat_print(0, "%L", LANG_PLAYER, "STOP_DM", id);
 		}
+		case MODE_ZM: {
+			training_start();
+			chat_print(0, "Player %n stopped zombie mode", id);
+		}
 	}
 
 	rg_send_audio(0, "fvox/fuzz.wav");
@@ -311,6 +380,10 @@ public cmdStop(id) {
 }
 
 public cmdSkillMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	chat_print(0, "%L", LANG_PLAYER, "TYPE_SKILL", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
@@ -330,6 +403,10 @@ public cmdSkillMode(id) {
 }
 
 public cmdBoostMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	chat_print(0, "%L", LANG_PLAYER, "TYPE_BOOST", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
@@ -346,6 +423,10 @@ public cmdBoostMode(id) {
 }
 
 public cmdRestartRound(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	chat_print(0, "%L", LANG_PLAYER, "GAME_RESTART", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
@@ -358,6 +439,10 @@ public cmdRestartRound(id) {
 }
 
 public cmdSwapTeams(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	chat_print(0, "%L", LANG_PLAYER, "GAME_SWAP", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
@@ -373,6 +458,10 @@ public cmdSwapTeams(id) {
 }
 
 public cmdStartPause(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
 	if (g_iCurrentMode != MODE_MIX || g_eMatchState == STATE_PAUSED) {
 		return PLUGIN_HANDLED;
 	}
@@ -385,6 +474,10 @@ public cmdStartPause(id) {
 }
 
 public cmdStopPause(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+	
 	if (g_iCurrentMode != MODE_MIX || g_eMatchState != STATE_PAUSED) {
 		return PLUGIN_HANDLED;
 	}
@@ -440,7 +533,6 @@ public cmdShowTimers(id) {
 	if (g_iCurrentMode != MODE_MIX) {
 		return PLUGIN_HANDLED;
 	}
-
 
 	new timeToWin[HNS_TEAM][24], diffTime[24];
 	fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_B], timeToWin[HNS_TEAM_B], 23);

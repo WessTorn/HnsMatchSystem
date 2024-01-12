@@ -21,7 +21,7 @@ public mainMatchMenu(id) {
 		else
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_NOTCAP");
 	} else {
-		if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM)
+		if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM || g_iCurrentMode == MODE_ZM)
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCUSTOM");
 		else if (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus <= MATCH_WAITCONNECT)
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_MIX");
@@ -43,7 +43,7 @@ public mainMatchMenu(id) {
 	} else {
 		if (g_iCurrentMode == MODE_TRAINING)
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_CUSTOM");
-		else if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM)
+		else if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM || g_iCurrentMode == MODE_ZM)
 			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_BLEND");
 		else {
 			if (g_eMatchState != STATE_PAUSED)
@@ -96,7 +96,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 				else
 					mainMatchMenu(id);
 			} else {
-				if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM) {
+				if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM || g_iCurrentMode == MODE_ZM) {
 					cmdStop(id);
 				}
 				else if (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus <= MATCH_WAITCONNECT)
@@ -117,7 +117,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 			} else {
 				if (g_iCurrentMode == MODE_TRAINING)
 					customMenu(id);
-				else if ((g_iCurrentMode == MODE_DM || g_iCurrentMode == MODE_PUB))
+				else if ((g_iCurrentMode == MODE_DM || g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_ZM))
 					cmdBlend(id);
 				else {
 					if (g_eMatchState != STATE_PAUSED)
@@ -163,6 +163,9 @@ public customMenu(id) {
 	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CUSTOM_DM");
 	menu_additem(hMenu, szMsg, "2");
 
+	formatex(szMsg, charsmax(szMsg), "Zombie");
+	menu_additem(hMenu, szMsg, "3");
+
 	menu_display(id, hMenu, 0);
 	return PLUGIN_HANDLED;
 }
@@ -184,6 +187,9 @@ public customMenuHandler(id, hMenu, item) {
 		}
 		case 2: {
 			cmdDMMode(id);
+		}
+		case 3: {
+			cmdZMMode(id);
 		}
 	}
 	return PLUGIN_HANDLED;

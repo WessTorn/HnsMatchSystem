@@ -18,6 +18,9 @@ public dm_killed(victim, killer)
 		rg_set_user_team(killer, TEAM_TERRORIST);
 		rg_set_user_team(victim, TEAM_CT);
 
+		if (!g_iSettings[ONEHPMODE])
+			set_entvar(killer, var_health, 100.0);
+		
 		hns_setrole(killer);
 	} else {
 		if (getUserTeam(victim) == TEAM_TERRORIST) {

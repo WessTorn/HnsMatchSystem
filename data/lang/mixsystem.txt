@@ -53,7 +53,7 @@ NOT_START_MIX   = Please disable other mode before start mix
 NOT_START_KNIFE = Please disable other mode before start knife round
 
 START_MIX       = ^3%n^1 has started ^3mix
-START_KNIFE     = ^3%n^1 has started ^3knife^1 round!
+START_KNIFE     = Started ^3knife^1 round!
 
 STOP_MIX        = ^3%n^1 stopped ^3mix
 STOP_KNIFE      = ^3%n^1 stopped ^3knife^1 round
@@ -137,13 +137,6 @@ MENU_STNGS_SMOKE            = Smoke: \y%d^n
 MENU_STNGS_AA               = Airaccelerate \y%d^n
 
 MENU_VERIF_TITLE = \yVerification menu^n^n\dAre you sure you want to stop this mod:
-
-MENU_TRNING_TITLE = \yTrainig menu
-MENU_TRNING_CPNT = Checkpoint
-MENU_TRNING_TLPRT = Teleport
-MENU_TRNING_NOCLIP = No Clip
-MENU_TRNING_RESPAWN = Respawn
-MENU_TRNING_DAMAGE = Damage
 
 MENU_PLAY_TITLE = \rYou play?
 
@@ -293,13 +286,6 @@ MENU_STNGS_SMOKE            = Smoke: \y%d^n
 MENU_STNGS_AA               = Airaccelerate \y%d^n
 
 MENU_VERIF_TITLE = \yМеню подтверждения^n^n\dВы уверены, что хотите остановить матч?
-
-MENU_TRNING_TITLE = \yТренировочное меню
-MENU_TRNING_CPNT = Чекпоинт
-MENU_TRNING_TLPRT = Телепорт
-MENU_TRNING_NOCLIP = Ноклип
-MENU_TRNING_RESPAWN = Возродиться
-MENU_TRNING_DAMAGE = Показать дамаг
 
 MENU_PLAY_TITLE = \rВы играете?
 

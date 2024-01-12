@@ -4,6 +4,12 @@
 
 #define _user_included
 
+stock getUserKey(id) {
+	new szAuth[24];
+	get_user_authid(id, szAuth, charsmax(szAuth));
+	return szAuth;
+}
+
 stock TeamName:getUserTeam(id) {
 	return get_member(id, m_iTeam);
 }
@@ -13,7 +19,7 @@ stock bool:getUserInMatch(id) {
 		return false;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -49,7 +55,7 @@ stock transferUserToSpec(id) {
 stock transferUsers(TeamName:iTeam) {
 	new Float:flTime;
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 	for (new i = 0; i < iNum; i++) {
 		new id = iPlayers[i];
 		if (is_user_connected(id)) {
@@ -105,7 +111,7 @@ setTeam(id, TeamName:iTeam) {
 
 stock get_num_players_in_match() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 	new numGameplr;
 	for (new i; i < iNum; i++) {
 		new tempid = iPlayers[i];

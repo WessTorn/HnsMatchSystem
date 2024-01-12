@@ -76,3 +76,22 @@ enum _: Forwards {
 };
 
 new g_hForwards[Forwards];
+
+enum _: PlayerData_s {
+	bool:PLAYER_MATCH,
+	PLAYER_TEAM[16],
+	PLAYER_SAVE_SCORE
+};
+
+new g_ePlayerData[MAX_PLAYERS + 1][PlayerData_s];
+
+new Trie:g_tPlayerData;
+
+enum _:PlayersLoad_s {
+	e_pAuth[24],
+	e_pTeam
+};
+
+new Array:g_aPlayersLoadData;
+
+new g_szBuffer[2048];

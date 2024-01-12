@@ -3,6 +3,9 @@
 ## HnsMatchSystem
 Counter-Strike Hide'n'Seek Match System plugins
 
+## ПРОЕКТ НАХОДИТСЯ В СТАДИИ ТЕСТОРОВАНИЯ, ПОЖАЛУЙСТА, ОЖИДАЙТЕ РЕЛИЗ.
+## PROJECT IS IN TESTING PHASE, PLEASE EXPECT A RELEASE.
+
 ## Add pts
 https://github.com/OpenHNS/HnsMatchSystem-additions ПТС плагин.
 

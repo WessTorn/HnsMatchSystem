@@ -16,7 +16,7 @@ public captain_start(id) {
 	g_iMatchStatus = MATCH_CAPTAINPICK;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 
@@ -44,7 +44,7 @@ public chooseCapsMenu(id) {
 	new hMenu = menu_create(szMsg, "chooseCapsHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	new szBuffer[256];
 	for (new i; i < iNum; i++) {
@@ -159,7 +159,7 @@ public pickMenu(id) {
 	new hMenu = menu_create(szMsg, "pickHandler");
 
 	new iPlayers[MAX_PLAYERS], iNum, szPlayer[10], iPlayer;
-	get_players(iPlayers, iNum, "he", "SPECTATOR");
+	get_players(iPlayers, iNum, "che", "SPECTATOR");
 
 	new szBuffer[256];
 	for (new i; i < iNum; i++) {
@@ -244,7 +244,7 @@ public pickHandler(id, hMenu, item) {
 	pickMenu(g_iCaptainPick);
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	new iTotalPlayers;
 	for (new i; i < iNum; i++) {

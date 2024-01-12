@@ -20,8 +20,6 @@
 #include <hns-match/addition/cvars>
 #include <hns-match/globals>
 #include <hns-match/utils>
-#include <hns-match/auto_join>
-#include <hns-match/save>
 #include <hns-match/user>
 
 #include <hns-match/gameplay/gameplay_hns.inc>
@@ -31,6 +29,7 @@
 #include <hns-match/modes/mode_training.inl>
 #include <hns-match/modes/mode_pub.inl>
 #include <hns-match/modes/mode_dm.inl>
+#include <hns-match/modes/mode_zombie.inl>
 #include <hns-match/modes/mode_mix.inl>
 #include <hns-match/modes/mode_manager.inl>
 

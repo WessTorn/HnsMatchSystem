@@ -4,6 +4,7 @@ enum _:HNS_MODES
 	MODE_KNIFE,
 	MODE_PUB,
 	MODE_DM,
+	MODE_ZM,
 	MODE_MIX
 }
 new g_iCurrentMode; 
@@ -20,6 +21,8 @@ enum _:MODE_FUNCS
 	MODEFUNC_KILL,
 	MODEFUNC_RESTARTROUND,
 	MODEFUNC_SWAP,
+	MODEFUNC_PLAYER_JOIN,
+	MODEFUNC_PLAYER_LEAVE
 };
 
 new g_ModFuncs[HNS_MODES][MODE_FUNCS];
@@ -30,6 +33,7 @@ public InitGameModes()
 	kniferound_init();
 	pub_init();
 	dm_init();
+	zm_init();
 	mode_init();
 	trainingmode_init();
 }
@@ -45,5 +49,6 @@ public set_cvars_mode(iMode) {
 		case MODE_PUB: server_cmd("exec %s/public.cfg", szPath);
 		case MODE_DM: server_cmd("exec %s/deathmatch.cfg", szPath);
 		case MODE_MIX: server_cmd("exec %s/match.cfg", szPath);
+		case MODE_ZM: server_cmd("exec %s/zombie.cfg", szPath);
 	}
 }
