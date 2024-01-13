@@ -4,9 +4,7 @@
 #include <hns_matchsystem>
 #include <hns_matchsystem_sql>
 
-#define PHP_WEB_TOP
-
-#define rg_get_user_team(%0) get_member(%0, m_iTeam)
+new const g_szTablePts[] = "hns_pts";
 
 #define PTS_WIN 15
 #define PTS_LOSS 10
@@ -71,30 +69,6 @@ WHERE `id` IN \
 	WHERE  `steamid` = '%s' \
 );"
 
-enum _:skill_info {
-	skill_pts,
-	skill_lvl[10]
-};
-
-new const g_eSkillData[][skill_info] = {
-	// pts     skill
-	{ 0,		"L-" },
-	{ 650,		"L" },
-	{ 750,		"L+" },
-	{ 850,		"M-" },
-	{ 950,		"M" },
-	{ 1050,		"M+" },
-	{ 1150,		"H-" },
-	{ 1250,		"H" },
-	{ 1350,		"H+" },
-	{ 1450,		"P-" },
-	{ 1550,		"P" },
-	{ 1650,		"P+" },
-	{ 1750,		"G-" },
-	{ 1850,		"G" },
-	{ 1950,		"G+" },
-};
-
 enum _:SQL {
 	SQL_TABLE,
 	SQL_INSERT,
@@ -104,6 +78,9 @@ enum _:SQL {
 	SQL_LOOSERS
 };
 
+new Handle:g_hSqlTuple;
+new g_sTablePlayers[32];
+
 enum _:PTS_DATA {
 	e_iPts,
     e_iWins,
@@ -111,29 +88,20 @@ enum _:PTS_DATA {
     e_iTop
 };
 
-//#if defined PHP_WEB_TOP
-	new const g_szLinkPts[] = "https://piterserverbans.myarena.site/boost/pts/pts.php";
-//#endif
-
-new const g_szTablePts[] = "hns_pts";
-
-new g_sPrefix[24];
-new g_sTablePlayers[32];
 new g_ePointsData[MAX_PLAYERS + 1][PTS_DATA];
 
+new const g_szLinkPts[] = "https://piterserverbans.myarena.site/boost/pts/pts.php";
+
+new g_sPrefix[24];
 new Float:g_flMatchDelay;
 
 new g_hFwdPlayerInit;
 
-new Handle:g_hSqlTuple;
-
 public plugin_init() {
 	register_plugin("Match: Pts", "1.1", "OpenHNS"); // Garey
 
-	register_clcmd("say /rank", "CmdRank");
-	//#if defined PHP_WEB_TOP
-		register_clcmd("say /pts", "CmdPts");
-	//#endif
+	RegisterSayCmd("rank", "me", "CmdRank", 0, "Show rank");
+	RegisterSayCmd("pts", "ptstop", "CmdPts", 0, "Show top pts players");
 
 	g_hFwdPlayerInit = CreateMultiForward("hns_pts_init_player", ET_CONTINUE, FP_CELL, FP_CELL, FP_CELL, FP_CELL, FP_CELL);
 
@@ -144,7 +112,6 @@ public CmdRank(id) {
 	client_print_color(id, print_team_blue, "%L", id, "PTS_RANK", g_sPrefix, g_ePointsData[id][e_iTop], g_ePointsData[id][e_iPts], g_ePointsData[id][e_iWins], g_ePointsData[id][e_iLoss], get_skill_player(g_ePointsData[id][e_iPts]));
 }
 
-//#if defined PHP_WEB_TOP
 public CmdPts(id) {
 	new szMotd[MAX_MOTD_LENGTH];
 
@@ -154,7 +121,6 @@ public CmdPts(id) {
 
 	show_motd(id, szMotd);
 }
-//#endif
 
 public plugin_cfg() {
 	hns_sql_get_table_name(g_sTablePlayers, charsmax(g_sTablePlayers));
@@ -172,10 +138,10 @@ public hns_match_canceled() {
 
 public hns_match_finished(iWinTeam) {
 	if (g_flMatchDelay > get_gametime()) {
-		client_print_color(0, print_team_blue, "%L", 0, "PTS_NOT_TIME", g_sPrefix);
+		client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "PTS_NOT_TIME", g_sPrefix);
 	} else {
 		if (get_num_players_in_match() < 5) {
-			client_print_color(0, print_team_blue, "%L", 0, "PTS_NOT_PLR", g_sPrefix);
+			client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "PTS_NOT_PLR", g_sPrefix);
 		} else {
 			if (iWinTeam == 1)
 				SQL_SetPts(TEAM_TERRORIST);
@@ -261,9 +227,9 @@ public QueryHandler(iFailState, Handle:hQuery, szError[], iErrnum, cData[], iSiz
 
 SQL_SetPts(TeamName:team_winners) {
 	if (team_winners == TEAM_TERRORIST) {
-		client_print_color(0, print_team_blue, "%L", 0, "PTS_SET_TT", g_sPrefix);
+		client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "PTS_SET_TT", g_sPrefix);
 	} else {
-		client_print_color(0, print_team_blue, "%L", 0, "PTS_SET_CT", g_sPrefix);
+		client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "PTS_SET_CT", g_sPrefix);
 	}
 
 	new szQuery[1024], iLen;
@@ -320,7 +286,6 @@ public SQL_Select(id) {
 	get_user_authid(id, szAuthId, charsmax(szAuthId));
 
 	formatex(szQuery, charsmax(szQuery), SQL_SELECT_DATA, g_szTablePts, szAuthId);
-	//log_amx(szQuery);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
 }
 
@@ -337,7 +302,6 @@ public SQL_Insert(id) {
 	get_user_authid(id, szAuthId, charsmax(szAuthId));
 
 	formatex(szQuery, charsmax(szQuery), SQL_CREATE_DATA, g_szTablePts, hns_sql_get_player_id(id));
-	//log_amx(szQuery);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
 }
 
@@ -354,6 +318,30 @@ public SQL_Top(id) {
 	formatex(szQuery, charsmax(szQuery), SQL_GET_TOP, g_szTablePts, g_ePointsData[id][e_iPts]);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
 }
+
+enum _:skill_info {
+	skill_pts,
+	skill_lvl[10]
+};
+
+new const g_eSkillData[][skill_info] = {
+	// pts     skill
+	{ 0,		"L-" },
+	{ 650,		"L" },
+	{ 750,		"L+" },
+	{ 850,		"M-" },
+	{ 950,		"M" },
+	{ 1050,		"M+" },
+	{ 1150,		"H-" },
+	{ 1250,		"H" },
+	{ 1350,		"H+" },
+	{ 1450,		"P-" },
+	{ 1550,		"P" },
+	{ 1650,		"P+" },
+	{ 1750,		"G-" },
+	{ 1850,		"G" },
+	{ 1950,		"G+" },
+};
 
 stock get_skill_player(iPts) {
 	new iPtr[10];

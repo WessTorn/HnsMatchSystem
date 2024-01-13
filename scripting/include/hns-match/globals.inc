@@ -95,3 +95,10 @@ enum _:PlayersLoad_s {
 new Array:g_aPlayersLoadData;
 
 new g_szBuffer[2048];
+
+enum SPEC_BACK {
+	bool:sb_isSpec,
+	TeamName:sb_hTeam
+}
+
+new g_eSpecBack[MAX_PLAYERS + 1][SPEC_BACK];

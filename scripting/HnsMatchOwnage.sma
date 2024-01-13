@@ -5,7 +5,7 @@
 #include <hns_matchsystem>
 #include <hns_matchsystem_sql>
 
-#define rg_get_user_team(%0) get_member(%0, m_iTeam)
+new const g_szTablePts[] = "hns_ownage";
 
 #define DELAY 5.0
 
@@ -43,33 +43,34 @@ WHERE `id` = \
 );"
 
 enum _:SQL {
-	sql_table,
-	sql_insert,
-	sql_select,
-    sql_ownage
+	SQL_TABLE,
+	SQL_INSERT,
+	SQL_SELECT,
+    SQL_OWNAGE
 };
 
-new Float:g_flLastHeadTouch[MAX_PLAYERS + 1];
+new Handle:g_hSqlTuple;
 
 new g_iDataOwnage[MAX_PLAYERS + 1];
 
-new const g_szTablePts[] = "hns_ownage";
-new Handle:g_hSqlTuple;
+new Float:g_flLastHeadTouch[MAX_PLAYERS + 1];
 
 new const g_szSound[][] = {
 	"openhns/mario.wav",
 	"openhns/ownage.wav"
 };
 
+public plugin_precache() {
+	for(new i; i < sizeof(g_szSound); i++)
+		precache_sound(g_szSound[i]);
+}
+
 public plugin_init() {
 	register_plugin("Match: Ownage", "1.0", "OpenHNS");
 	
 	register_touch("player", "player", "touchPlayer");
-}
 
-public plugin_precache() {
-	for(new i; i < sizeof(g_szSound); i++)
-		precache_sound(g_szSound[i]);
+	register_dictionary("match_additons.txt");
 }
 
 public hns_sql_player_authorized(id) {
@@ -80,7 +81,7 @@ public hns_sql_connection(Handle:hSqlTuple) {
 	g_hSqlTuple = hSqlTuple;
 
 	new szQuery[512];
-	new cData[1] = sql_table;
+	new cData[1] = SQL_TABLE;
 	
 	formatex(szQuery, charsmax(szQuery), SQL_CREATE_TABLE, g_szTablePts);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
@@ -93,7 +94,7 @@ public QueryHandler(iFailState, Handle:hQuery, szError[], iErrnum, cData[], iSiz
 	}
 
 	switch(cData[0]) {
-		case sql_select: {
+		case SQL_SELECT: {
 			new id = cData[1];
 
 			if (SQL_NumResults(hQuery)) {
@@ -114,7 +115,7 @@ public SQL_Select(id) {
 	new szQuery[512];
 	new cData[2]; 
 
-	cData[0] = sql_select;
+	cData[0] = SQL_SELECT;
 	cData[1] = id;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
@@ -128,7 +129,7 @@ public SQL_Insert(id) {
 	new szQuery[512];
 	new cData[2];
 
-	cData[0] = sql_insert;
+	cData[0] = SQL_INSERT;
 	cData[1] = id;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
@@ -144,16 +145,14 @@ public touchPlayer(iToucher, iTouched) {
 		flGametime = get_gametime();
 		
 		if(flGametime > g_flLastHeadTouch[iToucher] + DELAY) {
+			ClearDHUDMessages();
+			set_dhudmessage(250, 255, 0, -1.0, 0.15, 0, 0.0, 5.0, 0.1, 0.1);
 			if (hns_get_mode() == MODE_MIX && hns_get_state() == STATE_ENABLED) {
-				ClearDHUDMessages();
-				set_dhudmessage(250, 255, 0, -1.0, 0.15, 0, 0.0, 5.0, 0.1, 0.1);
 				g_iDataOwnage[iToucher]++;
-				show_dhudmessage(0, "%n owned %n's head! [#%d]", iToucher, iTouched, g_iDataOwnage[iToucher]);
+				show_dhudmessage(0, "%L", LANG_PLAYER, "HNS_OWNAGE_MIX", iToucher, iTouched, g_iDataOwnage[iToucher]);
 				SQL_SetOwnage(iToucher);
-			} else if (hns_get_mode() == MODE_PUB || hns_get_mode() == MODE_DM) {
-				ClearDHUDMessages();
-				set_dhudmessage(250, 255, 0, -1.0, 0.15, 0, 0.0, 5.0, 0.1, 0.1);
-				show_dhudmessage(0, "%n owned %n's head!", iToucher, iTouched);
+			} else if (hns_get_mode() == MODE_PUB || hns_get_mode() == MODE_DM || hns_get_mode() == MODE_ZM) {
+				show_dhudmessage(0, "%L", LANG_PLAYER, "HNS_OWNAGE", iToucher, iTouched);
 			}
 			
 			if (hns_get_mode() == MODE_MIX || hns_get_mode() == MODE_PUB || hns_get_mode() == MODE_DM || hns_get_mode() == MODE_ZM) {
@@ -166,7 +165,7 @@ public touchPlayer(iToucher, iTouched) {
 
 public SQL_SetOwnage(id) {
 	new szQuery[512];
-	new cData[1] = sql_ownage;
+	new cData[1] = SQL_OWNAGE;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
 	get_user_authid(id, szAuthId, charsmax(szAuthId));

@@ -34,6 +34,7 @@ stock cmds_init() {
 	RegisterSayCmd("live", 		"unpause", 		"cmdStopPause",		access, "Unpause");
 	RegisterSayCmd("surrender", "sur", 			"cmdSurrender", 	0, "Surrender vote");
 	RegisterSayCmd("score", 	"s", 			"cmdShowTimers", 	0, "Score");
+	RegisterSayCmd("back", 		"spec", 		"cmdTeamSpec", 		0, "Spec/Back player");
 	RegisterSayCmd("pick", 		"pick", 		"pickMenu", 		0, "Pick player");
 	RegisterSayCmd("np", 		"noplay", 		"cmdNoplay", 		0, "No play");
 	RegisterSayCmd("ip", 		"play", 		"cmdPlay", 			0, "Play");
@@ -72,7 +73,7 @@ public sayHandle(id) {
 
 		if (is_str_num(szTarget)) {
 			set_round_time(szTarget);
-			chat_print(0, "%L", LANG_PLAYER, "SET_ROUNDTIME", id, str_to_float(szTarget));
+			chat_print(0, "%l", "SET_ROUNDTIME", id, str_to_float(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -88,7 +89,7 @@ public sayHandle(id) {
 
 		if (str_to_num(szTarget) > 0) {
 			g_iSettings[MAXROUNDS] = str_to_num(szTarget);
-			chat_print(0, "%L", LANG_PLAYER, "SET_MAXROUNDS", id, str_to_num(szTarget), str_to_num(szTarget) * 2);
+			chat_print(0, "%l", "SET_MAXROUNDS", id, str_to_num(szTarget), str_to_num(szTarget) * 2);
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -118,7 +119,7 @@ public cmdPubMode(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "PUB_ACTIVATED", id);
+	chat_print(0, "%l", "PUB_ACTIVATED", id);
 
 	pub_start();
 
@@ -140,7 +141,7 @@ public cmdDMMode(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "DM_ACTIVATED", id);
+	chat_print(0, "%l", "DM_ACTIVATED", id);
 
 	dm_start();
 
@@ -177,7 +178,7 @@ public cmdBlend(id) {
 	if (g_iCurrentMode != MODE_PUB && g_iCurrentMode != MODE_DM) 
 		return PLUGIN_HANDLED; 
 
-	chat_print(0, "%L", LANG_PLAYER, "BLEND_TEAMS", id);
+	chat_print(0, "%l", "BLEND_TEAMS", id);
 
 	new Players[MAX_PLAYERS], Num;
 	get_players(Players, Num, "ch");
@@ -212,7 +213,7 @@ public cmdTransferSpec(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "TRANSF_SPEC", id);
+	chat_print(0, "%l", "TRANSF_SPEC", id);
 
 	transferUsers(TEAM_SPECTATOR);
 	
@@ -228,7 +229,7 @@ public cmdTransferTT(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "TRANSF_TT", id);
+	chat_print(0, "%l", "TRANSF_TT", id);
 
 	transferUsers(TEAM_TERRORIST);
 
@@ -244,7 +245,7 @@ public cmdTransferCT(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "TRANSF_CT", id);
+	chat_print(0, "%l", "TRANSF_CT", id);
 
 	transferUsers(TEAM_CT);
 
@@ -265,7 +266,7 @@ public cmdStartMatch(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "START_MIX", id);
+	chat_print(0, "%l", "START_MIX", id);
 
 	mix_start();
 
@@ -283,7 +284,7 @@ public cmdKnifeRound(id) {
 	}
 
 	if (g_iMatchStatus == MATCH_CAPTAINKNIFE || g_iMatchStatus == MATCH_TEAMKNIFE) {
-		chat_print(id, "Ножевой раунд уже запущен.");
+		chat_print(id, "%L", id, "KNIFE_ALREADY");
 		return PLUGIN_HANDLED;
 	}
 
@@ -299,7 +300,7 @@ public cmdCaptain(id) {
 	}
 
 	if (!equali(g_szMapName, g_iSettings[KNIFEMAP])) {
-		chat_print(id, "Доступно только на ножевой карте.");
+		chat_print(id, "%L", id, "NOT_CAPTAIN");
 		return PLUGIN_HANDLED;
 	}
 
@@ -339,14 +340,14 @@ public cmdStop(id) {
 	switch (g_iCurrentMode) {
 		case MODE_MIX: {
 			mix_stop();
-			chat_print(0, "%L", LANG_PLAYER, "STOP_MIX", id);
+			chat_print(0, "%l", "STOP_MIX", id);
 		}
 		case MODE_KNIFE: {
 			if (g_iMatchStatus == MATCH_CAPTAINKNIFE) {
 				resetCaptainData();
-				chat_print(0, "%L", LANG_PLAYER, "STOP_CAP", id);
+				chat_print(0, "%l", "STOP_CAP", id);
 			} else {
-				chat_print(0, "%L", LANG_PLAYER, "STOP_KNIFE", id);
+				chat_print(0, "%l", "STOP_KNIFE", id);
 			}
 			kniferound_stop();
 		}
@@ -355,18 +356,18 @@ public cmdStop(id) {
 				resetCaptainData();
 				g_iMatchStatus = MATCH_NONE;
 				training_start();
-				chat_print(0, "%L", LANG_PLAYER, "STOP_CAP", id);
+				chat_print(0, "%l", "STOP_CAP", id);
 			} else if (g_iMatchStatus) {
 				g_iMatchStatus = MATCH_NONE;
 			}
 		}
 		case MODE_PUB: {
 			training_start();
-			chat_print(0, "%L", LANG_PLAYER, "STOP_PUB", id);
+			chat_print(0, "%l", "STOP_PUB", id);
 		}
 		case MODE_DM: {
 			training_start();
-			chat_print(0, "%L", LANG_PLAYER, "STOP_DM", id);
+			chat_print(0, "%l", "STOP_DM", id);
 		}
 		case MODE_ZM: {
 			training_start();
@@ -384,7 +385,7 @@ public cmdSkillMode(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "TYPE_SKILL", id);
+	chat_print(0, "%l", "TYPE_SKILL", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
 		set_cvar_num("mp_freezetime", 5);
@@ -407,7 +408,7 @@ public cmdBoostMode(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "TYPE_BOOST", id);
+	chat_print(0, "%l", "TYPE_BOOST", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
 		set_cvar_num("mp_freezetime", 15);
@@ -427,7 +428,7 @@ public cmdRestartRound(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "GAME_RESTART", id);
+	chat_print(0, "%l", "GAME_RESTART", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
 		mix_restartround()
@@ -443,7 +444,7 @@ public cmdSwapTeams(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "%L", LANG_PLAYER, "GAME_SWAP", id);
+	chat_print(0, "%l", "GAME_SWAP", id);
 
 	if (g_iCurrentMode == MODE_MIX) {
 		mix_reverttimer();
@@ -468,7 +469,7 @@ public cmdStartPause(id) {
 
 	mix_pause();
 
-	chat_print(0, "%L", LANG_PLAYER, "GAME_PAUSED", id);
+	chat_print(0, "%l", "GAME_PAUSED", id);
 
 	return PLUGIN_HANDLED;
 }
@@ -484,7 +485,7 @@ public cmdStopPause(id) {
 
 	mix_unpause();
 
-	chat_print(0, "%L", LANG_PLAYER, "GAME_UNPAUSED", id);
+	chat_print(0, "%l", "GAME_UNPAUSED", id);
 
 	return PLUGIN_HANDLED;
 }
@@ -518,7 +519,7 @@ public cmdSurrender(id) {
 	g_eSurrenderData[e_sStarted] = true;
 	g_eSurrenderData[e_sInitiator] = id;
 	g_eSurrenderData[e_sFlDelay] = get_gametime() + g_iSettings[SURTIMEDELAY];
-	chat_print(0, "%L", LANG_PLAYER, "SUR_PLAYER", id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
+	chat_print(0, "%l", "SUR_PLAYER", id, getUserTeam(id) == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -560,17 +561,43 @@ public cmdShowTimers(id) {
 	return PLUGIN_HANDLED;
 }
 
+public cmdTeamSpec(id) {
+	if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM || (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus == MATCH_NONE)) { // Переделать
+		g_eSpecBack[id][sb_isSpec] = !g_eSpecBack[id][sb_isSpec];
+
+		if (g_eSpecBack[id][sb_isSpec]) {
+			if (getUserTeam(id) == TEAM_SPECTATOR) {
+				g_eSpecBack[id][sb_isSpec] = false;
+				return;
+			}
+			g_eSpecBack[id][sb_hTeam] = getUserTeam(id);
+			transferUserToSpec(id);
+		} else {
+			if (getUserTeam(id) != TEAM_SPECTATOR) {
+				g_eSpecBack[id][sb_isSpec] = true;
+				return;
+			}
+			rg_set_user_team(id, g_eSpecBack[id][sb_hTeam]);
+
+			if ( g_iCurrentMode == MODE_TRAINING) {
+				rg_round_respawn(id);
+			}
+		}
+	}
+}
+
+
 public cmdNoplay(id) {
 	if (!g_bNoplay[id]) {
 		g_bNoplay[id] = true;
-		chat_print(0, "%L", LANG_PLAYER, "STATUS_NOPLAY", id);
+		chat_print(0, "%l", "STATUS_NOPLAY", id);
 	}
 }
 
 public cmdPlay(id) {
 	if (g_bNoplay[id]) {
 		g_bNoplay[id] = false;
-		chat_print(0, "%L", LANG_PLAYER, "STATUS_PLAY", id);
+		chat_print(0, "%l", "STATUS_PLAY", id);
 	}
 }
 

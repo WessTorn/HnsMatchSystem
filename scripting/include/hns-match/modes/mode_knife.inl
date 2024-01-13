@@ -23,12 +23,12 @@ public kniferound_stop() {
 public kniferound_roundstart() {
 	switch (g_iMatchStatus) {
 		case MATCH_CAPTAINKNIFE: {
-			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "Captain knife round started.");
+			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "%L", LANG_PLAYER, "HUD_START_CAPKF");
 			chat_print(0, "%L", LANG_PLAYER, "START_KNIFE");
 			ChangeGameplay(GAMEPLAY_KNIFE);
 		}
 		case MATCH_TEAMKNIFE: {
-			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "Team knife round started.");
+			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "%L", LANG_PLAYER, "HUD_STARTKNIFE");
 			chat_print(0, "%L", LANG_PLAYER, "START_KNIFE");
 			ChangeGameplay(GAMEPLAY_KNIFE);
 		}

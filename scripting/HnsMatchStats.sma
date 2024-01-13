@@ -169,9 +169,6 @@ public taskSetPlayerTeam(id) {
 public client_disconnected(id) {
 	if ((iStats[id][PLR_TEAM] == TEAM_TERRORIST || iStats[id][PLR_TEAM] == TEAM_CT) && (hns_get_mode() == MODE_MIX || hns_get_state() == STATE_PAUSED)) {
 		iStats[id][PLR_STATS_STOPS] = g_iGameStops;
-
-		console_print(0, "Player %n was disconnected..", id);
-		client_print_color(0, print_team_blue, "Player ^3%n^1 was disconnected..", id);
 	}
 	TrieSetArray(g_tSaveData, getUserKey(id), iStats[id], PLAYER_STATS);
 	TrieSetArray(g_tSaveRoundData, getUserKey(id), g_StatsRound[id], PLAYER_STATS);

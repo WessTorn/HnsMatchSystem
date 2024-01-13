@@ -46,6 +46,9 @@ TRNING_STUCK_NOT = %s You must have another checkpoint to use stuck!
 
 TRNING_DMG = %s You have taken ^3%i^1 damage.
 
+HNS_OWNAGE_MIX = %n owned %n's head! [#%d]
+HNS_OWNAGE = %n owned %n's head!
+
 [ru]
 
 PTS_RANK = %s Ваш ранг: ^3%d^1 (Птс: ^3%d^1 | Побед: ^3%d^1 | Поражений: ^3%d^1 | Скилл: ^3%s^1)
@@ -95,4 +98,7 @@ TRNING_CPNT_SAVE = %s Чекпоинт сохранена!
 TRNING_TLPRT_NOT = %s У вас нет чекпоинтов!
 TRNING_STUCK_NOT = %s У вас должен быть другой чекпоинт, чтобы использовать stuck!
 
-TRNING_DMG = %s Вы получили  ^3%i^1 урона.
+TRNING_DMG = %s Вы получили ^3%i^1 урона.
+
+HNS_OWNAGE_MIX = %n запрыгнул на голову %n! [#%d]
+HNS_OWNAGE = %n запрыгнул на голову %n!

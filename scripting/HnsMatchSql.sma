@@ -2,6 +2,8 @@
 #include <reapi>
 #include <sqlx>
 
+new g_szTablePlayers[] = "hns_players";
+
 #define SQL_CREATE_TABLE \
 "CREATE TABLE IF NOT EXISTS `%s` \
 ( \
@@ -54,47 +56,67 @@ WHERE \
 WHERE \
 	`steamid` = '%s'"
 
-new g_szTablePlayers[] = "hns_players";
-
 enum _:CVARS {
-	host[48],
-	user[32],
-	pass[32],
-	db[32]
-};
-
-enum _:SQL {
-	sql_table,
-	sql_select,
-	sql_insert,
-	sql_name,
-	sql_ip,
-	sql_save,
-	sql_savecon
+	HOST[48],
+	USER[32],
+	PASS[32],
+	DB[32]
 };
 
 new g_eCvars[CVARS];
+
+enum _:SQL {
+	SQL_TABLE,
+	SQL_SELECT,
+	SQL_INSERT,
+	SQL_NAME,
+	SQL_IP,
+	SQL_SAVE,
+	SQL_SAVECON
+};
+
 new Handle:g_hSqlTuple;
+
+new g_iPlayerID[MAX_PLAYERS + 1];
+
 new g_hSqlForward;
 new g_hAuthorizedForward;
-new g_iPlayerID[MAX_PLAYERS + 1];
 
 public plugin_init() {
 	register_plugin("Match: Sql", "1.1", "OpenHNS"); // Garey
 
-	registerCvars();
-	registerForwards();
-	registerSQL();
+	new pCvar;
+	pCvar = create_cvar("hns_host", "127.0.0.1", FCVAR_PROTECTED, "Host");
+	bind_pcvar_string(pCvar, g_eCvars[HOST], charsmax(g_eCvars[HOST]));
+
+	pCvar = create_cvar("hns_user", "root", FCVAR_PROTECTED, "User");
+	bind_pcvar_string(pCvar, g_eCvars[USER], charsmax(g_eCvars[USER]));
+
+	pCvar = create_cvar("hns_pass", "root", FCVAR_PROTECTED, "Password");
+	bind_pcvar_string(pCvar, g_eCvars[PASS], charsmax(g_eCvars[PASS]));
+
+	pCvar = create_cvar("hns_db", "hns", FCVAR_PROTECTED, "db");
+	bind_pcvar_string(pCvar, g_eCvars[DB], charsmax(g_eCvars[DB]));
+
+	new szPath[PLATFORM_MAX_PATH]; 
+	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
+	
+	server_cmd("exec %s/mixsystem/hnsmatch-sql.cfg", szPath);
+	server_exec();
+
+	g_hSqlForward 			= CreateMultiForward("hns_sql_connection", ET_CONTINUE, FP_CELL);
+	g_hAuthorizedForward 	= CreateMultiForward("hns_sql_player_authorized", ET_CONTINUE, FP_CELL);
+
+	g_hSqlTuple = SQL_MakeDbTuple(g_eCvars[HOST], g_eCvars[USER], g_eCvars[PASS], g_eCvars[DB]);
+	SQL_SetCharset(g_hSqlTuple, "utf-8");
+	ExecuteForward(g_hSqlForward, _, g_hSqlTuple);
+
+	new szQuery[512];
+	new cData[1] = SQL_TABLE;
+	formatex(szQuery, charsmax(szQuery), SQL_CREATE_TABLE, g_szTablePlayers);
+	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
 
 	RegisterHookChain(RG_CBasePlayer_SetClientUserInfoName, "rgSetClientUserInfoName", true);
-}
-
-public client_putinserver(id) {
-	SQL_Select(id);
-}
-
-public plugin_end() {
-	SQL_FreeHandle(g_hSqlTuple);
 }
 
 public plugin_natives() {
@@ -112,57 +134,18 @@ public native_sql_get_player_id(amxx, params) {
 	return g_iPlayerID[get_param(id)];
 }
 
-registerCvars() {
-	new pCvar;
-	pCvar = create_cvar("hns_host", "127.0.0.1", FCVAR_PROTECTED, "Host");
-	bind_pcvar_string(pCvar, g_eCvars[host], charsmax(g_eCvars[host]));
-
-	pCvar = create_cvar("hns_user", "root", FCVAR_PROTECTED, "User");
-	bind_pcvar_string(pCvar, g_eCvars[user], charsmax(g_eCvars[user]));
-
-	pCvar = create_cvar("hns_pass", "root", FCVAR_PROTECTED, "Password");
-	bind_pcvar_string(pCvar, g_eCvars[pass], charsmax(g_eCvars[pass]));
-
-	pCvar = create_cvar("hns_db", "hns", FCVAR_PROTECTED, "db");
-	bind_pcvar_string(pCvar, g_eCvars[db], charsmax(g_eCvars[db]));
-
-	AutoExecConfig(true, "hnsmatch-sql");
-
-	new szPath[PLATFORM_MAX_PATH]; 
-	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
-	
-	server_cmd("exec %s/mixsystem/hnsmatch-sql.cfg", szPath);
-	server_exec();
-}
-
-registerSQL() {
-	g_hSqlTuple = SQL_MakeDbTuple(g_eCvars[host], g_eCvars[user], g_eCvars[pass], g_eCvars[db]);
-	SQL_SetCharset(g_hSqlTuple, "utf-8");
-	ExecuteForward(g_hSqlForward, _, g_hSqlTuple);
-
-	new szQuery[512];
-	new cData[1] = sql_table;
-	formatex(szQuery, charsmax(szQuery), SQL_CREATE_TABLE, g_szTablePlayers);
-	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
-}
-
-registerForwards() {
-	g_hSqlForward = CreateMultiForward("hns_sql_connection", ET_CONTINUE, FP_CELL);
-	g_hAuthorizedForward = CreateMultiForward("hns_sql_player_authorized", ET_CONTINUE, FP_CELL);
-}
-
 public QueryHandler(iFailState, Handle:hQuery, szError[], iErrnum, cData[], iSize, Float:fQueueTime) {
 	if (iFailState != TQUERY_SUCCESS) {
 		log_amx("SQL Error #%d - %s", iErrnum, szError);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	switch(cData[0]) {
-		case sql_select: {
+		case SQL_SELECT: {
 			new id = cData[1];
 
 			if (!is_user_connected(id))
-				return;
+				return PLUGIN_HANDLED;
 
 			if (SQL_NumResults(hQuery)) {
 				new index_id = SQL_FieldNameToNum(hQuery, "id");
@@ -195,20 +178,22 @@ public QueryHandler(iFailState, Handle:hQuery, szError[], iErrnum, cData[], iSiz
 				SQL_Insert(id);
 			}
 		}
-		case sql_insert: {
+		case SQL_INSERT: {
 			new id = cData[1];
 			g_iPlayerID[id] = SQL_GetInsertId(hQuery);
 
 			ExecuteForward(g_hAuthorizedForward, _, id);
 		}
 	}
+
+	return PLUGIN_HANDLED;
 }
 
 public SQL_Select(id) {
 	new szQuery[512];
 
 	new cData[2];
-	cData[0] = sql_select, 
+	cData[0] = SQL_SELECT, 
 	cData[1] = id;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
@@ -216,13 +201,15 @@ public SQL_Select(id) {
 
 	formatex(szQuery, charsmax(szQuery), SQL_SELECT_DATA, g_szTablePlayers, szAuthId);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
+
+	return PLUGIN_HANDLED;
 }
 
 public SQL_Insert(id) {
 	new szQuery[512];
 
 	new cData[2];
-	cData[0] = sql_insert,
+	cData[0] = SQL_INSERT,
 	cData[1] = id;
 
 	new szName[MAX_NAME_LENGTH * 2];
@@ -236,11 +223,13 @@ public SQL_Insert(id) {
 
 	formatex(szQuery, charsmax(szQuery), SQL_CREATE_DATA, g_szTablePlayers, szName, szAuthId, szIp);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
+
+	return PLUGIN_HANDLED;
 }
 
 SQL_Name(id, szNewname[]) {
 	new szQuery[512]
-	new cData[1] = sql_name;
+	new cData[1] = SQL_NAME;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
 	get_user_authid(id, szAuthId, charsmax(szAuthId));
@@ -254,7 +243,7 @@ SQL_Name(id, szNewname[]) {
 
 SQL_Ip(id, szNewip[]) {
 	new szQuery[512]
-	new cData[1] = sql_ip;
+	new cData[1] = SQL_IP;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
 	get_user_authid(id, szAuthId, charsmax(szAuthId));
@@ -270,17 +259,12 @@ public rgSetClientUserInfoName(id, infobuffer[], szNewName[]) {
 	SQL_Name(id, szNewName);
 }
 
-public client_disconnected(id) {
-	SQL_Save(id);
-	SQL_SaveConn(id);
-}
-
 public SQL_Save(id) {
 	if (!is_user_connected(id))
-		return;
+		return PLUGIN_HANDLED;
 	
 	new szQuery[512];
-	new cData[1] = sql_save;
+	new cData[1] = SQL_SAVE;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
 	get_user_authid(id, szAuthId, charsmax(szAuthId));
@@ -289,11 +273,13 @@ public SQL_Save(id) {
 	
 	formatex(szQuery, charsmax(szQuery), SQL_SET_PLAYTIME, g_szTablePlayers, iSaveOnline, szAuthId);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
+
+	return PLUGIN_HANDLED;
 }
 
 public SQL_SaveConn(id) {
 	new szQuery[512];
-	new cData[1] = sql_savecon;
+	new cData[1] = SQL_SAVECON;
 
 	new szAuthId[MAX_AUTHID_LENGTH];
 	get_user_authid(id, szAuthId, charsmax(szAuthId));
@@ -303,4 +289,19 @@ public SQL_SaveConn(id) {
 	
 	formatex(szQuery, charsmax(szQuery), SQL_SET_LASTCONNECT, g_szTablePlayers, iTime, szAuthId);
 	SQL_ThreadQuery(g_hSqlTuple, "QueryHandler", szQuery, cData, sizeof(cData));
+
+	return PLUGIN_HANDLED;
+}
+
+public client_putinserver(id) {
+	SQL_Select(id);
+}
+
+public client_disconnected(id) {
+	SQL_Save(id);
+	SQL_SaveConn(id);
+}
+
+public plugin_end() {
+	SQL_FreeHandle(g_hSqlTuple);
 }

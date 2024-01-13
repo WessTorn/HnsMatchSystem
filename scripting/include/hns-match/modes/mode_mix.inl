@@ -37,8 +37,6 @@ public mix_start()
 	setTaskHud(0, 0.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX1");
 	setTaskHud(0, 3.1, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_STARTMIX2");
 
-	//addStats();
-
 	restartRound(2.0);
 
 	ExecuteForward(g_hForwards[MATCH_START], _);
@@ -148,7 +146,7 @@ public mix_roundstart()
 	if (iNum < g_eMatchInfo[e_mTeamSize]) {
 		// Pause Need Players
 		mix_pause();
-		chat_print(0, "Match paused, need ^3%d^1 players.", g_eMatchInfo[e_mTeamSize] - iNum)
+		chat_print(0, "%L", LANG_PLAYER, "NEED_PAUSE", g_eMatchInfo[e_mTeamSize] - iNum)
 	} else {
 		iNum = iNum - g_eMatchInfo[e_mTeamSize];
 		if (iNum >= 2) {
@@ -221,7 +219,7 @@ public mix_roundend(bool:win_ct)
 		mix_swap();
 		if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= (g_iSettings[MAXROUNDS] * 2) - 1) {
 			new sTime[24];
-			if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - Float:(g_iSettings[MAXROUNDS] * 60.0) > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
+			if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - (get_round_time() * 60.0) > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
 				// variant kogda tt josko proebivaut (bolwe 4em roundtime)
 				fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], sTime, charsmax(sTime));
 				setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, "КТ Победили!^n ТТ не хватило %s что-бы победить! ^n(More than roundtime)", sTime);

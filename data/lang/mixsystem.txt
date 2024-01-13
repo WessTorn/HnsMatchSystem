@@ -17,6 +17,8 @@ SUR_END         = Team ^3%s^1 surrendered!
 AFK_PAUSE       = ^3%d^1 players AFK, pausing game
 AFK_UNPAUSE     = LIVE! All players is here! Unpausing match.
 
+NEED_PAUSE      = Match paused, need ^3%d^1 players.
+
 DM_TRANSF       = ^3%n^1 transfered to ^3Terrorist^1.
 
 GAME_NOTSTARTED = Game not started or already paused (use /unpause)
@@ -51,6 +53,10 @@ SHOW_KNIFEOFF     = Knife is now set ^3invisible.
 
 NOT_START_MIX   = Please disable other mode before start mix
 NOT_START_KNIFE = Please disable other mode before start knife round
+
+KNIFE_ALREADY   = Knife round has already started.
+
+NOT_CAPTAIN     = Only available on the knife map.
 
 START_MIX       = ^3%n^1 has started ^3mix
 START_KNIFE     = Started ^3knife^1 round!
@@ -93,16 +99,17 @@ HUD_CAPWIN      = Captain %n win!
 HUD_GAMEOVER    = Game Over
 HUD_STARTMIX1   = Going Live in 3 second!
 HUD_STARTMIX2   = Live! Live! Live!^nGood Luck & Have Fun!
-HUD_STARTKNIFE  = Knife Round Started
+HUD_STARTKNIFE  = Team knife round started.
 HUD_UNPAUSE     = Game Unpause^nLive! Live! Live!
 HUD_PAUSE       = GAME PAUSE
+HUD_START_CAPKF = Captain knife round started.
 
 NOCLIP_ON       = No Clip ^3enabled^1!
 NOCLIP_OFF      = No Clip ^3disabled^1!
 DAMAGE_ON       = Damage show ^3enabled^1.
 DAMAGE_OFF      = Damage show ^3disabled^1.
 
-MENU_MIX_TITLE       = \yHide'n'Seek match system
+MENU_MIX_TITLE       = \rHide'n'Seek match system
 MENU_MAIN_CAP        = Start captain mode
 MENU_MAIN_NOTCAP     = \dStart captain mode
 MENU_MAIN_STOPCAP    = \rStop captain mode
@@ -136,14 +143,14 @@ MENU_STNGS_FLASH            = Flash: \y%d
 MENU_STNGS_SMOKE            = Smoke: \y%d^n
 MENU_STNGS_AA               = Airaccelerate \y%d^n
 
-MENU_VERIF_TITLE = \yVerification menu^n^n\dAre you sure you want to stop this mod:
+MENU_VERIF_TITLE = \rVerification menu^n^n\dAre you sure you want to stop this mod:
 
 MENU_PLAY_TITLE = \rYou play?
 
 MENU_CAP_CHOSE = \rChoose the captain:
 MENU_CAP_PICK = \rChoose a player:
 
-MENU_SUR_TITLE = \ySurrender?^n\dVote by %n
+MENU_SUR_TITLE = \rSurrender?^n\dVote by %n
 
 MENU_YES = Yes
 MENU_NO = No
@@ -167,6 +174,8 @@ SUR_END         = Команда ^3%s^1 сдалась!
 
 AFK_PAUSE       = ^3%d^1 игроков АФК, игра приостановлена.
 AFK_UNPAUSE     = Старт! Все игроки на месте! Игра возоблена.
+
+NEED_PAUSE      = Матч приостановлен, требуется ^3%d^1 игроков.
 
 DM_TRANSF       = %n перенесли за ^3Террористов^1.
 
@@ -201,6 +210,10 @@ SHOW_KNIFEOFF     = Нож теперь ^3не видимый^1.
 
 NOT_START_MIX   = Пожалуйста, отключите другой режим перед запуском матча.
 NOT_START_KNIFE = Пожалуйста, отключите другой режим перед запуском ножевого раунда.
+
+KNIFE_ALREADY   = Ножевой раунд уже запущен.
+
+NOT_CAPTAIN     = Доступно только на ножевой карте.
 
 START_MIX       = ^3%n^1 запустил ^3микс^1!
 START_KNIFE     = ^3%n^1 запустил ^3ножевой раунд^1!
@@ -248,11 +261,13 @@ HUD_CAPWIN      = Капитан %n победил!
 HUD_GAMEOVER    = Игра закончена.
 HUD_STARTMIX1   = Начало игры через 3 секунды!
 HUD_STARTMIX2   = Игра началась!^nУдачи и веселой игры!
-HUD_STARTKNIFE  = Начался ножевой раунд!
+HUD_STARTKNIFE  = Начался ножевой раунд за выбор команды!
 HUD_UNPAUSE     = Игра возоблена^nНачало игры!
 HUD_PAUSE       = ИГРА ПРИОСТАНОВЛЕНА
+HUD_START_CAPKF = Начался ножевой раунд за выбор игроков!
 
-MENU_MIX_TITLE       = \yHide'n'Seek match system
+
+MENU_MIX_TITLE       = \rHide'n'Seek match system
 MENU_MAIN_CAP        = Запустить капитан мод
 MENU_MAIN_NOTCAP     = \dЗапустить капитан мод
 MENU_MAIN_STOPCAP    = \rОстановить капитан мод
@@ -285,14 +300,14 @@ MENU_STNGS_FLASH            = Flash: \y%d
 MENU_STNGS_SMOKE            = Smoke: \y%d^n
 MENU_STNGS_AA               = Airaccelerate \y%d^n
 
-MENU_VERIF_TITLE = \yМеню подтверждения^n^n\dВы уверены, что хотите остановить матч?
+MENU_VERIF_TITLE = \rМеню подтверждения^n^n\dВы уверены, что хотите остановить матч?
 
 MENU_PLAY_TITLE = \rВы играете?
 
 MENU_CAP_CHOSE = \rВыберите капитанов:
 MENU_CAP_PICK = \rВыберите игрока:
 
-MENU_SUR_TITLE = \yСдаться?^n \dГолосовавший %n
+MENU_SUR_TITLE = \rСдаться?^n \dГолосовавший %n
 
 MENU_NADES_TITLE = Do you need some nades? 
 
