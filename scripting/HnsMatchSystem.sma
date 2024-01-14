@@ -135,7 +135,7 @@ public rgPlayerSpawnPost() {
 	};
 	
 	for(new iCount = 0, iSize = sizeof(szRemoveEntities); iCount < iSize; iCount++) {
-		rg_remove_entity(szRemoveEntities[iCount]);
+		remove_entity_m(szRemoveEntities[iCount]);
 	}
 }
 

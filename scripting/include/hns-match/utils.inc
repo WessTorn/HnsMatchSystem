@@ -126,7 +126,7 @@ stock loadMapCFG() {
 	}
 }
 
-rg_remove_entity(const Zone[]) {
+remove_entity_m(const Zone[]) {
 	new iEntity = 0;
 	while ((iEntity = rg_find_ent_by_class(iEntity, Zone))) {
 		set_entvar(iEntity, var_flags, get_entvar(iEntity, var_flags) | FL_KILLME);
