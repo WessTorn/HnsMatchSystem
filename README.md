@@ -1,37 +1,19 @@
 ## [README in English](https://github.com/WessTorn/HnsMatchSystem/blob/main/README_ENG.md)
 
 ## HnsMatchSystem
-Counter-Strike Hide'n'Seek Match System plugins
-
-## ПРОЕКТ НАХОДИТСЯ В СТАДИИ ТЕСТОРОВАНИЯ, ПОЖАЛУЙСТА, ОЖИДАЙТЕ РЕЛИЗ.
-## PROJECT IS IN TESTING PHASE, PLEASE EXPECT A RELEASE.
-
-## Add pts
-https://github.com/OpenHNS/HnsMatchSystem-additions ПТС плагин.
-
-Для использования PTS вам необходимо:
-1. Скомпилировать и установить эти 2 плагина на сервер:
-- [HnsMatch-sql.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-sql.sma)
-- [HnsMatch-pts.sma](https://github.com/OpenHNS/HnsMatchSystem-additions/blob/main/scripting/HnsMatch-pts.sma)
-
-2. Раскомментировать 1-ю линию (удалить - //) в плагине: [HnsMatchSystem.sma] https://github.com/WessTorn/HnsMatchSystem/blob/main/scripting/HnsMatchSystem.sma
-
-3. После 2-го действия необходимо опять скомпилировать HnsMatchSystem.sma, поставить на сервер и перезапустить сервер.
-
-4. Далее, появится конфиг файл с настройкой базы данных (/addons/amxmodx/configs/plugins/hnsmatch-sql.cfg), туда вводим данные от базы данных и перезапускаем сервер.
+Counter-Strike Hide'n'Seek Match System plugins.
 
 ## Требование
 - [ReHLDS](https://dev-cs.ru/resources/64/)
 - [Amxmodx 1.9.0](https://dev-cs.ru/resources/405/)
-- [Reapi 5.22 (last)](https://dev-cs.ru/resources/73/updates)
-- [ReGameDLL 5.21 (last)](https://dev-cs.ru/resources/67/updates)
-- [ReSemiclip 2.3.9 (last)](https://dev-cs.ru/resources/71/updates)
+- [Reapi (last)](https://dev-cs.ru/resources/73/updates)
+- [ReGameDLL (last)](https://dev-cs.ru/resources/67/updates)
+- [ReSemiclip (last)](https://dev-cs.ru/resources/71/updates)
 
 ## Характеристики
-- Public / DeathMatch / Knife / Captain mode
-- Timer / MR match mode
+- Public / DeathMatch / Zombie / Knife / Captain mode
+- MR match system
 - Watcher (admin) menu (N)
-- Training menu
 - Система зависит от администратора
 - Surrender
 - AFK contol
@@ -52,29 +34,99 @@ https://github.com/OpenHNS/HnsMatchSystem-additions ПТС плагин.
 
 7. Перезапустите сервер или поменяйте карту.
 
+## Настройка
+
+- Настройка птc
+
+    1. Открыть файл `configs/mixsystem/hnsmatch-sql.cfg`
+    2. Вписать туда данные для базы данных
+    3. Поменять карту.
+
+- Настройка конфигов для карты
+    1. Заходим в папку `configs/mixsystem/mapcfg/`
+    2. Создаем файл с названием карты (rayish_brick-world.cfg)
+    3. Вписываем в файл нужные настройки:
+
+            mp_roundtime "2.5"
+            mp_freezetime "5" 
+            hns_flash "1"
+            hns_smoke "1"
+    4. Сохраняем. Теперь у нас при старте микса на карте rayish_brick-world будут выставляться настройки автоматически.
+
+- Ножевая карта
+    1. Открываем файл `configs/mixsystem/matchsystem.cfg`
+    2. Изменяем квар hns_knifemap пот вашу ножевую карту.
+    3. Все, теперь на указанной вами карте будут проходить капитан и кнайф моды, рекомендую ножевую карту ставить первой в списке карт `maps.ini`
+
+- Watcher
+
+    Для watcher'а необходимо настроить `configs/cmdaccess.ini`, а именно сделать доступным для флага f следующие команды:
+
+        "amx_slay" 	"f" ; admincmd.amxx
+        "amx_slap" 	"f" ; admincmd.amxx
+        "amx_map" 	"f" ; admincmd.amxx
+        "amx_slapmenu" 	"f" ; plmenu.amxx
+        "amx_teammenu" 	"f" ; plmenu.amxx
+        "amx_mapmenu" 	"f" ; mapsmenu.amxx   
+
+## Описание
+    
+- Watcher
+
+    Система не автоматическая, для того, чтобы игроки могли заводить миксы, есть плагин 'HnsMatchWatcher.amxx'. 
+    
+    Watcher - игрок, который запускает миксы.     
+    
+- Запуск микса
+    
+    Для того чтобы запустить матч игру, вам необходимо поменять карту на ножевую карту, запустить капитан мод и выбрать 2х капитанов.
+    
+    Далее капитаны играют ножевой раунд и выбирают игроков в команды.
+    
+    После играется ножевой раунд и победители ножевого раунда должны выбрать карту, а Watcher или Админ поменять карту.
+    
+    После смены карты система будет ждать игроков и запустит микс.
+    
+- Матч - Maxround режим
+
+    На игру дается в общей сумме четное кол-во раундов (14) (hns_rounds * 2). Командам дается таймер, который равен 00:00.
+
+    Таймер увеличивается у команды играющие за террористов. Команды каждый раунд меняются.
+
+    По истечению раундов (14) та команда, у которой больше таймер победила.
+
+## Плагины
+- HnsMatchSystem.sma - Основной плагин мода
+- HnsMatchStats.sma - Плагин статистики микса
+- HnsMatchSql.sma - Плагин для взаимодействия с БД
+- HnsMatchPts.sma - Плагин для ПТС (не работает без Sql плагина)
+- HnsMatchOwnage.sma - Плагин для подсчета Ownage (не работает без Sql плагина)
+- HnsMatchChatmanager.sma - Измененый ЧМ, показывает префикс ранга (скилла)
+- HnsMatchHideKnife.sma - Показать/Спрятать нож
+- HnsMatchMaps.sma - Список карт для игроков (/maps)
+- HnsMatchTraining.sma - Трейнинг меню (Чектоинты)
+- HnsMatchWatcher.sma - Watcher система, позволяет игрокам становиться/голосовать за watcher
+
 ## Cvars
 
 | Cvar                 | Default    | Description |
 | :------------------- | :--------: | :--------------------------------------------------- |
-| hns_wintime          | 15         | Кол-во минут для победы ТТ |
-| hns_rounds           | 15         | Кол-во раундов для победы |
-| hns_flash	           | 2          | Кол-во флешек (Плагин сам изменяет) |
-| hns_smoke            | 3          | Кол-во дыма (Плагин сам изменяет) |
-| hns_aa               | 100        | sv_airaccelerate <br/>`100`<br/>`10`                          |
-| hns_semiclip         | 0          | Проходить сквозь друг друга (Плагин сам изменяет)   |
-| hns_hpmode           | 100        | Кол-во HP `100` `1` (работает только во время Public/DM/Match) |
+| hns_rounds           | 6         | Кол-во раундов для победы |
+| hns_boost            | 0          | Включить/Отключить буст режим |
+| hns_onehpmode        | 0          | Включить/Отключить 1 хп режим |
+| hns_flash	           | 1          | Кол-во флешек (Плагин сам изменяет) |
+| hns_smoke            | 1          | Кол-во дыма (Плагин сам изменяет) |
+| hns_last             | 1        | Включить/Отключить выдачу гранат последнему ТТ |
 | hns_dmrespawn        | 3          | Время (в секундах), в течение которого игрок возродится в режиме DM |
 | hns_survotetime      | 10         | Время (в секундах), в течение которого идет голосование (surrender) |
-| hns_checkplay        | 1          | Меню play/nolay при входе на кнайф карте / `0` off `1` on |
-| hns_knifemap         | 35hp_2     | Кнайф карта |
-| hns_prefix         | ^1>     | Префикс системы (^1 - желтый, ^3 - голубой, ^4 - зеленый) |
-| hns_rules         | 0     | Игровой режим `0` Timer `1` MR |
+| hns_knifemap         | 35hp_2     | Ножевая карта |
+| hns_prefix         | MATCH     | Префикс системы |
 
 ## Комманды
 
 - Комманды в чат
 
-- Admin (ADMIN_MAP)
+- Watcher (ADMIN_MAP)
 
 | Commands | Description |
 | :------------------- |  :--------------------------------------------------- |
@@ -92,14 +144,11 @@ https://github.com/OpenHNS/HnsMatchSystem-additions ПТС плагин.
 | stop / cancel | Остановить текущий режим  |
 | skill | Скилл мод |
 | boost | Буст мод |
-| aa10 / 10aa | Set sv_airaccelerate 10 |
-| aa100 / 100aa | Set sv_airaccelerate 100 |
 | rr / restart | Рестарт раунда |
 | swap / swap | Поменять команды местами |
 | pause / ps | Пауза |
 | live / unpause | Запуск |
-| mr / maxround | Мод по раундам |
-| timer | Таймер мод |
+| mr | Выставить кол-во раундов |
 
 - Player
 
@@ -115,20 +164,20 @@ https://github.com/OpenHNS/HnsMatchSystem-additions ПТС плагин.
 | checkpoint / cp | Чекпоинт |
 | teleport / tp | Телепорт к чекпоинту |
 | gocheck / gc | Чекпоинтn |
-| damage / showdamade | Дамаг |
+| showdmg / showdamade | Дамаг |
 | noclip / clip | Ноуклип |
 | respawn / resp | Заспавниться |
-| top / tops | Топ |
-
-
-
-## Список задач
-- Новый pts
-- Captain на всех картах
-- Инклуд для взаимодействия с другими плагинами
-- Переделать motd top players
+| top / tops | Топ игроков за матч |
+| map / maps | Показать список карт |
+| rank / me | Показать свою статистику птс |
+| pts / ptstop | Показать топ игроков по птс |
+| hud / hudinfo | Отключить/Включить худ |
+| rnw / rocknewwatcher | Голосовать за нового watcher |
+| wt / watcher | Передать/Назначить нового watcher |
 
 ## Благодарности / Aвторы других плагинов
-[Garey - Мixsystem](https://github.com/Garey27)
+[Garey](https://github.com/Garey27)
 
-[Medusa - Мixsystem](https://dev-cs.ru/members/65/)
+[Medusa](https://github.com/medusath)
+
+[juice](https://github.com/etojuice)

@@ -90,7 +90,7 @@ enum _:PTS_DATA {
 
 new g_ePointsData[MAX_PLAYERS + 1][PTS_DATA];
 
-new const g_szLinkPts[] = "https://piterserverbans.myarena.site/boost/pts/pts.php";
+new const g_szLinkPts[] = "https://SITENAME/pts/pts.php";
 
 new g_sPrefix[24];
 new Float:g_flMatchDelay;

@@ -8,7 +8,7 @@ new bool: g_playerHideKnife[MAX_PLAYERS + 1][TeamName];
 public plugin_init() {
 	register_plugin("HNS: Hideknife", "1.0.0", "ufame, OpenHNS"); // ufame (https://github.com/ufame/brohns/blob/master/server/src/scripts/hns/hns_hideknife.sma)
 
-	RegisterSayCmd("hideknife", "knife", "commandHideKnife", 0, "Show knife");
+	RegisterSayCmd("hideknife", "showknife", "commandHideKnife", 0, "Show knife");
 
 	RegisterHam(Ham_Item_Deploy, "weapon_knife", "knifeDeploy", 1);
 

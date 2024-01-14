@@ -10,8 +10,6 @@ public plugin_init() {
 	register_plugin("Match: Maps", "1.0", "OpenHNS"); // Garey
 
 	RegisterSayCmd("map", "maps", "cmdMapsMenu", 0, "Open mapmenu");
-
-	register_clcmd("amx_mapmenu", "cmdMapsMenu", ADMIN_MAP, "- displays changelevel menu")
 }
 
 public plugin_cfg() {

@@ -29,7 +29,7 @@ new g_eRnw[RNW];
 public plugin_init() {
 	register_plugin("Match: Watcher", "1.0", "OpenHNS"); // Garey
 
-	RegisterSayCmd("rnw", "votewatcher", "cmdRnw", 0, "Vote new watchers");
+	RegisterSayCmd("rnw", "rocknewwatcher", "cmdRnw", 0, "Rock new watchers");
 	RegisterSayCmd("unrnw", "nornw", "cmdUnRnw", 0, "Cancel vote new watchers");
 	RegisterSayCmd("watcher", "wt", "cmdWatcherMenu", 0, "Watcher menu");
 
