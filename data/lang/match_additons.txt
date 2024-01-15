@@ -43,7 +43,10 @@ TRNING_NOT_ALIVE = %s You must be alive to use this command!
 TRNING_CPNT_SAVE = %s Checkpoint saved!
 TRNING_TLPRT_NOT = %s You haven't got any checkpoints!
 TRNING_STUCK_NOT = %s You must have another checkpoint to use stuck!
-
+TRNING_SHOW_ON = %s Damage show ^3enabled^1!
+TRNING_SHOW_OFF = %s Damage show ^3disabled^1!
+TRNING_CLIP_ON = %s No Clip ^3enabled^1!
+TRNING_CLIP_OFF = %s No Clip ^3disabled^1!
 TRNING_DMG = %s You have taken ^3%i^1 damage.
 
 HNS_OWNAGE_MIX = %n owned %n's head! [#%d]
@@ -97,7 +100,10 @@ TRNING_NOT_ALIVE = %s Вы должны быть живы, чтобы испол
 TRNING_CPNT_SAVE = %s Чекпоинт сохранена!
 TRNING_TLPRT_NOT = %s У вас нет чекпоинтов!
 TRNING_STUCK_NOT = %s У вас должен быть другой чекпоинт, чтобы использовать stuck!
-
+TRNING_SHOW_ON = %s Показать урон: ^3влючено^1!
+TRNING_SHOW_OFF = %s Показать урон: ^3выключено^1!
+TRNING_CLIP_ON = %s Ноклип ^3включен^1!
+TRNING_CLIP_OFF = %s Ноклип ^3выключен^1!
 TRNING_DMG = %s Вы получили ^3%i^1 урона.
 
 HNS_OWNAGE_MIX = %n запрыгнул на голову %n! [#%d]

@@ -2,8 +2,6 @@
 #include <reapi>
 #include <hns_matchsystem>
 
-#define rg_get_user_team(%0) get_member(%0, m_iTeam)
-
 new g_szPrefix[24];
 
 new bool:g_bDamage[MAX_PLAYERS + 1];
@@ -18,7 +16,7 @@ new g_hResetBugForward;
 public plugin_init() {
 	register_plugin("Match: Training", "1.0", "OpenHNS");
 
-	RegisterSayCmd("training", "training", "hns_training_menu");
+	RegisterSayCmd("training", "tr", "hns_training_menu");
 	
 	RegisterSayCmd("checkpoint", "cp", "CmdCheckpoint");
 	RegisterSayCmd("teleport", "tp", "CmdGoCheck");
@@ -28,11 +26,15 @@ public plugin_init() {
 	RegisterSayCmd("noclip", "clip", "CmdClipMode");
 	RegisterSayCmd("showdamage", "showdmg", "CmdShowDamage");	
 	
-	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgPlayerTakeDamage", 0);
+	RegisterHookChain(RG_CSGameRules_FlPlayerFallDamage, "rgFlPlayerFallDamage", true);
 	
 	g_hResetBugForward = CreateMultiForward("fwResetBug", ET_IGNORE, FP_CELL);
 
 	register_dictionary("match_additons.txt");
+}
+
+public client_putinserver(id) {
+	g_bDamage[id] = true;
 }
 
 public plugin_cfg() {
@@ -53,7 +55,11 @@ public CmdClipMode(id) {
 
 	set_entvar(id, var_movetype, iClip);
 
-	client_print_color(id, print_team_blue, "%s No Clip ^3%sabled^1!", g_szPrefix, iClip == MOVETYPE_NOCLIP ? "en" : "dis");
+	if (iClip == MOVETYPE_NOCLIP) {
+		client_print_color(id, print_team_blue, "%L", id, "TRNING_SHOW_ON", g_szPrefix);
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "TRNING_SHOW_OFF", g_szPrefix);
+	}
 
 	return PLUGIN_HANDLED;
 }
@@ -158,7 +164,11 @@ public CmdShowDamage(id) {
 
 	g_bDamage[id] = !g_bDamage[id];
 
-	client_print_color(id, print_team_blue,"%s Damage show ^3%sabled^1.", g_szPrefix, g_bDamage[id] ? "en" : "dis");
+	if (g_bDamage[id]) {
+		client_print_color(id, print_team_blue, "%L", id, "TRNING_SHOW_ON", g_szPrefix);
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "TRNING_SHOW_OFF", g_szPrefix);
+	}
 
 	return PLUGIN_HANDLED;
 }
@@ -225,15 +235,15 @@ public hns_training_menu_code(id, hMenu, item) {
 	return PLUGIN_HANDLED;
 }
 
-public rgPlayerTakeDamage(id, inflictor, attacker, Float:damage, damage_bits) {
+public rgFlPlayerFallDamage(id) {
 	if (hns_get_mode() != MODE_TRAINING && hns_get_state() != STATE_PAUSED) {
 		return HC_CONTINUE
 	}
 
-	if(damage_bits & DMG_FALL) {
-		if(g_bDamage[id]) {
-			client_print_color(id, print_team_blue, "%L", id, "TRNING_DMG", g_szPrefix);
-		}
+	new dmg = floatround(Float:GetHookChainReturn(ATYPE_FLOAT));
+
+	if(g_bDamage[id]) {
+		client_print_color(id, print_team_blue, "%L", id, "TRNING_DMG", g_szPrefix, dmg);
 	}
 
 	return HC_CONTINUE;

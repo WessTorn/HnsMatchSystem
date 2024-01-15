@@ -193,11 +193,8 @@ public mix_roundend(bool:win_ct)
 	get_players(iPlayers, iNum, "ache", "CT");
 
 	if (!iNum) {
-		if (get_round_time() - 1.0 > g_flRoundTime / 60.0) {
-			new Float:roundtime = get_round_time() * 60.0;
-
-			g_eMatchInfo[e_flSidesTime][g_isTeamTT] += roundtime - g_flRoundTime;
-		}
+		new Float:roundtime = get_round_time() * 60.0;
+		g_eMatchInfo[e_flSidesTime][g_isTeamTT] += roundtime - g_flRoundTime;
 	}
 
 	if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= g_iSettings[MAXROUNDS] * 2) {
