@@ -10,6 +10,7 @@ enum _:AfkData_s {
 	bool:is_afk,
 	afk_timer
 };
+
 new eAfkData[MAX_PLAYERS + 1][AfkData_s];
 new iPlayersAfk;
 
@@ -35,7 +36,7 @@ public taskCheckAfk() {
 
 	if (iPlayersAfk) {
 		if(task_exists(TASK_AFK))
-            remove_task(TASK_AFK);
+			remove_task(TASK_AFK);
 
 		mix_pause();
 		chat_print(0, "%L", LANG_PLAYER, "AFK_PAUSE", iPlayersAfk);
@@ -83,7 +84,7 @@ public taskAfk() {
 		chat_print(0, "%L", LANG_PLAYER, "AFK_UNPAUSE");
 
 		if(task_exists(TASK_AFK))
-            remove_task(TASK_AFK);
+			remove_task(TASK_AFK);
 	} else {
 		set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.23, .holdtime = 1.0);
 		show_hudmessage(0, "%s", szBuffer);

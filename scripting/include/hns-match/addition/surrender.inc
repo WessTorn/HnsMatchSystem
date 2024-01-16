@@ -76,13 +76,13 @@ stock surrenderMenu(id) {
 
 	new szMsg[64];
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_SUR_TITLE", iPlayer);
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_SUR_TITLE", iPlayer);
 	new hMenu = menu_create(szMsg, "surrenderMenuHandler");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_YES");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_YES");
 	menu_additem(hMenu, szMsg);
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NO");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_NO");
 	menu_additem(hMenu, szMsg);
 
 	menu_display(id, hMenu, 0);

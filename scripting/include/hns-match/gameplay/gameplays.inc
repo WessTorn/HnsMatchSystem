@@ -1,13 +1,12 @@
-enum _: GAMEPLAYS
-{
+enum _: GAMEPLAYS {
 	GAMEPLAY_HNS,
 	GAMEPLAY_KNIFE,
 	GAMEPLAY_TRAINING
 }
+
 new g_iCurrentGameplay;
 
-enum _: GP_FUNCS
-{
+enum _: GP_FUNCS {
 	GP_ENABLE,
 	GP_DISABLE,
 	GP_SETROLE,
@@ -25,28 +24,24 @@ public init_gameplay() {
 }
 
 
-public ChangeGameplay(iMode)
-{
-	switch (g_iCurrentGameplay)
-	{
+public ChangeGameplay(iMode) {
+	switch (g_iCurrentGameplay) {
 		case GAMEPLAY_HNS:
 			hns_disable_rules();
 		case GAMEPLAY_TRAINING:
 			training_disable_rules();
 	}
 
-	switch (iMode)
-	{
-		case GAMEPLAY_HNS:
-		{
+	switch (iMode) {
+		case GAMEPLAY_HNS: {
 			hns_enable_rules();
 		}
-		case GAMEPLAY_TRAINING:
-		{
+		case GAMEPLAY_TRAINING: {
 			training_enable_rules();
 		}
-		case GAMEPLAY_KNIFE:
+		case GAMEPLAY_KNIFE: {
 			knife_enable_rules();
+		}
 	}
 
 	g_iCurrentGameplay = iMode;

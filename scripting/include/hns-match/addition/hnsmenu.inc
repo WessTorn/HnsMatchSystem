@@ -4,29 +4,31 @@
 
 #define _hnsmenu_included
 
+new Float:g_flTimeToVoteMode;
+
 public mainMatchMenu(id) {
 	if (!is_user_connected(id) || !getUserInAccess(id))
 		return PLUGIN_HANDLED;
 
 	static szMsg[128];
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MIX_TITLE");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MIX_TITLE");
 	new hMenu = menu_create(szMsg, "mainMatchMenuHandler");
 
 	if (equali(g_iSettings[KNIFEMAP], g_szMapName)) {
 		if (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus == MATCH_NONE)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_CAP");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_CAP");
 		else if (g_iMatchStatus == MATCH_CAPTAINPICK || g_iMatchStatus == MATCH_CAPTAINKNIFE || g_iMatchStatus == MATCH_TEAMPICK)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCAP");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_STOPCAP");
 		else
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_NOTCAP");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_NOTCAP");
 	} else {
 		if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM || g_iCurrentMode == MODE_ZM)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPCUSTOM");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_STOPCUSTOM");
 		else if (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus <= MATCH_WAITCONNECT)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_MIX");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_MIX");
 		else {
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPMIX");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_STOPMIX");
 		}
 	}
 
@@ -35,39 +37,39 @@ public mainMatchMenu(id) {
 
 	if (equali(g_iSettings[KNIFEMAP], g_szMapName)) {
 		if (g_iMatchStatus == MATCH_CAPTAINPICK || g_iMatchStatus == MATCH_CAPTAINKNIFE || g_iMatchStatus == MATCH_TEAMPICK)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_NOTSTARTKF");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_NOTSTARTKF");
 		else if (g_iCurrentMode == MODE_KNIFE)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STOPKF");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_STOPKF");
 		else
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_STARTKF");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_STARTKF");
 	} else {
 		if (g_iCurrentMode == MODE_TRAINING)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_CUSTOM");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_CUSTOM");
 		else if (g_iCurrentMode == MODE_PUB || g_iCurrentMode == MODE_DM || g_iCurrentMode == MODE_ZM)
-			formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_BLEND");
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_BLEND");
 		else {
 			if (g_eMatchState != STATE_PAUSED)
-				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_PAUSE");
+				formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_PAUSE");
 			else
-				formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_UNPAUSE");
+				formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_UNPAUSE");
 		}
 	}
 	
 	menu_additem(hMenu, szMsg, "2");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_SETTINGS");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_SETTINGS");
 	menu_additem(hMenu, szMsg, "3");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_RESTART");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_RESTART");
 	menu_additem(hMenu, szMsg, "4");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_SWAP");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_SWAP");
 	menu_additem(hMenu, szMsg, "5");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_TEAM");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_TEAM");
 	menu_additem(hMenu, szMsg, "6");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MAIN_MAP");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MAIN_MAP");
 	menu_additem(hMenu, szMsg, "7");
 
 	menu_display(id, hMenu, 0);
@@ -154,17 +156,17 @@ public customMenu(id) {
 
 	new szMsg[64];
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MIX_TITLE");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MIX_TITLE");
 	new hMenu = menu_create(szMsg, "customMenuHandler");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CUSTOM_PUB");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_CUSTOM_PUB");
 	menu_additem(hMenu, szMsg, "1");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CUSTOM_DM");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_CUSTOM_DM");
 	menu_additem(hMenu, szMsg, "2");
 
-	formatex(szMsg, charsmax(szMsg), "Zombie");
-	menu_additem(hMenu, szMsg, "3");
+	// formatex(szMsg, charsmax(szMsg), "Zombie");
+	// menu_additem(hMenu, szMsg, "3");
 
 	menu_display(id, hMenu, 0);
 	return PLUGIN_HANDLED;
@@ -188,9 +190,9 @@ public customMenuHandler(id, hMenu, item) {
 		case 2: {
 			cmdDMMode(id);
 		}
-		case 3: {
-			cmdZMMode(id);
-		}
+		// case 3: {
+		// 	cmdZMMode(id);
+		// }
 	}
 	return PLUGIN_HANDLED;
 }
@@ -201,33 +203,41 @@ public settingsMatchMenu(id) {
 
 	new szMsg[64];
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_MIX_TITLE");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MIX_TITLE");
 	new hMenu = menu_create(szMsg, "settingsMatchMenuHandler");
 
 	if (g_iCurrentMode == MODE_TRAINING)
-		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ROUNDTIME_TRNG");
+		formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_ROUNDTIME_TRNG");
 	else
-		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ROUNDTIME", get_cvar_float("mp_roundtime"));
+		formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_ROUNDTIME", get_cvar_float("mp_roundtime"));
 
 	menu_additem(hMenu, szMsg, "1");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_FREEZETIME", get_cvar_num("mp_freezetime"));
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_FREEZETIME", get_cvar_num("mp_freezetime"));
 	menu_additem(hMenu, szMsg, "2");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_MAXROUND", g_iSettings[MAXROUNDS], g_iSettings[MAXROUNDS] * 2);
+	switch (g_iCurrentRules) {
+		case RULES_MR: {
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_MAXROUND", g_iSettings[MAXROUNDS], g_iSettings[MAXROUNDS] * 2);
+		}
+		case RULES_TIMER: {
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_WINTIME", g_iSettings[WINTIME]);
+		}
+	}
+	
 	menu_additem(hMenu, szMsg, "3");
 
 	if (g_iSettings[ONEHPMODE] == 0)
-		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ONEHP_ON");
+		formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_ONEHP_ON");
 	else
-		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_ONEHP_OFF");
+		formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_ONEHP_OFF");
 	
 	menu_additem(hMenu, szMsg, "4");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_FLASH", g_iSettings[FLASH]);
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_FLASH", g_iSettings[FLASH]);
 	menu_additem(hMenu, szMsg, "5");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_STNGS_SMOKE", g_iSettings[SMOKE]);
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_SMOKE", g_iSettings[SMOKE]);
 	menu_additem(hMenu, szMsg, "6");
 
 	menu_display(id, hMenu, 0);
@@ -273,12 +283,24 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 			settingsMatchMenu(id);
 		}
 		case 3: {
-			if (g_iSettings[MAXROUNDS] <= 6)
-				g_iSettings[MAXROUNDS] = 8;
-			else if (g_iSettings[MAXROUNDS] <= 8)
-				g_iSettings[MAXROUNDS] = 10;
-			else if (g_iSettings[MAXROUNDS] >= 10)
-				g_iSettings[MAXROUNDS] = 6;
+			switch (g_iCurrentRules) {
+				case RULES_MR: {
+					if (g_iSettings[MAXROUNDS] <= 6)
+						g_iSettings[MAXROUNDS] = 8;
+					else if (g_iSettings[MAXROUNDS] <= 8)
+						g_iSettings[MAXROUNDS] = 10;
+					else if (g_iSettings[MAXROUNDS] >= 10)
+						g_iSettings[MAXROUNDS] = 6;
+				}
+				case RULES_TIMER: {
+					if (g_iSettings[WINTIME] <= 10.0)
+						g_iSettings[WINTIME] = 15.0;
+					else if (g_iSettings[WINTIME] <= 15.0)
+						g_iSettings[WINTIME] = 20.0;
+					else if (g_iSettings[WINTIME] >= 20.0)
+						g_iSettings[WINTIME] = 10.0;
+				}
+			}
 
 			settingsMatchMenu(id);
 		}
@@ -323,13 +345,13 @@ public verifMenu(id) {
 
 	new szMsg[64];
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_VERIF_TITLE");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_VERIF_TITLE");
 	new hMenu = menu_create(szMsg, "verifMenuHandler");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NO");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_NO");
 	menu_additem(hMenu, szMsg, "1");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_YES");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_YES");
 	menu_additem(hMenu, szMsg, "2");
 
 	menu_display(id, hMenu, 0);
@@ -352,4 +374,120 @@ public verifMenuHandler(id, hMenu, item) {
 		}
 	}
 	return PLUGIN_HANDLED;
+}
+
+public menuSelectMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+	
+	if (g_iCurrentMode == MODE_MIX) {
+		chat_print(0, "This command is not available during the match!");
+		return PLUGIN_HANDLED;
+	}
+
+	new szMsg[64];
+
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_TITLE");
+	new hMenu = menu_create(szMsg, "HandlerSelectMode");
+	
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_MR");
+	menu_additem(hMenu, szMsg, "1");
+
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_WINTIME");
+	menu_additem(hMenu, szMsg, "2");
+		
+	menu_setprop(hMenu, MPROP_EXIT, MEXIT_ALL);
+	
+	menu_display(id, hMenu, 0);
+	
+	return PLUGIN_HANDLED;
+}
+
+public HandlerSelectMode(id, hMenu, item) {
+	if (item == MENU_EXIT) {
+		menu_destroy(hMenu);
+		return;
+	}
+
+	new szData[6], szName[64], iAccess, iCallback;
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
+
+	new index = str_to_num(szData);
+
+	if(index == 1) {
+		cmdMrMode(id);
+	} else {
+		cmdWintimeMode(id);
+	}
+}
+
+public StartVoteRules() {
+	g_flTimeToVoteMode = get_gametime() + 15.0;
+	g_iVoteRules[RULES_TIMER] = g_iVoteRules[RULES_MR] = 0;
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+	for (new i; i < iNum; i++) {
+		new id = iPlayers[i];
+		if (!is_user_connected(id))
+			continue;
+
+		if(getUserTeam(id) != TEAM_CT && getUserTeam(id) != TEAM_TERRORIST) {
+			continue;
+		}
+
+		new szMsg[64];
+
+		formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_TITLE");
+		new hMenu = menu_create(szMsg, "HandlerStartVoteRules");
+		
+		formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_MR");
+		menu_additem(hMenu, szMsg, "1");
+
+		formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_WINTIME");
+		menu_additem(hMenu, szMsg, "2");
+			
+		menu_setprop(hMenu, MPROP_EXIT, MEXIT_ALL);
+		
+		menu_display(id, hMenu, 0);
+	}
+
+	set_task(15.0, "VoteFinished", 83129);
+}
+
+public HandlerStartVoteRules(id, hMenu, item) {
+	if (item == MENU_EXIT || get_gametime() > g_flTimeToVoteMode) {
+		menu_destroy(hMenu);
+		return;
+	}
+
+	new szData[6], szName[64], iAccess, iCallback;
+	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
+
+	new index = str_to_num(szData);
+
+	if(index == 1) {
+		g_iVoteRules[RULES_MR]++;		
+		chat_print(0, "%l", "VOTE_MR", id);
+	} else {
+		g_iVoteRules[RULES_TIMER]++;
+		chat_print(0, "%l", "VOTE_WT", id);
+	}
+}
+
+public VoteFinished() {
+	if(g_iVoteRules[RULES_MR] > g_iVoteRules[RULES_TIMER]) {
+		g_iCurrentRules = RULES_MR;
+	} else if(g_iVoteRules[RULES_MR] < g_iVoteRules[RULES_TIMER]) {
+		g_iCurrentRules = RULES_TIMER;
+	} else {
+		g_iCurrentRules = NATCH_RULES:random_num(0, 1);
+	}
+
+	chat_print(0, "%l", "VOTE_WIN", g_iCurrentRules == RULES_MR? "MR" : "Wintime");
+	
+	g_iVoteRules[RULES_MR] = g_iVoteRules[RULES_TIMER] = 0;	
 }

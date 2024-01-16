@@ -116,13 +116,13 @@ public NewNadesMenu(id)
 {
 	new szMsg[64];
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NADES_TITLE");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_NADES_TITLE");
 	new hMenu = menu_create(szMsg, "NadesHandler");
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_YES");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_YES");
 	menu_additem(hMenu, szMsg);
 
-	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_NO");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_NO");
 	menu_additem(hMenu, szMsg);
 
 	menu_setprop(hMenu, MPROP_PERPAGE, 0);

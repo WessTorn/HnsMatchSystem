@@ -5,7 +5,7 @@
 
 
 enum _:PTS_DATA {
-	bool:e_bInit, // Птс статистика доступка
+	bool:e_bInit, // Птс статистика получена
 	e_iPts, // Птс
     e_iWins, // Победы
     e_iLoss, // Поражения

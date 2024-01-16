@@ -1,5 +1,4 @@
-public zm_init()
-{
+public zm_init() {
 	g_ModFuncs[MODE_ZM][MODEFUNC_START] 		= CreateOneForward(g_PluginId, "zm_start");
 	g_ModFuncs[MODE_ZM][MODEFUNC_KILL] 			= CreateOneForward(g_PluginId, "zm_killed", FP_CELL, FP_CELL);
 	g_ModFuncs[MODE_ZM][MODEFUNC_ROUNDEND] 		= CreateOneForward(g_PluginId, "zm_roundend", FP_CELL);

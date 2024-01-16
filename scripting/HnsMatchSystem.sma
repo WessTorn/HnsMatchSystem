@@ -111,11 +111,11 @@ public fwdClientKill(id) {
 	if (g_iCurrentMode == MODE_DM) {
 		chat_print(id, "%L", id, "KILL_NOT");
 		return FMRES_SUPERCEDE;
-	} else if (g_iCurrentMode == MODE_MIX && g_flRoundTime < 90.0) {
+	} else if (g_iCurrentMode == MODE_MIX && g_iCurrentRules == RULES_MR && g_flRoundTime < 90.0) {
 		chat_print(id, "%L", id, "KILL_NOT_MIX");
 		return FMRES_SUPERCEDE;
 	} else {
-		chat_print(0, "%L", LANG_PLAYER, "KILL_HIMSELF", id);
+		chat_print(0, "%l", "KILL_HIMSELF", id);
 	}
 	return FMRES_IGNORED;
 }
@@ -338,9 +338,10 @@ public PDS_Save() {
 		if (g_szBuffer[0])
 			PDS_SetString("playerslist", g_szBuffer);
 	}
-	PDS_SetCell("match_status",	 g_iMatchStatus);
+	PDS_SetCell("match_status",		g_iMatchStatus);
 	PDS_SetCell("match_mode",		g_iCurrentMode);
 	PDS_SetCell("match_gameplay",   g_iCurrentGameplay);
+	PDS_SetCell("match_rules",	 	g_iCurrentRules);
 }
 
 stock savePlayers(TeamName:team_winners) {

@@ -1,19 +1,18 @@
-public dm_init()
-{
+public dm_init() {
 	g_ModFuncs[MODE_DM][MODEFUNC_KILL] = CreateOneForward(g_PluginId, "dm_killed", FP_CELL, FP_CELL);	
 }
 
-public dm_start()
-{	
+public dm_start() {
 	ChangeGameplay(GAMEPLAY_HNS);
 	g_iCurrentMode = MODE_DM;
 	g_iMatchStatus = MATCH_NONE;
+	g_iSettings[FLASH] = 1;
+	g_iSettings[SMOKE] = 1;
 	set_cvars_mode(MODE_DM);
 	restartRound(0.5);
 }
 
-public dm_killed(victim, killer)
-{
+public dm_killed(victim, killer) {
 	if (killer != victim && is_user_connected(killer)) {
 		if (getUserTeam(killer) == TEAM_CT) {
 			rg_set_user_team(killer, TEAM_TERRORIST);
@@ -31,6 +30,10 @@ public dm_killed(victim, killer)
 				rg_set_user_team(lucky, TEAM_TERRORIST);
 				chat_print(0, "%L", LANG_PLAYER, "DM_TRANSF", lucky)
 				rg_set_user_team(victim, TEAM_CT);
+
+				if (!g_iSettings[ONEHPMODE])
+					set_entvar(lucky, var_health, 100.0);
+
 				hns_setrole(lucky);
 			}
 		}
@@ -39,8 +42,7 @@ public dm_killed(victim, killer)
 	set_task(g_iSettings[DMRESPAWN], "RespawnPlayer", victim);
 }
 
-public RespawnPlayer(id)
-{
+public RespawnPlayer(id) {
 	if (!is_user_connected(id))
 		return;
 

@@ -52,6 +52,8 @@ TRNING_DMG = %s You have taken ^3%i^1 damage.
 HNS_OWNAGE_MIX = %n owned %n's head! [#%d]
 HNS_OWNAGE = %n owned %n's head!
 
+STATS_TOP = %s Show top — ^3/top
+
 [ru]
 
 PTS_RANK = %s Ваш ранг: ^3%d^1 (Птс: ^3%d^1 | Побед: ^3%d^1 | Поражений: ^3%d^1 | Скилл: ^3%s^1)
@@ -108,3 +110,5 @@ TRNING_DMG = %s Вы получили ^3%i^1 урона.
 
 HNS_OWNAGE_MIX = %n запрыгнул на голову %n! [#%d]
 HNS_OWNAGE = %n запрыгнул на голову %n!
+
+STATS_TOP = %s Показать топ — ^3/top

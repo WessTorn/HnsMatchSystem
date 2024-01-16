@@ -1,14 +1,12 @@
-public kniferound_init()
-{
-	g_ModFuncs[MODE_KNIFE][MODEFUNC_START]			= CreateOneForward(g_PluginId, "kniferound_start");
-	g_ModFuncs[MODE_KNIFE][MODEFUNC_END]              = CreateOneForward(g_PluginId, "kniferound_stop");
-	g_ModFuncs[MODE_KNIFE][MODEFUNC_ROUNDSTART]	   = CreateOneForward(g_PluginId, "kniferound_roundstart");
-	g_ModFuncs[MODE_KNIFE][MODEFUNC_ROUNDEND]		 = CreateOneForward(g_PluginId, "kniferound_roundend", FP_CELL);
-	g_ModFuncs[MODE_KNIFE][MODEFUNC_PLAYER_JOIN]      = CreateOneForward(g_PluginId, "kniferound_player_join", FP_CELL);
+public kniferound_init() {
+	g_ModFuncs[MODE_KNIFE][MODEFUNC_START]		= CreateOneForward(g_PluginId, "kniferound_start");
+	g_ModFuncs[MODE_KNIFE][MODEFUNC_END]		= CreateOneForward(g_PluginId, "kniferound_stop");
+	g_ModFuncs[MODE_KNIFE][MODEFUNC_ROUNDSTART]	= CreateOneForward(g_PluginId, "kniferound_roundstart");
+	g_ModFuncs[MODE_KNIFE][MODEFUNC_ROUNDEND]	= CreateOneForward(g_PluginId, "kniferound_roundend", FP_CELL);
+	g_ModFuncs[MODE_KNIFE][MODEFUNC_PLAYER_JOIN]= CreateOneForward(g_PluginId, "kniferound_player_join", FP_CELL);
 }
 
-public kniferound_start()
-{
+public kniferound_start() {
 	g_iCurrentMode = MODE_KNIFE;
 	ChangeGameplay(GAMEPLAY_KNIFE);
 	set_cvars_mode(MODE_KNIFE);
@@ -57,6 +55,7 @@ public kniferound_roundend(bool:win_ct) {
 			savePlayers(win_ct ? TEAM_CT : TEAM_TERRORIST);
 			training_start();
 			g_iMatchStatus = MATCH_MAPPICK;
+			StartVoteRules();
 			//client_print_color(0, print_team_blue, "%L", 0, "KNIFE_WIN", hns_tag, win_ct ? "CT" : "TT", win_ct ? "CT" : "TT");
 		}
 	}

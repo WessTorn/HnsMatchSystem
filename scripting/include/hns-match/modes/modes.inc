@@ -27,8 +27,7 @@ enum _:MODE_FUNCS
 
 new g_ModFuncs[HNS_MODES][MODE_FUNCS];
 
-public InitGameModes()
-{
+public InitGameModes() {
 	mix_init();
 	kniferound_init();
 	pub_init();

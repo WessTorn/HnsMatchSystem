@@ -7,11 +7,19 @@
 #define access ADMIN_MAP
 
 #define TASK_TIMER 54345
+#define HUD_PAUSE 23931
 
 new g_PluginId;
 
-enum MATCH_STATUS
-{
+enum NATCH_RULES {
+	RULES_MR,
+	RULES_TIMER
+}
+
+new NATCH_RULES:g_iCurrentRules;
+new g_iVoteRules[NATCH_RULES];
+
+enum MATCH_STATUS {
 	MATCH_NONE,
 	MATCH_CAPTAINPICK,
 	MATCH_CAPTAINKNIFE,
@@ -23,12 +31,11 @@ enum MATCH_STATUS
 }
 new MATCH_STATUS:g_iMatchStatus;
 
-enum MODE_STATES
-{
-    STATE_DISABLED,
-    STATE_PREPARE,
-    STATE_PAUSED,
-    STATE_ENABLED
+enum MODE_STATES {
+	STATE_DISABLED,
+	STATE_PREPARE,
+	STATE_PAUSED,
+	STATE_ENABLED
 }
 new MODE_STATES:g_eMatchState;
 

@@ -8,6 +8,7 @@ enum _:CaptainTeam_s {
 	e_cTT,
 	e_cCT
 };
+
 new g_eCaptain[CaptainTeam_s], g_iCaptainPick;
 
 public captain_start(id) {

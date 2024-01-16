@@ -32,8 +32,6 @@ enum _: PLAYER_STATS {
 new iStats[MAX_PLAYERS + 1][PLAYER_STATS];
 new g_StatsRound[MAX_PLAYERS + 1][PLAYER_STATS];
 
-new bool:g_HudOnOff[MAX_PLAYERS + 1];
-
 new g_iGameStops;
 
 new iLastAttacker[MAX_PLAYERS + 1];
@@ -45,13 +43,10 @@ new Trie:g_tSaveRoundData;
 
 new best_auth[10][MAX_AUTHID_LENGTH];
 
-new g_MsgSync;
-
 public plugin_init() {
 	register_plugin("Match: Stats", "1.0", "OpenHNS"); // Garey
 
 	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
-	RegisterSayCmd("hud", "hudinfo", "cmdHUDInfo", 0, "Show hud info");
 
 	RegisterHookChain(RG_CBasePlayer_Killed, "rgPlayerKilled", true);
 	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgPlayerTakeDamage", false);
@@ -67,19 +62,25 @@ public plugin_init() {
 
 	g_tSaveData = TrieCreate();
 	g_tSaveRoundData = TrieCreate();
-
-	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
-	g_MsgSync = CreateHudSyncObj();
 }
 
 public plugin_cfg() {
 	hns_get_prefix(g_szPrefix, charsmax(g_szPrefix));
 }
 
-public cmdHUDInfo(id) {
-	g_HudOnOff[id] = !g_HudOnOff[id]
-	client_print_color(id, print_team_blue, "%s HUD info is now %sabled", g_szPrefix, g_HudOnOff[id] ? "^3En" : "^4Dis");
-	return PLUGIN_HANDLED;
+public plugin_natives() {
+	register_native("hns_get_stats_stabs", "native_get_stats_stabs");
+	register_native("hns_get_stats_surv", "native_get_stats_surv");
+}
+
+public native_get_stats_stabs(amxx, params) {
+	enum { id = 1 };
+	return g_StatsRound[get_param(id)][PLR_STATS_STABS];
+}
+
+public Float:native_get_stats_surv(amxx, params) {
+	enum { id = 1 };
+	return g_StatsRound[get_param(id)][PLR_STATS_SURVTIME];
 }
 
 public msgShowMenu(msgid, dest, id) {
@@ -141,8 +142,6 @@ stock forceTeamJoin(id, menu_msgid, team[] = "5", class[] = "0") {
 
 	TrieGetArray(g_tSaveData, getUserKey(id), iStats[id], PLAYER_STATS);
 	TrieGetArray(g_tSaveRoundData, getUserKey(id), g_StatsRound[id], PLAYER_STATS);
-
-	g_HudOnOff[id] = true;
 
 	set_task(0.2, "taskSetPlayerTeam", id);
 }
@@ -392,69 +391,18 @@ stock Msg_Update_ScoreInfo(id) {
 	message_end();
 }
 
-public task_ShowPlayerInfo() {
-	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum);
-
-	for(new i; i < iNum; i++) {
-		new id = iPlayers[i];
-
-		if(is_user_connected(id) && g_HudOnOff[id]) {
-			new show_id = is_user_alive(id) ? id : get_entvar(id, var_iuser2);
-
-			if (!show_id) {
-				continue;
-			}
-
-			set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.25, .holdtime = 1.0);
-			new szHudMess[128], iLen;
-
-			if (show_id != id) {
-				if (g_ePlayerPtsData[show_id][e_bInit]) {
-					iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "\
-					Player: %n (#%d)^n\
-					PTS: %d [%s]^n", 
-					show_id, g_ePlayerPtsData[show_id][e_iTop],
-					g_ePlayerPtsData[show_id][e_iPts], g_ePlayerPtsData[show_id][e_szRank]);
-				} else {
-					iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "\
-					Player: %n^n", 
-					show_id);	
-				}
-			}
-
-			if (hns_get_mode() == MODE_MIX && hns_get_state() != STATE_PAUSED) {
-				new szTime[24];
-				fnConvertTime(iStats[show_id][PLR_STATS_SURVTIME], szTime, charsmax(szTime), false);
-				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "\
-				Survive time: %s^n\
-				Stabs: %d",
-				szTime,
-				iStats[show_id][PLR_STATS_STABS]);
-			}
-
-			if (hns_get_status() != MATCH_NONE && hns_get_status() != MATCH_STARTED) {
-				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "%s", get_matchstats_str(hns_get_status()));
-			}
-
-			ShowSyncHudMsg(id, g_MsgSync, "%s", szHudMess);
-		}
-
-	}
-}
-
 public hns_match_stopped_post() {
-	client_print_color(0, print_team_blue, "%s Show top — ^3/top", g_szPrefix);
+	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
 	ShowTop(0);
 }
 
 public hns_match_surrendered() {
-	client_print_color(0, print_team_blue, "%s Show top — ^3/top", g_szPrefix);
+	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
 	ShowTop(0);
 }
 
 public hns_match_finished() {
-	client_print_color(0, print_team_blue, "%s Show top — ^3/top", g_szPrefix);
+	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
 	ShowTop(0);
 }
 

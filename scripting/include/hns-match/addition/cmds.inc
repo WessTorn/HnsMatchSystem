@@ -13,11 +13,14 @@ stock cmds_init() {
 	register_clcmd("jointeam", 		"blockCmd");
 	register_clcmd("joinclass", 	"blockCmd");
 
-	RegisterSayCmd("mix", 		"mix", 		"mainMatchMenu", 	access, "Main menu admin");
+	RegisterSayCmd("mix", 	"mix", 	"mainMatchMenu",	access, "Main menu admin");
+	RegisterSayCmd("mode", 	"type", "menuSelectMode",	access, "Mode match menu");
 
+	RegisterSayCmd("mr", 		"maxround", 	"cmdMrMode",		access, "Choose MR mode");
+	RegisterSayCmd("timer", 	"wintime", 		"cmdWintimeMode",	access, "Choost Wintime mode");
 	RegisterSayCmd("pub", 		"public", 		"cmdPubMode", 		access, "Public mode");
 	RegisterSayCmd("dm", 		"deathmatch", 	"cmdDMMode", 		access, "DeathMatch mode");
-	RegisterSayCmd("zm", 		"zombie", 		"cmdZMMode", 		access, "DeathMatch mode");
+	//RegisterSayCmd("zm", 		"zombie", 		"cmdZMMode", 		access, "Zombie mode");
 	RegisterSayCmd("bld", 		"blend", 		"cmdBlend", 		access, "Blend teams");
 	RegisterSayCmd("specall", 	"specall", 		"cmdTransferSpec", 	access, "Spec Transfer");
 	RegisterSayCmd("ttall", 	"ttall", 		"cmdTransferTT", 	access, "TT Transfer");
@@ -38,7 +41,6 @@ stock cmds_init() {
 	RegisterSayCmd("pick", 		"pick", 		"pickMenu", 		0, "Pick player");
 	RegisterSayCmd("np", 		"noplay", 		"cmdNoplay", 		0, "No play");
 	RegisterSayCmd("ip", 		"play", 		"cmdPlay", 			0, "Play");
-	//RegisterSayCmd("top", 		"tops", 		"ShowTop", 			0, "Show top");
 	RegisterSayCmd("tes", 		"tes", 		"TEstCmd", 			0, "Show top");
 }
 
@@ -85,11 +87,27 @@ public sayHandle(id) {
 			return PLUGIN_HANDLED;
 			
 		if (!is_str_num(szTarget))
-			return PLUGIN_HANDLED;
+			return PLUGIN_CONTINUE;
 
 		if (str_to_num(szTarget) > 0) {
 			g_iSettings[MAXROUNDS] = str_to_num(szTarget);
 			chat_print(0, "%l", "SET_MAXROUNDS", id, str_to_num(szTarget), str_to_num(szTarget) * 2);
+		}
+		return PLUGIN_CONTINUE;
+	}
+
+	if (equali(szArgs, "/wintime", 10)) {
+		trim(szTarget);
+
+		if (!getUserInAccess(id))
+			return PLUGIN_HANDLED;
+			
+		if (!is_str_num(szTarget))
+			return PLUGIN_CONTINUE;
+
+		if (str_to_float(szTarget) >= 0.0) {
+			g_iSettings[WINTIME] = str_to_float(szTarget);
+			chat_print(0, "%l", "SET_WINTIME", id, str_to_num(szTarget));
 		}
 		return PLUGIN_CONTINUE;
 	}
@@ -102,6 +120,48 @@ public blockCmd(id) {
 		return PLUGIN_HANDLED;
 
 	return PLUGIN_CONTINUE;
+}
+
+public cmdMrMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentRules == RULES_MR) {
+		chat_print(0, "%l", "MODE_ALREADY");
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentMode == MODE_MIX) {
+		chat_print(0, "%l", "MODE_NOT_MIX");
+		return PLUGIN_HANDLED;
+	}
+
+	chat_print(0, "%l", "MODE_SET_MR", id);
+	g_iCurrentRules = RULES_MR;
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdWintimeMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentRules == RULES_TIMER) {
+		chat_print(0, "%l", "MODE_ALREADY");
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentMode == MODE_MIX) {
+		chat_print(0, "%l", "MODE_NOT_MIX");
+		return PLUGIN_HANDLED;
+	}
+
+	chat_print(0, "%l", "MODE_SET_WT", id);
+	g_iCurrentRules = RULES_TIMER;
+
+	return PLUGIN_HANDLED;
 }
 
 public cmdPubMode(id) {
@@ -535,27 +595,43 @@ public cmdShowTimers(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	new timeToWin[HNS_TEAM][24], diffTime[24];
-	fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_B], timeToWin[HNS_TEAM_B], 23);
-	fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_A], timeToWin[HNS_TEAM_A], 23);
+	new szTimeToWin[HNS_TEAM][24], szTimeDiff[24];
 
-	new Float:TimeDiff = floatabs(g_eMatchInfo[e_flSidesTime][g_isTeamTT] - g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]);
-	fnConvertTime(TimeDiff, diffTime, 23, false);
+	new Float:fTimeDiff = floatabs(g_eMatchInfo[e_flSidesTime][g_isTeamTT] - g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT]);
+	fnConvertTime(fTimeDiff, szTimeDiff, charsmax(szTimeDiff), false);
 
+	switch (g_iCurrentRules) {
+		case RULES_MR: {
+			fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_B], szTimeToWin[HNS_TEAM_B], 23);
+			fnConvertTime(Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_A], szTimeToWin[HNS_TEAM_A], 23);
 
-	new iPlayers[MAX_PLAYERS], TTsize, CTSize;
-	get_players(iPlayers, TTsize, "ce", "TERRORIST");
-	get_players(iPlayers, CTSize, "ce", "CT");
-	if (g_isTeamTT == HNS_TEAM_A) {
-		chat_print(id, "%L", id, "SCORE_TIME",
-			timeToWin[HNS_TEAM_A], TTsize, CTSize, timeToWin[HNS_TEAM_B],
-			(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B]) + 1, g_iSettings[MAXROUNDS] * 2,
-			diffTime);
-	} else {
-		chat_print(id, "%L", id, "SCORE_TIME",
-			timeToWin[HNS_TEAM_B], TTsize, CTSize, timeToWin[HNS_TEAM_A],
-			(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A]) + 1, g_iSettings[MAXROUNDS] * 2,
-			diffTime);
+			new iPlayers[MAX_PLAYERS], TTsize, CTSize;
+			get_players(iPlayers, TTsize, "ce", "TERRORIST");
+			get_players(iPlayers, CTSize, "ce", "CT");
+			if (g_isTeamTT == HNS_TEAM_A) {
+				chat_print(id, "%L", id, "SCORE_TIME",
+					szTimeToWin[HNS_TEAM_A], TTsize, CTSize, szTimeToWin[HNS_TEAM_B],
+					(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B]) + 1, g_iSettings[MAXROUNDS] * 2,
+					szTimeDiff);
+			} else {
+				chat_print(id, "%L", id, "SCORE_TIME",
+					szTimeToWin[HNS_TEAM_B], TTsize, CTSize, szTimeToWin[HNS_TEAM_A],
+					(g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A]) + 1, g_iSettings[MAXROUNDS] * 2,
+					szTimeDiff);
+			}
+		}
+		case RULES_TIMER: {
+			new Float:flCapTime = floatmul(g_iSettings[WINTIME], 60.0);
+			new Float:flTimeToWinA = floatsub(flCapTime, Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_A]);
+			new Float:flTimeToWinB = floatsub(flCapTime, Float:g_eMatchInfo[e_flSidesTime][HNS_TEAM_B]);
+			fnConvertTime(flTimeToWinA, szTimeToWin[HNS_TEAM_A], 23);
+			fnConvertTime(flTimeToWinB, szTimeToWin[HNS_TEAM_B], 23);
+			if (g_isTeamTT == HNS_TEAM_A) {
+				chat_print(id, "%L", id, "SCORE_TIME_WT", szTimeToWin[HNS_TEAM_A], szTimeToWin[HNS_TEAM_B], szTimeDiff);
+			} else {
+				chat_print(id, "%L", id, "SCORE_TIME_WT", szTimeToWin[HNS_TEAM_B], szTimeToWin[HNS_TEAM_A], szTimeDiff);
+			}
+		}
 	}
 
 	return PLUGIN_HANDLED;

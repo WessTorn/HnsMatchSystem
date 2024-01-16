@@ -35,17 +35,73 @@ enum MODE_STATES
     STATE_ENABLED
 }
 
-native hns_get_prefix(prefix[], len);
+/*
+* Gets the system prefix.
+*
+* @param szPrefix   Buffer to copy prefix to
+* @param iLen Maximum buffer size
+*
+* @noreturn
+*/
+native hns_get_prefix(szPrefix[], iLen);
 
+/*
+* Gets mode system.
+*
+* @return enum HNS_MODES
+*/
 native hns_get_mode();
-native hns_set_mode(mode);
 
+/*
+* Set mode system.
+*
+* @noreturn
+*/
+native hns_set_mode(iMode);
+
+/*
+* Gets match status.
+*
+* @return type MATCH_STATUS
+*/
 native MATCH_STATUS:hns_get_status();
+
+/*
+* Gets match state
+*
+* @return type MODE_STATES
+*/
 native MODE_STATES:hns_get_state();
 
+/*
+* Called when the match play begins.
+*
+* @noreturn
+*/
 forward hns_match_started();
+
+/*
+* Called when a match round is reset.
+*
+* @noreturn
+*/
 forward hns_match_reset_round();
+
+/*
+* Called, the match is canceled.
+*
+* @noreturn
+*/
 forward hns_match_canceled();
+
+/*
+* Called when the match is over.
+*
+* @param iWinTeam The winning team
+*				1 - TT
+*				1 - CT
+* @noreturn
+*/
 forward hns_match_finished(iWinTeam);
 
 stock RegisterSayCmd(const szCmd[], const szShort[], const szFunc[], flags = -1, szInfo[] = "") {
