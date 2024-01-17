@@ -26,6 +26,7 @@ MODE_ALREADY    = This mode already started!
 MODE_NOT_MIX    = This command is not available during the match!
 MODE_SET_MR     = ^3%n^1 change mode to ^3MR^1!
 MODE_SET_WT     = ^3%n^1 change mode to ^3Wintime^1!
+MODE_SET_DUEL   = ^3%n^1 change mode to ^3Duel^1!
 
 GAME_NOTSTARTED = Game not started or already paused (use /unpause)
 GAME_PAUSED     = ^3%n^1 paused the game!
@@ -75,12 +76,14 @@ STOP_DM         = ^3%n^1 stopped ^3deathmatch^1 mode
 
 SCORE_TIME      = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 rounds) (^3%s^1 diff)
 SCORE_TIME_WT   = TT [^3%s^1] vs [^3%s^1] CT (^3%s^1 diff)
+SCORE_DUEL      = Score: TT - ^3%d^1 vs ^3%d^1 - CT
 SCORE_NOT       = Sorry, but game ain't started atm
 
 SAME_TIMER      = Same Timers! OVERTIME! Playing +2 Rounds
 
 TT_WIN          = TT win the match! (^3%s^1 difference)
 MR_WIN          = %s win the match! (^3%s^1 difference)
+DUEL_WIN        = Player ^3%n^1 (^3TT^1) win duel!
 SHOW_TOP        = Show top (^3/top^1)
 
 CAP_CHOOSE      = ^3%n^1 choosing captains...
@@ -145,6 +148,7 @@ MENU_STNGS_ROUNDTIME        = Roundtime: \y%.1f
 MENU_STNGS_FREEZETIME       = Freezetime: \y%d
 MENU_STNGS_MAXROUND         = Maxrounds: \y%d \d(%d rounds)^n
 MENU_STNGS_WINTIME          = Wintime: \y%.0f^n
+MENU_STNGS_DUEL             = Maxrounds: \y%d^n
 MENU_STNGS_ONEHP_ON         = 1 HP Mode (Skill): \yOff^n
 MENU_STNGS_ONEHP_OFF        = 1 HP Mode (Skill): \yOn^n
 MENU_STNGS_FLASH            = Flash: \y%d
@@ -154,6 +158,7 @@ MENU_STNGS_AA               = Airaccelerate \y%d^n
 MENU_MODE_TITLE     = \rChoose game mode
 MENU_MODE_MR        = MR System
 MENU_MODE_WINTIME   = Wintime
+MENU_MODE_DUEL      = Duel
 
 VOTE_MR     = ^3%n^1 voted for ^3MR^1!
 VOTE_WT     = ^3%n^1 voted for ^3Wintime^1!
@@ -202,6 +207,7 @@ MODE_ALREADY    = Этот режим уже запущен!
 MODE_NOT_MIX    = Эта команда недоступна во время матча!
 MODE_SET_MR     = ^3%n^1 изменил режим на ^3MR^1!
 MODE_SET_WT     = ^3%n^1 изменил режим на ^3Wintime^1!
+MODE_SET_DUEL   = ^3%n^1 изменил режим на ^3Duel^1!
 
 GAME_NOTSTARTED = Игра приостановлена, используйте (^1say /unpause^1).
 GAME_PAUSED     = ^3%n^1 приостановил игру!
@@ -249,13 +255,15 @@ STOP_CAP        = ^3%n^1 остановил режим ^3капитанов^1.
 STOP_DM         = ^3%n^1 остановил ^3ДМ^1 режим.
 
 SCORE_TIME     = TT [^3%s^1] %d vs %d [^3%s^1] CT (^3%d^1/^3%d^1 раундов) (^3%s^1 разрыв)
-SCORE_TIME_WT   = TT [^3%s^1] vs [^3%s^1] CT (^3%s^1 разрыв)
+SCORE_TIME_WT  = TT [^3%s^1] vs [^3%s^1] CT (^3%s^1 разрыв)
+SCORE_DUEL     = Счет: TT - ^3%d^1 vs ^3%d^1 - CT
 SCORE_NOT      = Извините, но игра не запущена.
 
 SAME_TIMER     = Время равное! ОВЕРТАЙМ! Начало доп. игры (+2 раунда).
 
 TT_WIN          = ТТ Выиграли игру! (^3%s^1 разрыв)
 MR_WIN          = %s Выиграли игру! (^3%s^1 разрыв)
+DUEL_WIN        = Игрок ^3%n^1 (^3TT^1) выиграл дуэль!
 SHOW_TOP        = Показать топ игроков (^3/top^1).
 
 CAP_CHOOSE      = ^3%n^1 выбирает капитанов...
@@ -320,6 +328,7 @@ MENU_STNGS_ROUNDTIME        = Roundtime: \y%.1f
 MENU_STNGS_FREEZETIME       = Freezetime: \y%d
 MENU_STNGS_MAXROUND         = Maxrounds: \y%d \d(%d раундов)^n
 MENU_STNGS_WINTIME          = Wintime: \y%.0f^n
+MENU_STNGS_DUEL             = Maxrounds: \y%d^n
 MENU_STNGS_ONEHP_ON         = 1 HP Mode (Skill): \yOff^n
 MENU_STNGS_ONEHP_OFF        = 1 HP Mode (Skill): \yOn^n
 MENU_STNGS_FLASH            = Flash: \y%d
@@ -329,6 +338,7 @@ MENU_STNGS_AA               = Airaccelerate \y%d^n
 MENU_MODE_TITLE     = \rВыберите режим игры:
 MENU_MODE_MR        = MR System
 MENU_MODE_WINTIME   = Wintime
+MENU_MODE_DUEL      = Duel
 
 VOTE_MR             = ^3%n^1 выбрал ^3MR^1!
 VOTE_WT             = ^3%n^1 выбрал ^3Wintime^1!

@@ -223,6 +223,9 @@ public settingsMatchMenu(id) {
 		case RULES_TIMER: {
 			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_WINTIME", g_iSettings[WINTIME]);
 		}
+		case RULES_DUEL: {
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_DUEL", g_iSettings[WINTIME]);
+		}
 	}
 	
 	menu_additem(hMenu, szMsg, "3");
@@ -299,6 +302,14 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 						g_iSettings[WINTIME] = 20.0;
 					else if (g_iSettings[WINTIME] >= 20.0)
 						g_iSettings[WINTIME] = 10.0;
+				}
+				case RULES_DUEL: {
+					if (g_iSettings[DUELROUNDS] <= 2)
+						g_iSettings[DUELROUNDS] = 3;
+					else if (g_iSettings[DUELROUNDS] <= 3)
+						g_iSettings[DUELROUNDS] = 4;
+					else if (g_iSettings[DUELROUNDS] >= 4)
+						g_iSettings[DUELROUNDS] = 2;
 				}
 			}
 
@@ -396,6 +407,9 @@ public menuSelectMode(id) {
 
 	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_WINTIME");
 	menu_additem(hMenu, szMsg, "2");
+
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_MODE_DUEL");
+	menu_additem(hMenu, szMsg, "3");
 		
 	menu_setprop(hMenu, MPROP_EXIT, MEXIT_ALL);
 	
@@ -407,7 +421,7 @@ public menuSelectMode(id) {
 public HandlerSelectMode(id, hMenu, item) {
 	if (item == MENU_EXIT) {
 		menu_destroy(hMenu);
-		return;
+		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
@@ -416,11 +430,19 @@ public HandlerSelectMode(id, hMenu, item) {
 
 	new index = str_to_num(szData);
 
-	if(index == 1) {
-		cmdMrMode(id);
-	} else {
-		cmdWintimeMode(id);
+	switch (index) {
+		case 1: {
+			cmdMrMode(id);
+		}
+		case 2: {
+			cmdWintimeMode(id);
+		}
+		case 3: {
+			cmdDuelMode(id);
+		}
 	}
+
+	return PLUGIN_HANDLED;
 }
 
 public StartVoteRules() {

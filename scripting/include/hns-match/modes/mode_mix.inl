@@ -215,6 +215,25 @@ public MixFinishedWT() {
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, 1);
 }
 
+public MixFinishedDuel() {
+	g_iMatchStatus = MATCH_NONE;
+	
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "che", "TERRORIST");
+
+	chat_print(0, "%L", LANG_PLAYER, "DUEL_WIN", iPlayers[0]);
+	
+	setTaskHud(0, 1.0, 1, 255, 255, 255, 4.0, "%L", LANG_SERVER, "HUD_GAMEOVER");
+	training_start();
+
+	g_bPlayersListLoaded = false;
+	arrayset(g_eMatchInfo, 0, MatchInfo_s);
+	TrieDestroy(g_tPlayerData);
+	remove_task(TASK_TIMER);
+
+	ExecuteForward(g_hForwards[MATCH_FINISH], _, 1);
+}
+
 public mix_roundend(bool:win_ct) {
 	if (g_eMatchState != STATE_ENABLED) {
 		return;
@@ -272,6 +291,17 @@ public mix_roundend(bool:win_ct) {
 			if (win_ct) {
 				mix_swap();
 			}
+		}
+		case RULES_DUEL: {
+			if (win_ct) {
+				mix_swap();
+			} else {
+				g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++
+			}
+			
+			if(g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] >= g_iSettings[DUELROUNDS]) {
+				MixFinishedDuel();
+			}	
 		}
 	}
 }

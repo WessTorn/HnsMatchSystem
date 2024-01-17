@@ -5,6 +5,7 @@ enum _: CVARS
 	RULES,
 	Float:WINTIME,
 	MAXROUNDS,
+	DUELROUNDS,
 	HNSBOOST,
 	ONEHPMODE,
 	FLASH,
@@ -31,6 +32,9 @@ stock cvars_init() {
 
 	pCvar[MAXROUNDS] = create_cvar("hns_rounds", "6", FCVAR_NONE, "Match rounds (MR)", true, 0.0, true, 10.0);
 	bind_pcvar_num(pCvar[MAXROUNDS], g_iSettings[MAXROUNDS]);
+
+	pCvar[DUELROUNDS] = create_cvar("hns_duel", "3", FCVAR_NONE, "Match 1x1 rounds", true, 0.0, true, 10.0);
+	bind_pcvar_num(pCvar[DUELROUNDS], g_iSettings[DUELROUNDS]);
 
 	pCvar[HNSBOOST] = create_cvar("hns_boost", "0", FCVAR_NONE, "Boost mode (0/1)", true, 0.0, true, 1.0);
 	bind_pcvar_num(pCvar[HNSBOOST], g_iSettings[HNSBOOST]);

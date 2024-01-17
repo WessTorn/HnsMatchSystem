@@ -17,7 +17,8 @@ stock cmds_init() {
 	RegisterSayCmd("mode", 	"type", "menuSelectMode",	access, "Mode match menu");
 
 	RegisterSayCmd("mr", 		"maxround", 	"cmdMrMode",		access, "Choose MR mode");
-	RegisterSayCmd("timer", 	"wintime", 		"cmdWintimeMode",	access, "Choost Wintime mode");
+	RegisterSayCmd("timer", 	"wintime", 		"cmdWintimeMode",	access, "Choose Wintime mode");
+	RegisterSayCmd("duel", 		"versus", 		"cmdDuelMode",		access, "Choose 1x1 mode");
 	RegisterSayCmd("pub", 		"public", 		"cmdPubMode", 		access, "Public mode");
 	RegisterSayCmd("dm", 		"deathmatch", 	"cmdDMMode", 		access, "DeathMatch mode");
 	//RegisterSayCmd("zm", 		"zombie", 		"cmdZMMode", 		access, "Zombie mode");
@@ -160,6 +161,27 @@ public cmdWintimeMode(id) {
 
 	chat_print(0, "%l", "MODE_SET_WT", id);
 	g_iCurrentRules = RULES_TIMER;
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdDuelMode(id) {
+	if (!getUserInAccess(id)) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentRules == RULES_DUEL) {
+		chat_print(0, "%l", "MODE_ALREADY");
+		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentMode == MODE_MIX) {
+		chat_print(0, "%l", "MODE_NOT_MIX");
+		return PLUGIN_HANDLED;
+	}
+
+	chat_print(0, "%l", "MODE_SET_DUEL", id);
+	g_iCurrentRules = RULES_DUEL;
 
 	return PLUGIN_HANDLED;
 }
@@ -630,6 +652,13 @@ public cmdShowTimers(id) {
 				chat_print(id, "%L", id, "SCORE_TIME_WT", szTimeToWin[HNS_TEAM_A], szTimeToWin[HNS_TEAM_B], szTimeDiff);
 			} else {
 				chat_print(id, "%L", id, "SCORE_TIME_WT", szTimeToWin[HNS_TEAM_B], szTimeToWin[HNS_TEAM_A], szTimeDiff);
+			}
+		}
+		case RULES_DUEL: {
+			if (g_isTeamTT == HNS_TEAM_A) {
+				chat_print(id, "%L", id, "SCORE_DUEL", g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B]);
+			} else {
+				chat_print(id, "%L", id, "SCORE_DUEL", g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A]);
 			}
 		}
 	}
