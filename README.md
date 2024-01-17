@@ -11,12 +11,12 @@ Counter-Strike Hide'n'Seek Match System plugins.
 - [ReSemiclip (last)](https://dev-cs.ru/resources/71/updates)
 
 ## Характеристики
-- Public / DeathMatch / Zombie / Knife / Captain mode
-- MR match system
+- Public / DeathMatch / Knife / Captain mode
+- MR / Wintime match system
 - Watcher (admin) menu (N)
-- Система зависит от администратора
+- Система зависит от администратора.
 - Surrender
-- AFK contol
+- AFK, Player leave contol
 
 ## Установка
  
@@ -95,9 +95,16 @@ Counter-Strike Hide'n'Seek Match System plugins.
 
     По истечению раундов (14) та команда, у которой больше таймер победила.
 
+- Матч - Wintime режим
+
+    Командам дается определенное кол-во времени (15)
+    У команды, которая играет за террористов время отнимается.
+    Та команда, у которой закончилось время, победила.
+
 ## Плагины
 - HnsMatchSystem.sma - Основной плагин мода
 - HnsMatchStats.sma - Плагин статистики микса
+- HnsMatchPlayerInfo.sma - Hud информация игрока
 - HnsMatchSql.sma - Плагин для взаимодействия с БД
 - HnsMatchPts.sma - Плагин для ПТС (не работает без Sql плагина)
 - HnsMatchOwnage.sma - Плагин для подсчета Ownage (не работает без Sql плагина)
@@ -111,6 +118,8 @@ Counter-Strike Hide'n'Seek Match System plugins.
 
 | Cvar                 | Default    | Description |
 | :------------------- | :--------: | :--------------------------------------------------- |
+| hns_rules           | 0         | Режим по умолчанию (0 - MR 1 - Timer) |
+| hns_wintime           | 15         | Время для победы |
 | hns_rounds           | 6         | Кол-во раундов для победы |
 | hns_boost            | 0          | Включить/Отключить буст режим |
 | hns_onehpmode        | 0          | Включить/Отключить 1 хп режим |
@@ -132,6 +141,8 @@ Counter-Strike Hide'n'Seek Match System plugins.
 | :------------------- |  :--------------------------------------------------- |
 | mix | Админ меню |
 | mode / type | Мод меню |
+| timer / wintime | Изменить режим микса на Таймер |
+| mr / maxround | Изменить режим микса на Мр |
 | training | Тренировочное меню |
 | pub / public | Паблик мод |
 | dm / deathmatch | ДМ мод |
@@ -148,7 +159,7 @@ Counter-Strike Hide'n'Seek Match System plugins.
 | swap / swap | Поменять команды местами |
 | pause / ps | Пауза |
 | live / unpause | Запуск |
-| mr | Выставить кол-во раундов |
+| mr 5 | Выставить кол-во раундов |
 
 - Player
 

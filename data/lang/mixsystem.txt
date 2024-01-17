@@ -156,7 +156,7 @@ MENU_MODE_MR        = MR System
 MENU_MODE_WINTIME   = Wintime
 
 VOTE_MR     = ^3%n^1 voted for ^3MR^1!
-VOTE_WT     = ^3%n^1 voted for ^3WintimeY1!
+VOTE_WT     = ^3%n^1 voted for ^3Wintime^1!
 VOTE_WIN    = ^3%s^1 mode won the vote!
 
 MENU_VERIF_TITLE = \rVerification menu^n^n\dAre you sure you want to stop this mod:
@@ -331,7 +331,7 @@ MENU_MODE_MR        = MR System
 MENU_MODE_WINTIME   = Wintime
 
 VOTE_MR             = ^3%n^1 выбрал ^3MR^1!
-VOTE_WT             = ^3%n^1 выбрал ^3WintimeY1!
+VOTE_WT             = ^3%n^1 выбрал ^3Wintime^1!
 VOTE_WIN            = Режим ^3%s^1 победил в голосовании!
 
 MENU_VERIF_TITLE = \rМеню подтверждения^n^n\dВы уверены, что хотите остановить матч?

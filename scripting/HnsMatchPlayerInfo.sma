@@ -1,4 +1,5 @@
 #include <amxmodx>
+#include <amxmisc>
 #include <reapi>
 
 #include <hns_matchsystem>
@@ -18,17 +19,18 @@ new Float:g_flCmdNextUseTime[MAX_PLAYERS + 1];
 new g_MsgSync;
 
 public plugin_init() {
-    register_plugin("Match: Player info", "1.0", "OpenHNS");
+	register_plugin("Match: Player info", "1.0", "OpenHNS");
 
-    RegisterSayCmd("hud", "hudinfo", "cmdHUDInfo", 0, "Show hud info");
-    RegisterSayCmd("dmg", "lastdmg", "cmdLastDmg", 0, "Show last dmg player");
+	register_clcmd("say", "sayHandle");
 
-    RegisterHookChain(RG_CSGameRules_RestartRound, "rgRoundStart", true);
-    RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
+	RegisterSayCmd("hud", "hudinfo", "cmdHUDInfo", 0, "Show hud info");
 
-    set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
-    
-    g_MsgSync = CreateHudSyncObj();
+	RegisterHookChain(RG_CSGameRules_RestartRound, "rgRoundStart", true);
+	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
+
+	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
+	
+	g_MsgSync = CreateHudSyncObj();
 }
 
 public client_putinserver(id) {
@@ -45,8 +47,26 @@ public cmdHUDInfo(id) {
 	return PLUGIN_HANDLED;
 }
 
-public cmdLastDmg(id) {
-    new Float:flGameTime = get_gametime();
+public sayHandle(id) {
+	new szArgs[64];
+	read_args(szArgs, charsmax(szArgs));
+	remove_quotes(szArgs);
+	trim(szArgs);
+
+	if (szArgs[0] != '/') {
+		return PLUGIN_CONTINUE;
+	}
+
+	new pattern[32];
+	strtok2(szArgs, szArgs, charsmax(szArgs), pattern, charsmax(pattern), ' ');
+
+	if(!equali(szArgs, "/dmg")) {
+		return PLUGIN_CONTINUE;
+	}
+
+	trim(pattern);
+
+	new Float:flGameTime = get_gametime();
 
 	if(g_flCmdNextUseTime[id] > flGameTime) {
 		client_print_color(id, print_team_blue, "%s Please wait ^3%.1f^1 seconds between commands!", g_szPrefix, g_flCmdNextUseTime[id] - flGameTime);
@@ -65,10 +85,12 @@ public cmdLastDmg(id) {
 	if (g_flDmg[iTarget]) {
 		client_print_color(0, print_team_blue, "%s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 - ^3%s^1 HP, ^3%.1f^1 seconds ago.", g_szPrefix, iTarget, g_flDmg[iTarget], g_flHealthBefore[iTarget], g_bDmgThisRound[iTarget] ? "^4Этот раунд" : "Не этот раунд", get_gametime() - g_flDmgTime[iTarget]);
 	}
+
+	return PLUGIN_CONTINUE;
 }
 
 public rgRoundStart(id) {
-    arrayset(g_bDmgThisRound, false, sizeof(g_bDmgThisRound));
+	arrayset(g_bDmgThisRound, false, sizeof(g_bDmgThisRound));
 }
 
 public rgTakeDamage(victim, inflictor, attacker, Float:damage, damagebits) {

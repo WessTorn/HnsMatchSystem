@@ -23,7 +23,7 @@ new _:g_iSettings[CVARS];
 stock cvars_init() {
 	g_pRoundTime = get_cvar_pointer("mp_roundtime");
 
-	pCvar[RULES] = create_cvar("hns_rules", "0", FCVAR_NONE, "Match rules 0 - MR 1 - Timer)", true, 0.0, true, 1.0);
+	pCvar[RULES] = create_cvar("hns_rules", "0", FCVAR_NONE, "Match rules (0 - MR 1 - Timer)", true, 0.0, true, 1.0);
 	bind_pcvar_num(pCvar[RULES], g_iSettings[RULES]);
 
 	pCvar[WINTIME] = _:create_cvar("hns_wintime", "15", FCVAR_NONE, "Match wintime (Timer)", true, 0.0, true, 30.0);

@@ -9,12 +9,12 @@ Counter-Strike Hide'n'Seek Match System plugins
 - [ReSemiclip (last)](https://dev-cs.ru/resources/71/updates)
 
 ## Characteristics
-- Public / DeathMatch / Zombie / Knife / Captain mode
-- MR match system
+- Public / DeathMatch / Knife / Captain mode
+- MR / Wintime match system
 - Watcher (admin) menu (N)
 - System is admin dependent
 - Surrender
-- AFK contol
+- AFK, Player leave contol
 
 ## Installation
  
@@ -89,9 +89,16 @@ Counter-Strike Hide'n'Seek Match System plugins
 
     At the end of the rounds (14), the team with the higher timer wins.
 
+- Match - Wintime mode
+
+    Teams are given a certain amount of time (15).
+    The team that plays for the terrorists has their time taken away.
+    The team that runs out of time wins.
+
 ## Plugins
 - HnsMatchSystem.sma - Main mod plugin
 - HnsMatchStats.sma - Mix statistics plugin
+- HnsMatchPlayerInfo.sma - Hud player info
 - HnsMatchSql.sma - Plugin for interacting with the database
 - HnsMatchPts.sma - Plugin for PTS (does not work without Sql plugin)
 - HnsMatchOwnage.sma - Plugin for calculating Ownage (does not work without Sql plugin)
@@ -105,6 +112,8 @@ Counter-Strike Hide'n'Seek Match System plugins
 
 | Cvar | Default | Description |
 | :------------------- | :--------: | :--------------------------------------------------- |
+| hns_rules           | 0         | Match rules (0 - MR 1 - Timer) |
+| hns_wintime           | 15         | Time to win |
 | hns_rounds | 6 | rounds to win |
 | hns_boost | 0 | Enable/Disable Boost Mode |
 | hns_onehpmode | 0 | Enable/Disable 1hpmode |
@@ -126,6 +135,8 @@ Counter-Strike Hide'n'Seek Match System plugins
 | :------------------- | :--------------------------------------------------- |
 | mix | admin menu |
 | mode / type | mod menu |
+| timer / wintime | Change the mix mode to Timer |
+| mr / maxround | Change the mix mode to MR |
 | training | training menu |
 | pub / public | public | public mod |
 | dm / deathmatch | DM mod |
