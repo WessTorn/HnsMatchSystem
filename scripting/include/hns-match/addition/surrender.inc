@@ -135,7 +135,6 @@ resetSurrenderData() {
 
 autoLose(TeamName:iTeam) {
 	chat_print(0, "%L", LANG_PLAYER, "SUR_END", iTeam == TEAM_TERRORIST ? "TERRORISTS" : "CTS");
-	chat_print(0, "%L", LANG_PLAYER, "SHOW_TOP");
 
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, iTeam == TEAM_TERRORIST ? 2 : 1);
 

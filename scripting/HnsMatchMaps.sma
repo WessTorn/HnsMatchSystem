@@ -78,7 +78,7 @@ public cmdMapsMenuHandler(id, hMenu, item) {
 
 	if (hns_get_status() == MATCH_MAPPICK)
 	{
-		client_print_color(0, print_team_blue, "%s ^3%n^1 номинировал карту: ^3%s^1.", g_szPrefix, id, szMap);
+		client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "MAPS_NOM", g_szPrefix, id, szMap);
 	}
 
 	menu_destroy(hMenu);

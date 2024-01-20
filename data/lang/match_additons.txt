@@ -54,6 +54,16 @@ HNS_OWNAGE = %n owned %n's head!
 
 STATS_TOP = %s Show top — ^3/top
 
+MAPS_NOM = %s ^3%n^1 nominated map: ^3%s^1.
+
+HUD_ON = %s HUD info is now ^3enabled^1.
+HUD_OFF = %s HUD info is now ^3disabled^1.
+
+DMG_SPAM = %s Please wait ^3%.1f^1 seconds between commands!
+DMG_ERR = %s There is no OR multiple players with matching pattern -> ^3%s^1.
+DMG_SHOW_ROUND = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 - ^3This round^1 HP, ^3%.1f^1 seconds ago.
+DMG_SHOW = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 - ^3Not this round^1 HP, ^3%.1f^1 seconds ago.
+
 [ru]
 
 PTS_RANK = %s Ваш ранг: ^3%d^1 (Птс: ^3%d^1 | Побед: ^3%d^1 | Поражений: ^3%d^1 | Скилл: ^3%s^1)
@@ -112,3 +122,13 @@ HNS_OWNAGE_MIX = %n запрыгнул на голову %n! [#%d]
 HNS_OWNAGE = %n запрыгнул на голову %n!
 
 STATS_TOP = %s Показать топ — ^3/top
+
+MAPS_NOM = %s ^3%n^1 номинировал карту: ^3%s^1.
+
+HUD_ON = %s HUD информация ^3включена^1.
+HUD_OFF = %s HUD информация^3выключена^1.
+
+DMG_SPAM = %s Пожалуйста, подождите ^3%.1f^1 секунды между командами!
+DMG_ERR = %s Не существует ИЛИ нескольких игроков с совпадающим шаблоном -> ^3%s^1.
+DMG_SHOW_ROUND = Урон от падения %s ^3%n^1 ^3%.0f^1 HP - до ^3%.0f^1 - ^3Этот раунд^1 HP, ^3%.1f^1 секунд назад.
+DMG_SHOW = Урон от падения %s ^3%n^1 ^3%.0f^1 HP - до ^3%.0f^1 - ^3Не этот раунд^1 HP, ^3%.1f^1 секунд назад.

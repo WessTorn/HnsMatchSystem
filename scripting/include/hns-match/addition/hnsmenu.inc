@@ -393,7 +393,7 @@ public menuSelectMode(id) {
 	}
 	
 	if (g_iCurrentMode == MODE_MIX) {
-		chat_print(0, "This command is not available during the match!");
+		chat_print(id, "%L", id, "MODE_NOT_MIX");
 		return PLUGIN_HANDLED;
 	}
 

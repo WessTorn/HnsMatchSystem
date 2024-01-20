@@ -50,7 +50,11 @@ public kniferound_roundend(bool:win_ct) {
 			pickMenu(g_iCaptainPick);
 		}
 		case MATCH_TEAMKNIFE: {
-			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "Team %s Win", win_ct ? "CTS" : "Terrorists");
+			if (win_ct) {
+				setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_KF_WIN_CT");
+			} else {
+				setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_KF_WIN_TT");
+			}
 
 			savePlayers(win_ct ? TEAM_CT : TEAM_TERRORIST);
 			training_start();

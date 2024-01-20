@@ -42,8 +42,14 @@ public plugin_cfg() {
 }
 
 public cmdHUDInfo(id) {
-	g_HudOnOff[id] = !g_HudOnOff[id]
-	client_print_color(id, print_team_blue, "%s HUD info is now %sabled", g_szPrefix, g_HudOnOff[id] ? "^3En" : "^4Dis");
+	g_HudOnOff[id] = !g_HudOnOff[id];
+
+	if (g_HudOnOff[id]) {
+		client_print_color(id, print_team_blue, "%L", id, "HUD_ON", g_szPrefix);
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "HUD_OFF", g_szPrefix);
+	}
+
 	return PLUGIN_HANDLED;
 }
 
@@ -69,7 +75,7 @@ public sayHandle(id) {
 	new Float:flGameTime = get_gametime();
 
 	if(g_flCmdNextUseTime[id] > flGameTime) {
-		client_print_color(id, print_team_blue, "%s Please wait ^3%.1f^1 seconds between commands!", g_szPrefix, g_flCmdNextUseTime[id] - flGameTime);
+		client_print_color(id, print_team_blue, "%L", id, "DMG_SPAM", g_szPrefix, g_flCmdNextUseTime[id] - flGameTime);
 		return PLUGIN_CONTINUE;
 	}
 
@@ -78,12 +84,16 @@ public sayHandle(id) {
 	new iTarget = pattern[0] ? cmd_target(id, pattern, CMDTARGET_ALLOW_SELF) : id;
 
 	if (!iTarget) {
-		client_print_color(id, print_team_blue, "%s There is no OR multiple players with matching pattern -> ^4%s", g_szPrefix, pattern);
+		client_print_color(id, print_team_blue, "%L", id, "DMG_ERR", g_szPrefix, pattern);
 		return PLUGIN_CONTINUE;
 	}
 
 	if (g_flDmg[iTarget]) {
-		client_print_color(0, print_team_blue, "%s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 - ^3%s^1 HP, ^3%.1f^1 seconds ago.", g_szPrefix, iTarget, g_flDmg[iTarget], g_flHealthBefore[iTarget], g_bDmgThisRound[iTarget] ? "^4Этот раунд" : "Не этот раунд", get_gametime() - g_flDmgTime[iTarget]);
+		if (g_bDmgThisRound[iTarget]) {
+			client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "DMG_SHOW_ROUND", g_szPrefix, iTarget, g_flDmg[iTarget], g_flHealthBefore[iTarget], get_gametime() - g_flDmgTime[iTarget]);
+		} else {
+			client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "DMG_SHOW", g_szPrefix, iTarget, g_flDmg[iTarget], g_flHealthBefore[iTarget], get_gametime() - g_flDmgTime[iTarget]);
+		}
 	}
 
 	return PLUGIN_CONTINUE;

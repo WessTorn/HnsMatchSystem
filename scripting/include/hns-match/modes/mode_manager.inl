@@ -47,7 +47,7 @@ public wait_players() {
 	}
 
 	if (task_exists(TASK_STARTED)) {
-		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "LAST SECONDS BEFORE THE START.");
+		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%L", LANG_SERVER, "HUD_START_LAST");
 	} else {
 		new iNum = get_num_players_in_match();
 
@@ -60,7 +60,7 @@ public wait_players() {
 
 		new sTime[24];
 		fnConvertTime(flWaitPlayersTime, sTime, charsmax(sTime));
-		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%s^nWaiting for %d players.", sTime, ArraySize(g_aPlayersLoadData) - iNum);
+		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%L", LANG_SERVER, "HUD_START_WAIT", sTime, ArraySize(g_aPlayersLoadData) - iNum);
 
 		if (flWaitPlayersTime <= 0.0) {
 			remove_task(TASK_WAIT);

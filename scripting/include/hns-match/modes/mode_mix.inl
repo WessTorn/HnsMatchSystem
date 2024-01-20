@@ -51,10 +51,32 @@ public mix_start() {
 public mix_freezeend() {
 	if (g_eMatchState == STATE_ENABLED) {
 		set_task(5.0, "taskCheckAfk");
+		set_task(5.0, "taskCheckLeave");
 		set_task(0.25, "taskRoundEvent", .id = TASK_TIMER, .flags = "b");
 	}
 }
 
+public taskCheckLeave() {
+	if (g_iCurrentMode != MODE_MIX) {
+		return;
+	}
+
+	new iNum = get_num_players_in_match();
+
+	server_print("get_num_players_in_match %d", iNum);
+	server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
+
+	if (iNum < g_eMatchInfo[e_mTeamSize]) {
+		// Pause Need Players
+		mix_pause();
+		chat_print(0, "%L", LANG_PLAYER, "NEED_PAUSE", g_eMatchInfo[e_mTeamSize] - iNum)
+	} else {
+		iNum = iNum - g_eMatchInfo[e_mTeamSize];
+		if (iNum >= 2) {
+			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
+		}
+	}
+}
 
 public mix_restartround() {
 	if (g_eMatchState == STATE_ENABLED) {
@@ -107,6 +129,8 @@ public mix_unpause() {
 	setTaskHud(0, 1.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_UNPAUSE");
 	rg_send_audio(0, "fvox/activated.wav");
 	server_cmd("sv_alltalk 3");
+
+	g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 }
 
 
@@ -139,22 +163,6 @@ public mix_roundstart() {
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "che", "TERRORIST");
 	g_eMatchInfo[e_mTeamSizeTT] = iNum;
-
-	iNum = get_num_players_in_match();
-
-	server_print("get_num_players_in_match %d", iNum);
-	server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
-
-	if (iNum < g_eMatchInfo[e_mTeamSize]) {
-		// Pause Need Players
-		mix_pause();
-		chat_print(0, "%L", LANG_PLAYER, "NEED_PAUSE", g_eMatchInfo[e_mTeamSize] - iNum)
-	} else {
-		iNum = iNum - g_eMatchInfo[e_mTeamSize];
-		if (iNum >= 2) {
-			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
-		}
-	}
 
 	get_players(iPlayers, iNum, "ch");
 	for (new i; i < iNum; i++) {
@@ -276,13 +284,13 @@ public mix_roundend(bool:win_ct) {
 					if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - (get_round_time() * 60.0) > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
 						// variant kogda tt josko proebivaut (bolwe 4em roundtime)
 						fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], sTime, charsmax(sTime));
-						setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, "КТ Победили!^n ТТ не хватило %s что-бы победить! ^n(More than roundtime)", sTime);
+						setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, "%L", LANG_SERVER, "HUD_WIN_CT", sTime);
 					} else if (g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] > g_eMatchInfo[e_flSidesTime][g_isTeamTT]) {
 						// samii default variant
 						fnConvertTime(g_eMatchInfo[e_flSidesTime][HNS_TEAM:!g_isTeamTT] - g_eMatchInfo[e_flSidesTime][g_isTeamTT], sTime, charsmax(sTime));
 						setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, fmt("%L", LANG_SERVER, "HUD_TIMETOWIN", sTime));
 					} else {
-						setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, "ТТ Победили!^n КТ таймер меньше, чем у команды ТТ!");
+						setTaskHud(0, 3.0, 1, 255, 255, 255, 5.0, "%L", LANG_SERVER, "HUD_WIN_TT");
 					}
 				}
 			}
@@ -376,4 +384,6 @@ public mix_player_leave(id) {
 	}
 
 	TrieSetArray(g_tPlayerData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
+
+	arrayset(g_ePlayerData[id], 0, PlayerData_s);
 }

@@ -75,12 +75,12 @@ public plugin_natives() {
 
 public native_get_stats_stabs(amxx, params) {
 	enum { id = 1 };
-	return g_StatsRound[get_param(id)][PLR_STATS_STABS];
+	return iStats[get_param(id)][PLR_STATS_STABS];
 }
 
 public Float:native_get_stats_surv(amxx, params) {
 	enum { id = 1 };
-	return g_StatsRound[get_param(id)][PLR_STATS_SURVTIME];
+	return iStats[get_param(id)][PLR_STATS_SURVTIME];
 }
 
 public msgShowMenu(msgid, dest, id) {
