@@ -348,6 +348,14 @@ public cmdStartMatch(id) {
 		return PLUGIN_HANDLED;
 	}
 
+	if (task_exists(TASK_STARTED)) {
+		remove_task(TASK_STARTED);
+	}
+
+	if (task_exists(TASK_WAIT)) {
+		remove_task(TASK_WAIT);
+	}
+
 	chat_print(0, "%l", "START_MIX", id);
 
 	mix_start();
@@ -369,6 +377,8 @@ public cmdKnifeRound(id) {
 		chat_print(id, "%L", id, "KNIFE_ALREADY");
 		return PLUGIN_HANDLED;
 	}
+
+	chat_print(id, "%L", id, "START_KNIFE_1");
 
 	g_iMatchStatus = MATCH_TEAMKNIFE;
 	kniferound_start();

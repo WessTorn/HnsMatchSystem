@@ -9,6 +9,10 @@
 #define TASK_TIMER 54345
 #define HUD_PAUSE 23931
 
+#define TASK_WAIT 12319
+#define TASK_STARTED 13339
+
+
 new g_PluginId;
 
 enum NATCH_RULES {

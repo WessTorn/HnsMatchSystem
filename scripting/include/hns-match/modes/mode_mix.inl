@@ -28,7 +28,7 @@ public mix_start() {
 	loadMapCFG();
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ce", "TERRORIST");
+	get_players(iPlayers, iNum, "e", "TERRORIST");
 	g_eMatchInfo[e_mTeamSizeTT] = iNum;
 	g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 
@@ -51,30 +51,7 @@ public mix_start() {
 public mix_freezeend() {
 	if (g_eMatchState == STATE_ENABLED) {
 		set_task(5.0, "taskCheckAfk");
-		set_task(5.0, "taskCheckLeave");
 		set_task(0.25, "taskRoundEvent", .id = TASK_TIMER, .flags = "b");
-	}
-}
-
-public taskCheckLeave() {
-	if (g_iCurrentMode != MODE_MIX) {
-		return;
-	}
-
-	new iNum = get_num_players_in_match();
-
-	server_print("get_num_players_in_match %d", iNum);
-	server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
-
-	if (iNum < g_eMatchInfo[e_mTeamSize]) {
-		// Pause Need Players
-		mix_pause();
-		chat_print(0, "%L", LANG_PLAYER, "NEED_PAUSE", g_eMatchInfo[e_mTeamSize] - iNum)
-	} else {
-		iNum = iNum - g_eMatchInfo[e_mTeamSize];
-		if (iNum >= 2) {
-			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
-		}
 	}
 }
 
@@ -182,8 +159,30 @@ public mix_roundstart() {
 
 	ResetAfkData();
 	set_task(0.3, "taskSaveAfk");
+	set_task(5.0, "taskCheckLeave");
 }
 
+public taskCheckLeave() {
+	if (g_iCurrentMode != MODE_MIX) {
+		return;
+	}
+
+	new iNum = get_num_players_in_match();
+
+	server_print("get_num_players_in_match %d", iNum);
+	server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
+
+	if (iNum < g_eMatchInfo[e_mTeamSize]) {
+		// Pause Need Players
+		mix_pause();
+		chat_print(0, "%L", LANG_PLAYER, "NEED_PAUSE", g_eMatchInfo[e_mTeamSize] - iNum)
+	} else {
+		iNum = iNum - g_eMatchInfo[e_mTeamSize];
+		if (iNum >= 2) {
+			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
+		}
+	}
+}
 
 public MixFinishedMR(iWinTeam) {
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, iWinTeam);
@@ -255,11 +254,12 @@ public mix_roundend(bool:win_ct) {
 			g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++;
 
 			new iPlayers[MAX_PLAYERS], iNum;
-			get_players(iPlayers, iNum, "ache", "CT");
+			get_players(iPlayers, iNum, "ahe", "CT");
 
 			if (!iNum) {
 				new Float:roundtime = get_round_time() * 60.0;
 				g_eMatchInfo[e_flSidesTime][g_isTeamTT] += roundtime - g_flRoundTime;
+				client_print_color(0, 0, "Тут")
 			}
 
 			if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= g_iSettings[MAXROUNDS] * 2) {

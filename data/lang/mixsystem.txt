@@ -64,6 +64,7 @@ NOT_CAPTAIN     = Only available on the knife map.
 
 START_MIX       = ^3%n^1 has started ^3mix^1.
 START_KNIFE     = Started ^3knife^1 round!
+START_KNIFE_1   = ^3%n^1 has started ^3knife^1 round!
 
 STOP_MIX        = ^3%n^1 stopped ^3mix^1.
 STOP_KNIFE      = ^3%n^1 stopped ^3knife^1 round^1.
@@ -235,6 +236,7 @@ NOT_CAPTAIN     = Доступно только на ножевой карте.
 
 START_MIX       = ^3%n^1 запустил ^3микс^1!
 START_KNIFE     = Запущен ^3ножевой^1 раунд!
+START_KNIFE_1   = ^3%n^1 запустил ^3ножевой^1 раунд!
 
 STOP_MIX        = ^3%n^1 остановил ^3микс^1.
 STOP_KNIFE      = ^3%n^1 остановил ^3ножевой раунд^1.

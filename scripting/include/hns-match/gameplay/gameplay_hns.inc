@@ -153,7 +153,7 @@ public NadesHandler(id, hMenu, item)
 			}
 		}
 
-		if (g_iSettings[FLASH] >= 1)
+		if (g_iSettings[SMOKE] >= 1)
 		{
 			if (user_has_weapon(id, CSW_SMOKEGRENADE))
 			{

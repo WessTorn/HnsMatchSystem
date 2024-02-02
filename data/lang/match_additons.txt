@@ -38,6 +38,11 @@ MENU_TRNING_TLPRT = Teleport
 MENU_TRNING_NOCLIP = No Clip
 MENU_TRNING_RESPAWN = Respawn
 MENU_TRNING_DAMAGE = Damage
+MENU_TRNING_ANGL_ON = Save angles \yOn
+MENU_TRNING_ANGL_OFF = Save angles \dOff
+MENU_TRNING_INVIS_ON = Invis players \yOn
+MENU_TRNING_INVIS_OFF = Invis players \dOff
+MENU_TRNING_WEAPONS = Get weapons
 
 TRNING_NOT_ALIVE = %s You must be alive to use this command!
 TRNING_CPNT_SAVE = %s Checkpoint saved!
@@ -45,8 +50,12 @@ TRNING_TLPRT_NOT = %s You haven't got any checkpoints!
 TRNING_STUCK_NOT = %s You must have another checkpoint to use stuck!
 TRNING_SHOW_ON = %s Damage show ^3enabled^1!
 TRNING_SHOW_OFF = %s Damage show ^3disabled^1!
+TRNING_ANGLES_ON = %s Save angles ^3enabled^1!
+TRNING_ANGLES_OFF = %s Save angles ^3disabled^1!
 TRNING_CLIP_ON = %s No Clip ^3enabled^1!
 TRNING_CLIP_OFF = %s No Clip ^3disabled^1!
+TRNING_INVIS_ON = %s Invis players ^3enabled^1!
+TRNING_INVIS_OFF = %s Invis players ^3disabled^1!
 TRNING_DMG = %s You have taken ^3%i^1 damage.
 
 HNS_OWNAGE_MIX = %n owned %n's head! [#%d]
@@ -107,6 +116,12 @@ MENU_TRNING_TLPRT = Телепорт
 MENU_TRNING_NOCLIP = Ноклип
 MENU_TRNING_RESPAWN = Возродиться
 MENU_TRNING_DAMAGE = Показать дамаг
+MENU_TRNING_ANGL_ON = Сохранять прицел \yOn
+MENU_TRNING_ANGL_OFF = Сохранять прицел \dOff
+MENU_TRNING_INVIS_ON = Невидимные игроки \yOn
+MENU_TRNING_INVIS_OFF = Невидимные игроки \dOff
+MENU_TRNING_WEAPONS = Получить оружие
+
 
 TRNING_NOT_ALIVE = %s Вы должны быть живы, чтобы использовать эту команду!
 TRNING_CPNT_SAVE = %s Чекпоинт сохранена!
@@ -114,8 +129,12 @@ TRNING_TLPRT_NOT = %s У вас нет чекпоинтов!
 TRNING_STUCK_NOT = %s У вас должен быть другой чекпоинт, чтобы использовать stuck!
 TRNING_SHOW_ON = %s Показать урон: ^3влючено^1!
 TRNING_SHOW_OFF = %s Показать урон: ^3выключено^1!
+TRNING_ANGLES_ON = %s Сохранять прицел ^3влючено^1!
+TRNING_ANGLES_OFF = %s Сохранять прицел ^3выключено^1!
 TRNING_CLIP_ON = %s Ноклип ^3включен^1!
 TRNING_CLIP_OFF = %s Ноклип ^3выключен^1!
+TRNING_INVIS_ON = %s Невидимные игроки ^3влючено^1!
+TRNING_INVIS_OFF = %s Невидимные игроки ^3выключено^1!
 TRNING_DMG = %s Вы получили ^3%i^1 урона.
 
 HNS_OWNAGE_MIX = %n запрыгнул на голову %n! [#%d]

@@ -1,6 +1,3 @@
-const TASK_WAIT = 12319;
-const TASK_STARTED = 13339;
-
 new Float:flWaitPlayersTime;
 
 public mode_init() {
