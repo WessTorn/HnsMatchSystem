@@ -60,7 +60,6 @@ public kniferound_roundend(bool:win_ct) {
 			training_start();
 			g_iMatchStatus = MATCH_MAPPICK;
 			StartVoteRules();
-			//client_print_color(0, print_team_blue, "%L", 0, "KNIFE_WIN", hns_tag, win_ct ? "CT" : "TT", win_ct ? "CT" : "TT");
 		}
 	}
 	ChangeGameplay(GAMEPLAY_TRAINING);

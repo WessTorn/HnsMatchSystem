@@ -21,7 +21,7 @@ stock cmds_init() {
 	RegisterSayCmd("duel", 		"versus", 		"cmdDuelMode",		access, "Choose 1x1 mode");
 	RegisterSayCmd("pub", 		"public", 		"cmdPubMode", 		access, "Public mode");
 	RegisterSayCmd("dm", 		"deathmatch", 	"cmdDMMode", 		access, "DeathMatch mode");
-	//RegisterSayCmd("zm", 		"zombie", 		"cmdZMMode", 		access, "Zombie mode");
+	RegisterSayCmd("zm", 		"zombie", 		"cmdZMMode", 		access, "Zombie mode");
 	RegisterSayCmd("bld", 		"blend", 		"cmdBlend", 		access, "Blend teams");
 	RegisterSayCmd("specall", 	"specall", 		"cmdTransferSpec", 	access, "Spec Transfer");
 	RegisterSayCmd("ttall", 	"ttall", 		"cmdTransferTT", 	access, "TT Transfer");
@@ -236,16 +236,16 @@ public cmdZMMode(id) {
 	}
 
 	if (g_iCurrentMode == MODE_ZM) {
-		chat_print(id, "Zombie mode is already running.");
+		chat_print(id, "%L", id, "ZM_ALREADY");
 		return PLUGIN_HANDLED;
 	}
 
 	if (g_iCurrentMode != MODE_TRAINING) {
-		chat_print(id, "Please disable other mode before zombie.");
+		chat_print(id, "%L", id, "ZM_CANC");
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(0, "^3%n^1 has activated ^3zombie^1 mode.", id);
+	chat_print(0, "%l", "ZM_ACTIVATED", id);
 
 	zm_start();
 
@@ -255,6 +255,12 @@ public cmdZMMode(id) {
 public cmdBlend(id) {
 	if (!getUserInAccess(id)) {
 		return PLUGIN_HANDLED;
+	}
+
+	if (g_iCurrentMode == MODE_ZM) {
+		chat_print(0, "%l", "BLEND_TEAMS", id);
+		blendZM();
+		return PLUGIN_HANDLED; 
 	}
 
 	if (g_iCurrentMode != MODE_PUB && g_iCurrentMode != MODE_DM) 
@@ -284,6 +290,11 @@ public cmdBlend(id) {
 
 	restartRound();
 	return PLUGIN_HANDLED;
+}
+
+public blendZM() {
+	zm_set_teams();
+	restartRound(2.0);
 }
 
 public cmdTransferSpec(id) {
@@ -378,7 +389,7 @@ public cmdKnifeRound(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	chat_print(id, "%L", id, "START_KNIFE_1");
+	chat_print(id, "%L", id, "START_KNIFE_1", id);
 
 	g_iMatchStatus = MATCH_TEAMKNIFE;
 	kniferound_start();
@@ -463,7 +474,7 @@ public cmdStop(id) {
 		}
 		case MODE_ZM: {
 			training_start();
-			chat_print(0, "Player %n stopped zombie mode", id);
+			chat_print(0, "%l", "STOP_ZM", id);
 		}
 	}
 

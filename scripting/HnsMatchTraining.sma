@@ -399,10 +399,9 @@ public fmAddToFullPack(es, e, iEnt, id, hostflags, player, pSet) {
 		return FMRES_IGNORED;
 
 	if (player) {
-		set_es(es, ES_Solid, SOLID_NOT);
-
 		if (is_user_alive(iEnt)) {
 			if (g_bInvisPlayers[id]) {
+				set_es(es, ES_Solid, SOLID_NOT);
 				set_es(es, ES_RenderMode, kRenderTransTexture);
 				set_es(es, ES_RenderAmt, 0);
 				set_es(es, ES_Origin, { 999999999.0, 999999999.0, 999999999.0 });

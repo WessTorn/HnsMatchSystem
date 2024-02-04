@@ -165,8 +165,8 @@ public customMenu(id) {
 	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_CUSTOM_DM");
 	menu_additem(hMenu, szMsg, "2");
 
-	// formatex(szMsg, charsmax(szMsg), "Zombie");
-	// menu_additem(hMenu, szMsg, "3");
+	formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_CUSTOM_ZM");
+	menu_additem(hMenu, szMsg, "3");
 
 	menu_display(id, hMenu, 0);
 	return PLUGIN_HANDLED;
@@ -190,9 +190,9 @@ public customMenuHandler(id, hMenu, item) {
 		case 2: {
 			cmdDMMode(id);
 		}
-		// case 3: {
-		// 	cmdZMMode(id);
-		// }
+		case 3: {
+			cmdZMMode(id);
+		}
 	}
 	return PLUGIN_HANDLED;
 }
