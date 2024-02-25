@@ -41,13 +41,13 @@ public plugin_init() {
 
 	set_msg_block(get_user_msgid("HudTextArgs"), BLOCK_SET);
 
-	g_aPlayersLoadData = ArrayCreate(PlayersLoad_s);
 	loadPlayers();
 
 	forward_init();
 
 	registerMode();
 
+	g_aPlayersLoadData = ArrayCreate(PlayersLoad_s);
 	g_tPlayerData = TrieCreate();
 
 	register_dictionary("mixsystem.txt");
@@ -155,6 +155,8 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 
 	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_ROUNDEND])
 		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_ROUNDEND], _, (status == WINSTATUS_CTS) ? true : false);
+
+	g_bPlayersListLoaded = false;
 
 	return HC_CONTINUE;
 }
@@ -331,6 +333,31 @@ public taskSetPlayerTeam(id) {
 
 	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_PLAYER_JOIN])
 		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_PLAYER_JOIN], _, id);
+
+	if (g_eMatchState != STATE_PAUSED && g_iCurrentMode != MODE_PUB && g_iCurrentMode != MODE_DM && g_iCurrentMode != MODE_TRAINING)
+	{
+		server_print("1111");
+		transferspec(id);
+		return;
+	}	
+
+	if (g_iCurrentMode == MODE_TRAINING)
+	{	
+		if (g_bPlayersListLoaded)
+		{
+			if (!checkPlayer(id))
+			{
+				server_print("2222");
+				transferspec(id);
+			}	
+			else
+				server_print("4444");
+				rg_round_respawn(id);	
+		}
+		else
+			server_print("3333");
+			rg_round_respawn(id);
+	}	
 }
 
 public PDS_Save() {
@@ -446,6 +473,36 @@ stock bool:checkPlayer(id) {
 		}
 	}
 	return false;
+}
+
+stock transferspec(id)
+{
+	setteam(id, TEAM_SPECTATOR);
+	set_entvar(id, var_solid, SOLID_NOT);
+	set_entvar(id, var_movetype, MOVETYPE_FLY);
+}
+
+setteam(id, TeamName:iTeam)
+{
+	set_member(id, m_bTeamChanged, false);
+	
+	if (is_user_alive(id))
+	user_silentkill(id);
+	
+	switch (iTeam)
+	{
+		case TEAM_TERRORIST:
+		{
+			rg_internal_cmd(id, "jointeam", "1");
+			rg_internal_cmd(id, "joinclass", "5");
+		}
+		case TEAM_CT:
+		{
+			rg_internal_cmd(id, "jointeam", "2");
+			rg_internal_cmd(id, "joinclass", "5");
+		}
+		case TEAM_SPECTATOR: rg_internal_cmd(id, "jointeam", "6");
+	}
 }
 
 public plugin_cfg() {

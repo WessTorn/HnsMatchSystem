@@ -124,6 +124,7 @@ public mix_stop() {
 	training_start();
 	remove_task(HUD_PAUSE);
 	ExecuteForward(g_hForwards[MATCH_CANCEL], _);
+	g_bPlayersListLoaded = false;
 }
 
 
@@ -169,8 +170,8 @@ public taskCheckLeave() {
 
 	new iNum = get_num_players_in_match();
 
-	server_print("get_num_players_in_match %d", iNum);
-	server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
+	//server_print("get_num_players_in_match %d", iNum);
+	//server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
 
 	if (iNum < g_eMatchInfo[e_mTeamSize]) {
 		// Pause Need Players
@@ -259,7 +260,7 @@ public mix_roundend(bool:win_ct) {
 			if (!iNum) {
 				new Float:roundtime = get_round_time() * 60.0;
 				g_eMatchInfo[e_flSidesTime][g_isTeamTT] += roundtime - g_flRoundTime;
-				client_print_color(0, 0, "Тут")
+				//lient_print_color(0, 0, "Тут")
 			}
 
 			if (g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM:!g_isTeamTT] >= g_iSettings[MAXROUNDS] * 2) {
