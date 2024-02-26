@@ -97,7 +97,9 @@ enum _: PlayerData_s {
 
 new g_ePlayerData[MAX_PLAYERS + 1][PlayerData_s];
 
-new Trie:g_tPlayerData;
+new Trie:g_PlayersLeaveData;
+
+new bool:g_bPlayersLeaved;
 
 enum _:PlayersLoad_s {
 	e_pAuth[24],

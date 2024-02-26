@@ -436,7 +436,7 @@ public cmdStop(id) {
 	}
 
 	if (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus == MATCH_NONE) {
-		g_bPlayersListLoaded = false;
+		//g_bPlayersListLoaded = false;
 		return PLUGIN_HANDLED;
 	}
 

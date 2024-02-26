@@ -44,6 +44,8 @@ public mix_start() {
 		}
 	}
 
+	g_bPlayersLeaved = false;
+
 	ExecuteForward(g_hForwards[MATCH_START], _);
 }
 
@@ -51,7 +53,13 @@ public mix_start() {
 public mix_freezeend() {
 	if (g_eMatchState == STATE_ENABLED) {
 		set_task(5.0, "taskCheckAfk");
+		//set_task(10.0, "mix_pause");
 		set_task(0.25, "taskRoundEvent", .id = TASK_TIMER, .flags = "b");
+
+		if(g_bPlayersLeaved) {
+			//mix_pause();
+			set_task(1.0, "mix_pause");
+		}	
 	}
 }
 
@@ -125,6 +133,7 @@ public mix_stop() {
 	remove_task(HUD_PAUSE);
 	ExecuteForward(g_hForwards[MATCH_CANCEL], _);
 	g_bPlayersListLoaded = false;
+	g_bPlayersLeaved = false;
 }
 
 
@@ -160,7 +169,8 @@ public mix_roundstart() {
 
 	ResetAfkData();
 	set_task(0.3, "taskSaveAfk");
-	set_task(5.0, "taskCheckLeave");
+	taskCheckLeave();
+	//set_task(5.0, "taskCheckLeave");
 }
 
 public taskCheckLeave() {
@@ -170,18 +180,17 @@ public taskCheckLeave() {
 
 	new iNum = get_num_players_in_match();
 
-	//server_print("get_num_players_in_match %d", iNum);
-	//server_print("g_eMatchInfo %d", g_eMatchInfo[e_mTeamSize]);
-
 	if (iNum < g_eMatchInfo[e_mTeamSize]) {
 		// Pause Need Players
-		mix_pause();
+		g_bPlayersLeaved = true;
 		chat_print(0, "%L", LANG_PLAYER, "NEED_PAUSE", g_eMatchInfo[e_mTeamSize] - iNum)
 	} else {
 		iNum = iNum - g_eMatchInfo[e_mTeamSize];
 		if (iNum >= 2) {
 			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 		}
+		TrieClear(g_PlayersLeaveData);
+		g_bPlayersLeaved = false;
 	}
 }
 
@@ -198,7 +207,7 @@ public MixFinishedMR(iWinTeam) {
 
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
-	TrieDestroy(g_tPlayerData);
+	TrieDestroy(g_PlayersLeaveData);
 	remove_task(TASK_TIMER);
 }
 
@@ -217,7 +226,7 @@ public MixFinishedWT() {
 
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
-	TrieDestroy(g_tPlayerData);
+	TrieDestroy(g_PlayersLeaveData);
 	remove_task(TASK_TIMER);
 
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, 1);
@@ -236,7 +245,7 @@ public MixFinishedDuel() {
 
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
-	TrieDestroy(g_tPlayerData);
+	TrieDestroy(g_PlayersLeaveData);
 	remove_task(TASK_TIMER);
 
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, 1);
@@ -361,7 +370,7 @@ public mix_reverttimer() {
 }
 
 public mix_player_join(id) {
-	TrieGetArray(g_tPlayerData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
+	TrieGetArray(g_PlayersLeaveData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
 	if (g_ePlayerData[id][PLAYER_MATCH]) {
 		new iScore = g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + 1;
 		
@@ -384,7 +393,7 @@ public mix_player_leave(id) {
 		g_ePlayerData[id][PLAYER_SAVE_SCORE] = g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + 1;
 	}
 
-	TrieSetArray(g_tPlayerData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
+	TrieSetArray(g_PlayersLeaveData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
 
 	arrayset(g_ePlayerData[id], 0, PlayerData_s);
 }
