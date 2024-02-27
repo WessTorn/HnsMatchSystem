@@ -12,6 +12,8 @@
 #define TASK_WAIT 12319
 #define TASK_STARTED 13339
 
+#define TASK_WAITCAP 13131
+
 
 new g_PluginId;
 
@@ -116,3 +118,5 @@ enum SPEC_BACK {
 }
 
 new g_eSpecBack[MAX_PLAYERS + 1][SPEC_BACK];
+
+new Float:g_eWaitPick = 25.0;
