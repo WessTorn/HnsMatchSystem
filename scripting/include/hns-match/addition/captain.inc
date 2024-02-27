@@ -154,6 +154,8 @@ public pickMenu(id) {
 		return PLUGIN_HANDLED;
 	}
 
+	WaitPick();
+
 	new szMsg[64];
 
 	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CAP_PICK");
@@ -243,29 +245,7 @@ public pickHandler(id, hMenu, item) {
 	g_iCaptainPick = id == g_eCaptain[e_cTT] ? g_eCaptain[e_cCT] : g_eCaptain[e_cTT];
 
 	pickMenu(g_iCaptainPick);
-
-	remove_task(TASK_WAITCAP);
-	g_eWaitPick = 25.0;
-	set_task(1.0, "WaitPick");
-
-	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ch");
-
-	new iTotalPlayers;
-	for (new i; i < iNum; i++) {
-		new tempid = iPlayers[i];
-
-		if (getUserTeam(tempid) == TEAM_SPECTATOR) continue;
-
-		iTotalPlayers++;
-	}
-
-	if (iTotalPlayers == 10) {
-		resetCaptainData();
-		chat_print(0, "%L", LANG_PLAYER, "TEAM_FULL");
-		g_iMatchStatus = MATCH_TEAMKNIFE;
-		kniferound_start();
-	}
+	checkFullTeams();
 
 	return PLUGIN_HANDLED;
 }
@@ -273,8 +253,11 @@ public pickHandler(id, hMenu, item) {
 public WaitPick()
 {
 	if (g_iMatchStatus != MATCH_TEAMPICK) {
-		remove_task(TASK_WAITCAP);
 		return PLUGIN_HANDLED;
+	}
+
+	if (task_exists(TASK_WAITCAP)) {
+		remove_task(TASK_WAITCAP)
 	}
 	g_eWaitPick = 25.0;
 
@@ -285,14 +268,15 @@ public WaitPick()
 
 public wait_function(id)
 {
+
 	g_eWaitPick -= 1.0;
 	
-	client_print(0, print_center, "%n выбирает игрока, осталось %.f", g_iCaptainPick, g_eWaitPick);
+	setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%L", LANG_SERVER, "HUD_WAITPICK", g_iCaptainPick, g_eWaitPick);
 
 	if (g_eWaitPick <= 0.0) {
-		new randomaizer = GetRandomPick();
-		new pPlayer = g_iCaptainPick;
+		new randomaizer = GetPickRandom();
 		if(randomaizer) {
+			new pPlayer = g_iCaptainPick;
 			if(getUserTeam(pPlayer) == TEAM_TERRORIST) {
 				rg_set_user_team(randomaizer, TEAM_TERRORIST);
 			}
@@ -300,25 +284,97 @@ public wait_function(id)
 				rg_set_user_team(randomaizer, TEAM_CT);
 			}
 
+			rg_round_respawn(randomaizer);
+			chat_print(0, "%L", LANG_PLAYER, "PLAYER_CHOOSE_RANDOM", pPlayer, randomaizer);
+
+			g_iCaptainPick = g_iCaptainPick == g_eCaptain[e_cTT] ? g_eCaptain[e_cCT] : g_eCaptain[e_cTT];
+			show_menu(pPlayer, 0, "^n", 1);
+
+			if (task_exists(TASK_WAITCAP)) {
+				remove_task(TASK_WAITCAP)
+			}
+
+			checkFullTeams();
+			pickMenu(g_iCaptainPick);
+
+			return;
+
 		}
-		remove_task(TASK_WAITCAP);
+		else {
+			remove_task(TASK_WAITCAP);
+		}
 	}
 }
 
-GetRandomPick() {
-	/* static iPlayers[32], iSpecNum
-	get_players(iPlayers, iSpecNum, "ahe", "SPECTATOR");
 
-	if (!iSpecNum)
-		return 0
+GetPickRandom() {
+	new iChoose;
+	static iPlayers[MAX_PLAYERS], iNum
+	get_players(iPlayers, iNum, "he", "SPECTATOR");
 
-	return iSpecNum > 1 ? iPlayers[random(iSpecNum)] : iPlayers[iSpecNum - 1]; */
+	new iSpecPlayers[MAX_PLAYERS], iSpecNum;
 
-	// ТУТ НУЖЕН РАНДОМ ЗАКИДЫВАНИЕ ИЗ СПЕКТАТОРОВ
+	for (new i; i < iNum; i++) {
+	if (!is_user_connected(iPlayers[i])) {
+		continue;
+	}
+
+	if (g_bNoplay[iPlayers[i]]) {
+		continue;
+		}
+
+	iSpecPlayers[iSpecNum] = iPlayers[i];
+	iSpecNum++;
+	}
+
+	if (iSpecNum == 0) {
+		return 0;
+	}
+
+	if (iSpecNum > 1) {
+	iChoose = iSpecPlayers[random(iSpecNum)];
+	} else {
+	iChoose = iSpecPlayers[iSpecNum - 1];
+	}
+
+	return iChoose;
+}
+
+public checkFullTeams() {
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+
+	new iPlayersMatch;
+	new iPlayersNotMatch;
+	for (new i; i < iNum; i++) {
+		new tempid = iPlayers[i];
+
+		if(g_bNoplay[tempid]) {
+			continue;
+		}
+
+		if (getUserTeam(tempid) == TEAM_SPECTATOR) {
+			iPlayersNotMatch++;
+			continue;
+		}
+
+		iPlayersMatch++;
+	}
+
+	if (iPlayersMatch == 10 || !iPlayersNotMatch) {
+		resetCaptainData();
+		chat_print(0, "%L", LANG_PLAYER, "TEAM_FULL");
+		g_iMatchStatus = MATCH_TEAMKNIFE;
+		kniferound_start();
+	}
 }
 
 resetCaptainData() {
 	g_iCaptainPick = 0;
+
+	if (task_exists(TASK_WAITCAP)) {
+		remove_task(TASK_WAITCAP)
+	}
 
 	for (new i; i < sizeof(g_eCaptain); i++) {
 		if (is_user_connected(g_eCaptain[i])) {
