@@ -270,37 +270,6 @@ public pickHandler(id, hMenu, item) {
 	return PLUGIN_HANDLED;
 }
 
-/* public WaitPick()
-{
-	if (g_iMatchStatus != MATCH_STARTED) {
-		remove_task(TASK_WAITCAP);
-		return PLUGIN_HANDLED;
-	} 
-	g_eWaitPick -= 1.0;
-
-	client_print(0, print_center, "Выбирает игрока для пика...");
-
-	if (g_eWaitPick <= 0.0) {
-		remove_task(TASK_WAITCAP);
-	}
- 
-
-	g_eWaitPick = 25.0;
-	set_task(1.0, "wait_function", .id = TASK_WAITCAP, .flags = "b");
-
-}	
-
-public wait_function()
-{
-	g_eWaitPick -= 1.0;
-
-	client_print(0, print_center, "Выбирает игрока для пика...");
-
-	if (g_eWaitPick <= 0.0) {
-		remove_task(TASK_WAITCAP);
-	}
-} */
-
 public WaitPick()
 {
 	if (g_iMatchStatus != MATCH_TEAMPICK) {
