@@ -268,6 +268,10 @@ public WaitPick()
 
 public wait_function(id)
 {
+	if (!is_user_connected(g_iCaptainPick)) {
+		resetCaptainData();
+		return;
+	}
 
 	g_eWaitPick -= 1.0;
 	
