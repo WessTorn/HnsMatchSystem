@@ -37,6 +37,11 @@ public kniferound_roundstart() {
 }
 
 public kniferound_roundend(bool:win_ct) {
+	if (!is_user_connected(g_iCaptainPick))
+	{
+		return;
+	}
+
 	switch(g_iMatchStatus) {
 		case MATCH_CAPTAINKNIFE: {
 			g_iCaptainPick = win_ct ? g_eCaptain[e_cCT] : g_eCaptain[e_cTT];
