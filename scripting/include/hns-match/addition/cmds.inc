@@ -436,13 +436,14 @@ public cmdStop(id) {
 	}
 
 	if (g_iCurrentMode == MODE_TRAINING && g_iMatchStatus == MATCH_NONE) {
+		//g_bPlayersListLoaded = false;
 		return PLUGIN_HANDLED;
 	}
 
 
 	switch (g_iCurrentMode) {
 		case MODE_MIX: {
-			mix_stop();
+			mix_stop();	
 			chat_print(0, "%l", "STOP_MIX", id);
 		}
 		case MODE_KNIFE: {

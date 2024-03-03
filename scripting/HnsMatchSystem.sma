@@ -48,7 +48,7 @@ public plugin_init() {
 
 	registerMode();
 
-	g_tPlayerData = TrieCreate();
+	g_PlayersLeaveData = TrieCreate();
 
 	register_dictionary("mixsystem.txt");
 }
@@ -146,15 +146,13 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 		return HC_SUPERCEDE;
 	}
 
-	// if (status == WINSTATUS_DRAW && event == ROUND_END_DRAW) {
-	// 	return HC_CONTINUE;
-	// }
-
 	if (g_GPFuncs[g_iCurrentGameplay][GP_ROUNDEND])
 		ExecuteForward(g_GPFuncs[g_iCurrentGameplay][GP_ROUNDEND], _, (status == WINSTATUS_CTS) ? true : false);
 
 	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_ROUNDEND])
 		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_ROUNDEND], _, (status == WINSTATUS_CTS) ? true : false);
+
+	g_bPlayersListLoaded = false;
 
 	return HC_CONTINUE;
 }
@@ -461,6 +459,6 @@ restartRound(Float:delay = 0.5) {
 
 
 public plugin_end() {
-	TrieDestroy(g_tPlayerData);
+	TrieDestroy(g_PlayersLeaveData);
 	ArrayDestroy(g_aPlayersLoadData);
 }

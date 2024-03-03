@@ -154,6 +154,8 @@ public pickMenu(id) {
 		return PLUGIN_HANDLED;
 	}
 
+	WaitPick();
+
 	new szMsg[64];
 
 	formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "MENU_CAP_PICK");
@@ -243,31 +245,140 @@ public pickHandler(id, hMenu, item) {
 	g_iCaptainPick = id == g_eCaptain[e_cTT] ? g_eCaptain[e_cCT] : g_eCaptain[e_cTT];
 
 	pickMenu(g_iCaptainPick);
+	checkFullTeams();
 
+	return PLUGIN_HANDLED;
+}
+
+public WaitPick()
+{
+	if (g_iMatchStatus != MATCH_TEAMPICK) {
+		return PLUGIN_HANDLED;
+	}
+
+	if (task_exists(TASK_WAITCAP)) {
+		remove_task(TASK_WAITCAP)
+	}
+	g_eWaitPick = 25.0;
+
+	set_task(1.0, "wait_function", .id = TASK_WAITCAP, .flags = "b");
+
+	return PLUGIN_HANDLED;
+}	
+
+public wait_function(id)
+{
+	if (!is_user_connected(g_iCaptainPick)) {
+		resetCaptainData();
+		return;
+	}
+
+	g_eWaitPick -= 1.0;
+	
+	setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%L", LANG_SERVER, "HUD_WAITPICK", g_iCaptainPick, g_eWaitPick);
+
+	if (g_eWaitPick <= 0.0) {
+		new randomaizer = GetPickRandom();
+		if(randomaizer) {
+			new pPlayer = g_iCaptainPick;
+			if(getUserTeam(pPlayer) == TEAM_TERRORIST) {
+				rg_set_user_team(randomaizer, TEAM_TERRORIST);
+			}
+			else {
+				rg_set_user_team(randomaizer, TEAM_CT);
+			}
+
+			rg_round_respawn(randomaizer);
+			chat_print(0, "%L", LANG_PLAYER, "PLAYER_CHOOSE_RANDOM", pPlayer, randomaizer);
+
+			g_iCaptainPick = g_iCaptainPick == g_eCaptain[e_cTT] ? g_eCaptain[e_cCT] : g_eCaptain[e_cTT];
+			show_menu(pPlayer, 0, "^n", 1);
+
+			if (task_exists(TASK_WAITCAP)) {
+				remove_task(TASK_WAITCAP)
+			}
+
+			checkFullTeams();
+			pickMenu(g_iCaptainPick);
+
+			return;
+
+		}
+		else {
+			remove_task(TASK_WAITCAP);
+		}
+	}
+}
+
+
+GetPickRandom() {
+	new iChoose;
+	static iPlayers[MAX_PLAYERS], iNum
+	get_players(iPlayers, iNum, "he", "SPECTATOR");
+
+	new iSpecPlayers[MAX_PLAYERS], iSpecNum;
+
+	for (new i; i < iNum; i++) {
+	if (!is_user_connected(iPlayers[i])) {
+		continue;
+	}
+
+	if (g_bNoplay[iPlayers[i]]) {
+		continue;
+		}
+
+	iSpecPlayers[iSpecNum] = iPlayers[i];
+	iSpecNum++;
+	}
+
+	if (iSpecNum == 0) {
+		return 0;
+	}
+
+	if (iSpecNum > 1) {
+	iChoose = iSpecPlayers[random(iSpecNum)];
+	} else {
+	iChoose = iSpecPlayers[iSpecNum - 1];
+	}
+
+	return iChoose;
+}
+
+public checkFullTeams() {
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "ch");
 
-	new iTotalPlayers;
+	new iPlayersMatch;
+	new iPlayersNotMatch;
 	for (new i; i < iNum; i++) {
 		new tempid = iPlayers[i];
 
-		if (getUserTeam(tempid) == TEAM_SPECTATOR) continue;
+		if(g_bNoplay[tempid]) {
+			continue;
+		}
 
-		iTotalPlayers++;
+		if (getUserTeam(tempid) == TEAM_SPECTATOR) {
+			iPlayersNotMatch++;
+			continue;
+		}
+
+		iPlayersMatch++;
 	}
 
-	if (iTotalPlayers == 10) {
+	if (iPlayersMatch == 10 || !iPlayersNotMatch) {
 		resetCaptainData();
 		chat_print(0, "%L", LANG_PLAYER, "TEAM_FULL");
 		g_iMatchStatus = MATCH_TEAMKNIFE;
 		kniferound_start();
 	}
-
-	return PLUGIN_HANDLED;
 }
 
 resetCaptainData() {
 	g_iCaptainPick = 0;
+
+	if (task_exists(TASK_WAITCAP)) {
+		remove_task(TASK_WAITCAP)
+	}
 
 	for (new i; i < sizeof(g_eCaptain); i++) {
 		if (is_user_connected(g_eCaptain[i])) {
