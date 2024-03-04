@@ -68,13 +68,15 @@ public hns_setrole(id)
 			rg_set_user_footsteps(id, true);
 			if (g_iSettings[FLASH] >= 1)
 			{
-				rg_give_item(id, "weapon_flashbang");
+				new ent = rg_give_item(id, "weapon_flashbang", GT_APPEND);
+				rg_set_iteminfo(ent, ItemInfo_iMaxAmmo1, 10);
 				rg_set_user_bpammo(id, WEAPON_FLASHBANG, g_iSettings[FLASH]);
 			}
 
 			if (g_iSettings[SMOKE] >= 1)
 			{
-				rg_give_item(id, "weapon_smokegrenade");
+				new ent = rg_give_item(id, "weapon_smokegrenade");
+				rg_set_iteminfo(ent, ItemInfo_iMaxAmmo1, 10);
 				rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, g_iSettings[SMOKE]);
 			}
 		}
