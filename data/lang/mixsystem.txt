@@ -100,6 +100,7 @@ TEAM_FULL       = The teams are full!
 
 PLAYER_CHOOSE       = Captain ^3%n^1 choose ^3%n^1.
 PLAYER_CHOOSE_PTS   = Captain ^3%n^1 choose ^3%n^1 (^3%d^1 [^3%s^1]).
+PLAYER_CHOOSE_RANDOM = Captain ^3%n^1 chose ^3%n^1 at random!
 
 
 HUD_TIMETOWIN   = Last Round!^n TT Need %s Time to Win!
@@ -117,6 +118,7 @@ HUD_STARTKNIFE  = Team knife round started.
 HUD_UNPAUSE     = Game Unpause^nLive! Live! Live!
 HUD_PAUSE       = GAME PAUSE
 HUD_START_CAPKF = Captain knife round started.
+HUD_WAITPICK    = %n selects a player, %.f seconds left.
 
 MENU_MIX_TITLE       = \rHide'n'Seek match system
 MENU_MAIN_CAP        = Start captain mode
@@ -280,6 +282,7 @@ TEAM_FULL       = Команды полны!
 
 PLAYER_CHOOSE       = Капитан ^3%n^1 выбрал ^3%n^1.
 PLAYER_CHOOSE_PTS   = Капитан ^3%n^1 выбрал ^3%n^1 (^3%d^1 [^3%s^1]).
+PLAYER_CHOOSE_RANDOM = Капитан ^3%n^1 выбрал ^3%n^1 случайно!
 
 
 HUD_TIMETOWIN   = Последний раунд!^n ТТ Нужно %s чтобы победить!
@@ -297,6 +300,7 @@ HUD_STARTKNIFE  = Начался ножевой раунд за выбор ко�
 HUD_UNPAUSE     = Игра возоблена^nНачало игры!
 HUD_PAUSE       = ИГРА ПРИОСТАНОВЛЕНА
 HUD_START_CAPKF = Начался ножевой раунд за выбор игроков!
+HUD_WAITPICK    = %n выбирает игрока, осталось %.f сек.
 
 
 MENU_MIX_TITLE       = \rHide'n'Seek match system
