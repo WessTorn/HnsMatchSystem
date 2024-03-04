@@ -271,7 +271,7 @@ public client_disconnected(id) {
 
 public hns_match_reset_round() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 		ResetPlayerRoundStats(iPlayer);
@@ -280,7 +280,7 @@ public hns_match_reset_round() {
 
 public hns_match_started() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -391,7 +391,7 @@ public rgRoundFreezeEnd() {
 public rgRestartRound() {
 	remove_task(TASK_TIMER);
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];

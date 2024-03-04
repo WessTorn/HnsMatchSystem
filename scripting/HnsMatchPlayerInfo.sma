@@ -148,7 +148,7 @@ public hns_round_end() {
 	}
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i = 0; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -340,7 +340,7 @@ public rgTakeDamage(victim, inflictor, attacker, Float:damage, damagebits) {
 
 public task_ShowPlayerInfo() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum);
+	get_players(iPlayers, iNum, "ch");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -417,7 +417,6 @@ public get_matchstats_str(MATCH_STATUS:iStatus) {
 public reset_best_players() {
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "ch");
-	client_print_color(0,0, "RESET")
 
 	for (new i = 0; i < iNum; i++) {
 		new id = iPlayers[i];
