@@ -72,9 +72,9 @@ public CmdClipMode(id) {
 	set_entvar(id, var_movetype, iClip);
 
 	if (iClip == MOVETYPE_NOCLIP) {
-		client_print_color(id, print_team_blue, "%L", id, "TRNING_SHOW_ON", g_szPrefix);
+		client_print_color(id, print_team_blue, "%L", id, "TRNING_CLIP_ON", g_szPrefix);
 	} else {
-		client_print_color(id, print_team_blue, "%L", id, "TRNING_SHOW_OFF", g_szPrefix);
+		client_print_color(id, print_team_blue, "%L", id, "TRNING_CLIP_OFF", g_szPrefix);
 	}
 
 	return PLUGIN_HANDLED;

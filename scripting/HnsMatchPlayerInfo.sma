@@ -6,9 +6,12 @@
 #include <hns_matchsystem_pts>
 #include <hns_matchsystem_stats>
 
+#define TASK_SHOWBEST 1328
+
 new g_szPrefix[24];
 
 new bool:g_HudOnOff[MAX_PLAYERS + 1];
+new bool:g_HudRoundOnOff[MAX_PLAYERS + 1];
 
 new bool:g_bDmgThisRound[MAX_PLAYERS + 1];
 new Float:g_flHealthBefore[MAX_PLAYERS + 1];
@@ -17,40 +20,55 @@ new Float:g_flDmgTime[MAX_PLAYERS + 1];
 new Float:g_flCmdNextUseTime[MAX_PLAYERS + 1];
 
 new g_MsgSync;
+new g_RoundSync;
+
+new best_auth[10][MAX_AUTHID_LENGTH];
+
+new Float:g_flShowRoundStats = 0.0;
+
+new g_szMess[1024];
+
+enum _: SHOW_STATS {
+	PLR_STATS_KILLS,
+	PLR_STATS_DEATHS,
+	PLR_STATS_ASSISTS,
+	PLR_STATS_STABS,
+	PLR_STATS_DMG_CT,
+	PLR_STATS_DMG_TT,
+	Float:PLR_STATS_RUNNED,
+	Float:PLR_STATS_FLASHTIME,
+	PLR_STATS_OWNAGES,
+}
+
+new g_eRoundBests[MAX_PLAYERS + 1][SHOW_STATS];
+
+new g_eBestIndex[SHOW_STATS];
+new g_eBestStats[SHOW_STATS];
 
 public plugin_init() {
 	register_plugin("Match: Player info", "1.0", "OpenHNS");
 
 	register_clcmd("say", "sayHandle");
 
-	RegisterSayCmd("hud", "hudinfo", "cmdHUDInfo", 0, "Show hud info");
+	RegisterSayCmd("hud", "hudinfo", "cmdHudInfo", 0, "Show hud info");
+	RegisterSayCmd("ri", "roundinfo", "cmdRoundInfo", 0, "Show hud info");
+	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
 
-	RegisterHookChain(RG_CSGameRules_RestartRound, "rgRoundStart", true);
 	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
 
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 	
 	g_MsgSync = CreateHudSyncObj();
-}
-
-public client_putinserver(id) {
-	g_HudOnOff[id] = true;
+	g_RoundSync = CreateHudSyncObj();
 }
 
 public plugin_cfg() {
 	hns_get_prefix(g_szPrefix, charsmax(g_szPrefix));
 }
 
-public cmdHUDInfo(id) {
-	g_HudOnOff[id] = !g_HudOnOff[id];
-
-	if (g_HudOnOff[id]) {
-		client_print_color(id, print_team_blue, "%L", id, "HUD_ON", g_szPrefix);
-	} else {
-		client_print_color(id, print_team_blue, "%L", id, "HUD_OFF", g_szPrefix);
-	}
-
-	return PLUGIN_HANDLED;
+public client_putinserver(id) {
+	g_HudOnOff[id] = true;
+	g_HudRoundOnOff[id] = true;
 }
 
 public sayHandle(id) {
@@ -99,8 +117,213 @@ public sayHandle(id) {
 	return PLUGIN_CONTINUE;
 }
 
-public rgRoundStart(id) {
+public cmdHudInfo(id) {
+	g_HudOnOff[id] = !g_HudOnOff[id];
+
+	if (g_HudOnOff[id]) {
+		client_print_color(id, print_team_blue, "%L", id, "HUD_ON", g_szPrefix);
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "HUD_OFF", g_szPrefix);
+	}
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdRoundInfo(id) {
+	g_HudRoundOnOff[id] = !g_HudRoundOnOff[id];
+
+	if (g_HudRoundOnOff[id]) {
+		client_print_color(id, print_team_blue, "%L", id, "ROUNDINFO_ON", g_szPrefix);
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "ROUNDINFO_OFF", g_szPrefix);
+	}
+
+	return PLUGIN_HANDLED;
+}
+
+public hns_round_end() {
+	if (hns_get_mode() != MODE_MIX || hns_get_state() == STATE_PAUSED || hns_get_status() != MATCH_STARTED) {
+		reset_best_players();
+		return;
+	}
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+
+	for (new i = 0; i < iNum; i++) {
+		new id = iPlayers[i];
+
+		g_eRoundBests[id][PLR_STATS_KILLS] = hns_get_stats_kills(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_DEATHS] = hns_get_stats_deaths(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_ASSISTS] = hns_get_stats_assists(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_STABS] = hns_get_stats_stabs(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_DMG_CT] = hns_get_stats_dmg_ct(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_DMG_TT] =  hns_get_stats_dmg_tt(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_RUNNED] = hns_get_stats_runned(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_FLASHTIME] = hns_get_stats_flashtime(STATS_ROUND, id);
+		g_eRoundBests[id][PLR_STATS_OWNAGES] = hns_get_stats_ownages(STATS_ROUND, id);
+				
+		for (new j = 0; j < SHOW_STATS; j++) {
+			if (g_eRoundBests[id][j] > g_eBestStats[j])
+			{
+				g_eBestStats[j] = g_eRoundBests[id][j];
+				g_eBestIndex[j] = id;
+			}
+		}
+	}
+
+	new iLen = format(g_szMess, sizeof g_szMess - 1, "Best players of the round:^n^n");
+	if (g_eBestIndex[PLR_STATS_OWNAGES])	iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "Ownages: %n - %d^n", g_eBestIndex[PLR_STATS_OWNAGES], g_eBestStats[PLR_STATS_OWNAGES])
+	if (g_eBestIndex[PLR_STATS_KILLS])		iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "Killed: %n - %d^n", g_eBestIndex[PLR_STATS_KILLS], g_eBestStats[PLR_STATS_KILLS])
+	if (g_eBestIndex[PLR_STATS_ASSISTS])	iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "Assists: %n - %d^n", g_eBestIndex[PLR_STATS_ASSISTS], g_eBestStats[PLR_STATS_ASSISTS])
+	if (g_eBestIndex[PLR_STATS_STABS])		iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "Stabs: %n - %d^n", g_eBestIndex[PLR_STATS_STABS], g_eBestStats[PLR_STATS_STABS])
+	if (g_eBestIndex[PLR_STATS_DMG_CT])		iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "CT Dmg: %n - %d^n", g_eBestIndex[PLR_STATS_DMG_CT], g_eBestStats[PLR_STATS_DMG_CT])
+	if (g_eBestIndex[PLR_STATS_DMG_TT])		iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "TT Dmg: %n - %d^n", g_eBestIndex[PLR_STATS_DMG_TT], g_eBestStats[PLR_STATS_DMG_TT])
+	if (g_eBestIndex[PLR_STATS_RUNNED])		iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "Runned: %n - %.2f^n", g_eBestIndex[PLR_STATS_RUNNED], g_eBestStats[PLR_STATS_RUNNED])
+	if (g_eBestIndex[PLR_STATS_FLASHTIME]) 	iLen += format(g_szMess[iLen], sizeof g_szMess - iLen, "Flashed: %n - %.2f^n", g_eBestIndex[PLR_STATS_FLASHTIME], g_eBestStats[PLR_STATS_FLASHTIME])
+
+	g_flShowRoundStats = get_gametime() + 10.0;
+	set_task(1.0, "taskShowBestRound", TASK_SHOWBEST, .flags = "b");
+}
+
+public taskShowBestRound(id) {
+	if (g_flShowRoundStats < get_gametime()) {
+		reset_best_players();
+		remove_task(TASK_SHOWBEST);
+		return;
+	}
+
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+
+	for (new i = 0; i < iNum; i++) {
+		new id = iPlayers[i];
+	
+		if (!is_user_connected(id) || !g_HudRoundOnOff[id]) {
+			continue;
+		}
+
+		set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.1, .y = -1.0, .fxtime = 0.0, .holdtime = 1.0);
+		ShowSyncHudMsg(id, g_RoundSync, g_szMess);
+	}
+}
+
+public hns_round_start() {
+	if (g_flShowRoundStats < get_gametime() && hns_get_mode() == MODE_MIX) {
+		reset_best_players();
+	}
 	arrayset(g_bDmgThisRound, false, sizeof(g_bDmgThisRound));
+}
+
+public hns_round_freezeend() {
+	if (hns_get_mode() == MODE_MIX) {
+		reset_best_players();
+	}
+}
+
+public hns_match_started() {
+	reset_best_players();
+	for (new i; i < 10; i++) {
+		best_auth[i] = "";
+	}
+}
+
+public hns_match_stopped_post() {
+	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
+	ShowTop(0);
+	reset_best_players();
+}
+
+public hns_match_surrendered() {
+	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
+	ShowTop(0);
+	reset_best_players();
+}
+
+public hns_match_finished() {
+	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
+	ShowTop(0);
+	reset_best_players();
+}
+
+public ShowTop(player) {
+	if (!player) {
+		new Float:best_time[10];
+		new iPlayers[MAX_PLAYERS], iNum;
+		get_players(iPlayers, iNum, "ch");
+		new bid = 0;
+		for (new i; i < iNum; i++) {
+			new id = iPlayers[i];
+
+			if (rg_get_user_team(id) == TEAM_SPECTATOR)
+				continue;
+
+			if (bid >= 10)
+				break;
+
+			get_user_authid(id, best_auth[bid], charsmax(best_auth[]));
+			best_time[bid] = hns_get_stats_surv(STATS_ALL, id);
+			bid++;
+		}
+
+		for (new i = 0; i < 10; i++) {
+			for (new j = 0; j < 10; j++) {
+				if (best_time[j] < best_time[i]) {
+					new Float:tmp = best_time[i];
+					new tmpauth[MAX_AUTHID_LENGTH];
+					copy(tmpauth, charsmax(tmpauth), best_auth[i]);
+					best_time[i] = best_time[j];
+					best_time[j] = tmp;
+					copy(best_auth[i], charsmax(best_auth[]), best_auth[j]);
+					copy(best_auth[j], charsmax(best_auth[]), tmpauth);
+				}
+			}
+		}
+	}
+	new szMotd[MAX_MOTD_LENGTH], iLen;
+	iLen = formatex(szMotd, charsmax(szMotd), "<html><head><meta charset=UTF-8>\
+					<link rel=^"stylesheet^" href=^"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css^">\
+					</head>\
+						<body>\
+							<div id=^"wrapper^">\
+								<table id=^"keywords^" cellspacing=^"0^" cellpadding=^"0^" class=^"table^">\
+									<thead>\
+										<tr>\
+										<th>Player</th>\
+										<th>SDA</th>\
+										<th>Survive time</th>\
+										<th>DMG</th>\
+										<th>RUN</th>\
+										<th>Flash time</th>\
+										<th>Stabs</th>\
+										</tr>\
+									</thead>\
+									<tbody>");
+	new surv_time[24]; new flash_time[24];
+	for (new i = 0; i < 10; i++) {
+		new id = find_player_ex(FindPlayer_MatchAuthId, best_auth[i]);
+
+		if (!is_user_connected(id))
+			continue;
+
+		fnConvertTime(hns_get_stats_surv(STATS_ALL, id), surv_time, 23);
+		fnConvertTime(hns_get_stats_flashtime(STATS_ALL, id), flash_time, 23);
+		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr><td>%n</td><td>%.1f</td><td>%s</td><td>%.0f</td><td>%.1fK</td><td>%s</td><td>%d</td></tr>",
+			id,
+			(float(hns_get_stats_stabs(STATS_ALL, id)) + float(hns_get_stats_assists(STATS_ALL, id))) / float(hns_get_stats_deaths(STATS_ALL, id)),
+			surv_time,
+			hns_get_stats_dmg_tt(STATS_ALL, id) + hns_get_stats_dmg_ct(STATS_ALL, id),
+			hns_get_stats_runned(STATS_ALL, id) / 1000.0,
+			flash_time,
+			hns_get_stats_stabs(STATS_ALL, id));
+	}
+	iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "</tbody>\
+								</table>\
+							</div>\
+						</body>\
+						</html>");
+	show_motd(player, szMotd);
+	//log_to_file("motd.txt", szMotd);
 }
 
 public rgTakeDamage(victim, inflictor, attacker, Float:damage, damagebits) {
@@ -117,18 +340,22 @@ public rgTakeDamage(victim, inflictor, attacker, Float:damage, damagebits) {
 
 public task_ShowPlayerInfo() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum);
+	get_players(iPlayers, iNum, "ch");
 
 	for(new i; i < iNum; i++) {
 		new id = iPlayers[i];
 
-		if(is_user_connected(id) && g_HudOnOff[id]) {
-			new show_id = is_user_alive(id) ? id : get_entvar(id, var_iuser2);
+		if(!is_user_connected(id)) {
+			continue;
+		}
 
-			if (!show_id) {
-				continue;
-			}
+		new show_id = is_user_alive(id) ? id : get_entvar(id, var_iuser2);
 
+		if (!show_id) {
+			continue;
+		}
+
+		if (g_HudOnOff[id]) {
 			set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.25, .holdtime = 1.0);
 			new szHudMess[128], iLen;
 
@@ -148,12 +375,12 @@ public task_ShowPlayerInfo() {
 
 			if (hns_get_mode() == MODE_MIX && hns_get_state() != STATE_PAUSED) {
 				new szTime[24];
-				fnConvertTime(hns_get_stats_surv(show_id), szTime, charsmax(szTime), false);
+				fnConvertTime(hns_get_stats_surv(STATS_ALL, show_id), szTime, charsmax(szTime), false);
 				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "\
 				Survive time: %s^n\
 				Stabs: %d",
 				szTime,
-				hns_get_stats_stabs(show_id));
+				hns_get_stats_stabs(STATS_ALL, show_id));
 			}
 
 			if (hns_get_status() != MATCH_NONE && hns_get_status() != MATCH_STARTED) {
@@ -162,7 +389,6 @@ public task_ShowPlayerInfo() {
 
 			ShowSyncHudMsg(id, g_MsgSync, "%s", szHudMess);
 		}
-
 	}
 }
 
@@ -186,6 +412,23 @@ public get_matchstats_str(MATCH_STATUS:iStatus) {
 		}
 	}
 	return szOut;
+}
+
+public reset_best_players() {
+	new iPlayers[MAX_PLAYERS], iNum;
+	get_players(iPlayers, iNum, "ch");
+
+	for (new i = 0; i < iNum; i++) {
+		new id = iPlayers[i];
+		arrayset(g_eRoundBests[id], 0, SHOW_STATS);
+
+	}
+
+	remove_task(TASK_SHOWBEST);
+	arrayset(g_eBestIndex, 0, SHOW_STATS);
+	arrayset(g_eBestStats, 0, SHOW_STATS);
+	arrayset(g_szMess, 0, 0);
+	g_szMess[0] = 0;
 }
 
 stock fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {

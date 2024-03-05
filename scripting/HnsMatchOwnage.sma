@@ -55,6 +55,8 @@ new g_iDataOwnage[MAX_PLAYERS + 1];
 
 new Float:g_flLastHeadTouch[MAX_PLAYERS + 1];
 
+new g_hForwardOwnage;
+
 new const g_szSound[][] = {
 	"openhns/mario.wav",
 	"openhns/ownage.wav"
@@ -71,6 +73,8 @@ public plugin_init() {
 	register_touch("player", "player", "touchPlayer");
 
 	register_dictionary("match_additons.txt");
+
+	g_hForwardOwnage = CreateMultiForward("hns_ownage", ET_CONTINUE, FP_CELL, FP_CELL);
 }
 
 public hns_sql_player_authorized(id) {
@@ -159,6 +163,8 @@ public touchPlayer(iToucher, iTouched) {
 				g_flLastHeadTouch[iToucher] = flGametime;
 				rg_send_audio(0, g_szSound[random(sizeof(g_szSound))]);
 			}
+
+			ExecuteForward(g_hForwardOwnage, _, iToucher, iTouched);
 		}
 	}
 }

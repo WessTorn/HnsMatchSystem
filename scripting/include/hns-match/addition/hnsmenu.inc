@@ -224,7 +224,7 @@ public settingsMatchMenu(id) {
 			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_WINTIME", g_iSettings[WINTIME]);
 		}
 		case RULES_DUEL: {
-			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_DUEL", g_iSettings[WINTIME]);
+			formatex(szMsg, charsmax(szMsg), "%L", id, "MENU_STNGS_DUEL", g_iSettings[DUELROUNDS]);
 		}
 	}
 	

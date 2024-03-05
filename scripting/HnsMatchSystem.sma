@@ -58,6 +58,10 @@ public forward_init() {
 	g_hForwards[MATCH_RESET_ROUND] = CreateMultiForward("hns_match_reset_round", ET_CONTINUE);
 	g_hForwards[MATCH_FINISH] = CreateMultiForward("hns_match_finished", ET_CONTINUE, FP_CELL);
 	g_hForwards[MATCH_CANCEL] = CreateMultiForward("hns_match_canceled", ET_CONTINUE);
+
+	g_hForwards[HNS_ROUND_START] = CreateMultiForward("hns_round_start", ET_CONTINUE);
+	g_hForwards[HNS_ROUND_FREEZEEND] = CreateMultiForward("hns_round_freezeend", ET_CONTINUE);
+	g_hForwards[HNS_ROUND_END] = CreateMultiForward("hns_round_end", ET_CONTINUE);
 }
 
 public plugin_natives() {
@@ -154,6 +158,8 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 
 	g_bPlayersListLoaded = false;
 
+	ExecuteForward(g_hForwards[HNS_ROUND_END]);
+	
 	return HC_CONTINUE;
 }
 
@@ -181,6 +187,8 @@ public rgRestartRound() { // Сделать красиво
 
 	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_ROUNDSTART])
 		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_ROUNDSTART], _);
+
+	ExecuteForward(g_hForwards[HNS_ROUND_START]);
 }
 
 public taskDestroyBreakables() {
@@ -195,6 +203,8 @@ public taskDestroyBreakables() {
 public rgOnRoundFreezeEnd() {
 	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_FREEZEEND])
 		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_FREEZEEND], _);
+
+	ExecuteForward(g_hForwards[HNS_ROUND_FREEZEEND]);
 }
 
 public rgPlayerSpawn(id) {
@@ -363,6 +373,7 @@ stock savePlayers(TeamName:team_winners) {
 		json_object_set_number(object, "e_pTeam", _:iTeam);
 		arrayAppendValue(arrayRoot, object);
 		json_free(object);
+		server_print("save (%s %s)", szAuth, _:iTeam)
 	}
 
 	json_serial_to_string(arrayRoot, g_szBuffer, charsmax(g_szBuffer), true);
@@ -409,6 +420,11 @@ decodeObject(&JSON:object) {
 	new szKey[30];
 	new JSON:objValue;
 	new eTempPlayer[PlayersLoad_s], iSave;
+	if (!g_aPlayersLoadData) {
+		server_print("FAIL")
+		return;
+	}
+	server_print("(%d)", json_object_get_count(object))
 	for (new i = 0; i < json_object_get_count(object); i++) {
 		json_object_get_name(object, i, szKey, charsmax(szKey));
 		objValue = json_object_get_value_at(object, i);
@@ -425,6 +441,7 @@ decodeObject(&JSON:object) {
 		}
 
 		if (iSave == 2) {
+			server_print("(%s %d [%d])", eTempPlayer[e_pAuth], eTempPlayer[e_pTeam], i)
 			ArrayPushArray(g_aPlayersLoadData, eTempPlayer);
 			arrayset(eTempPlayer, 0, PlayersLoad_s);
 			iSave = 0;

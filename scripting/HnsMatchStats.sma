@@ -9,6 +9,12 @@ forward hns_ownage(iToucher, iTouched);
 
 #define TASK_TIMER 54345
 
+enum _:TYPE_STATS
+{
+	STATS_ROUND = 0,
+	STATS_ALL = 1
+}
+
 new g_szPrefix[24];
 
 enum _: PLAYER_STATS {
@@ -18,9 +24,7 @@ enum _: PLAYER_STATS {
 	PLR_STATS_STABS,
 	PLR_STATS_DMG_CT,
 	PLR_STATS_DMG_TT,
-	Float:PLR_STATS_AVG_SPEED,
 	Float:PLR_STATS_RUNNED,
-	Float:PLR_STATS_RUNTIME,
 	Float:PLR_STATS_FLASHTIME,
 	Float:PLR_STATS_SURVTIME,
 	PLR_STATS_OWNAGES,
@@ -41,12 +45,8 @@ new Float:last_position[MAX_PLAYERS+ 1][3];
 new Trie:g_tSaveData;
 new Trie:g_tSaveRoundData;
 
-new best_auth[10][MAX_AUTHID_LENGTH];
-
 public plugin_init() {
 	register_plugin("Match: Stats", "1.0", "OpenHNS"); // Garey
-
-	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
 
 	RegisterHookChain(RG_CBasePlayer_Killed, "rgPlayerKilled", true);
 	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgPlayerTakeDamage", false);
@@ -69,18 +69,114 @@ public plugin_cfg() {
 }
 
 public plugin_natives() {
+	register_native("hns_get_stats_kills", "native_get_stats_kills");
+	register_native("hns_get_stats_deaths", "native_get_stats_deaths");
+	register_native("hns_get_stats_assists", "native_get_stats_assists");
 	register_native("hns_get_stats_stabs", "native_get_stats_stabs");
+	register_native("hns_get_stats_dmg_ct", "native_get_stats_dmg_ct");
+	register_native("hns_get_stats_dmg_tt", "native_get_stats_dmg_tt");
+	register_native("hns_get_stats_runned", "native_get_stats_runned");
+	register_native("hns_get_stats_flashtime", "native_get_stats_flashtime");
 	register_native("hns_get_stats_surv", "native_get_stats_surv");
+	register_native("hns_get_stats_ownages", "native_get_stats_ownages");
+}
+
+public native_get_stats_kills(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_KILLS];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_KILLS];
+}
+
+public native_get_stats_deaths(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_DEATHS];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_DEATHS];
+}
+
+public native_get_stats_assists(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_ASSISTS];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_ASSISTS];
 }
 
 public native_get_stats_stabs(amxx, params) {
-	enum { id = 1 };
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_STABS];
+	}
+
 	return iStats[get_param(id)][PLR_STATS_STABS];
 }
 
+public native_get_stats_dmg_ct(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_DMG_CT];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_DMG_CT];
+}
+
+public native_get_stats_dmg_tt(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_DMG_TT];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_DMG_TT];
+}
+
+public Float:native_get_stats_runned(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_RUNNED];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_RUNNED];
+}
+
+public Float:native_get_stats_flashtime(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_FLASHTIME];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_FLASHTIME];
+}
+
 public Float:native_get_stats_surv(amxx, params) {
-	enum { id = 1 };
+	enum { type = 1, id = 2 };
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_SURVTIME];
+	}
 	return iStats[get_param(id)][PLR_STATS_SURVTIME];
+}
+
+public native_get_stats_ownages(amxx, params) {
+	enum { type = 1, id = 2 };
+
+	if (get_param(type) == STATS_ROUND) {
+		return g_StatsRound[get_param(id)][PLR_STATS_OWNAGES];
+	}
+
+	return iStats[get_param(id)][PLR_STATS_OWNAGES];
 }
 
 public msgShowMenu(msgid, dest, id) {
@@ -175,7 +271,7 @@ public client_disconnected(id) {
 
 public hns_match_reset_round() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
 		ResetPlayerRoundStats(iPlayer);
@@ -184,17 +280,13 @@ public hns_match_reset_round() {
 
 public hns_match_started() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];
 		arrayset(iStats[id], 0, PLAYER_STATS);
 		arrayset(g_StatsRound[id], 0, PLAYER_STATS);
 		SetScoreInfo(id);
-	}
-
-	for (new i; i < 10; i++) {
-		best_auth[i] = "";
 	}
 }
 
@@ -280,13 +372,7 @@ public rgPlayerPreThink(id) {
 					velocity[2] = 0.0;
 					if (vector_length(velocity) > 125.0) {
 						g_StatsRound[id][PLR_STATS_RUNNED] += vector_length(velocity) * frametime;
-						g_StatsRound[id][PLR_STATS_RUNTIME] += frametime;
 						iStats[id][PLR_STATS_RUNNED] += vector_length(velocity) * frametime;
-						iStats[id][PLR_STATS_RUNTIME] += frametime;
-						if (g_StatsRound[id][PLR_STATS_RUNTIME]) {
-							g_StatsRound[id][PLR_STATS_AVG_SPEED] = g_StatsRound[id][PLR_STATS_RUNNED] / g_StatsRound[id][PLR_STATS_RUNTIME];
-							iStats[id][PLR_STATS_AVG_SPEED] = iStats[id][PLR_STATS_RUNNED] / iStats[id][PLR_STATS_RUNTIME];
-						}
 					}
 				}
 
@@ -305,7 +391,7 @@ public rgRoundFreezeEnd() {
 public rgRestartRound() {
 	remove_task(TASK_TIMER);
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -391,103 +477,6 @@ stock Msg_Update_ScoreInfo(id) {
 	message_end();
 }
 
-public hns_match_stopped_post() {
-	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
-	ShowTop(0);
-}
-
-public hns_match_surrendered() {
-	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
-	ShowTop(0);
-}
-
-public hns_match_finished() {
-	client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "STATS_TOP", g_szPrefix);
-	ShowTop(0);
-}
-
-
-public ShowTop(player) {
-	if (!player) {
-		new Float:best_time[10];
-		new iPlayers[MAX_PLAYERS], iNum;
-		get_players(iPlayers, iNum, "ch");
-		new bid = 0;
-		for (new i; i < iNum; i++) {
-			new id = iPlayers[i];
-
-			if (rg_get_user_team(id) == TEAM_SPECTATOR)
-				continue;
-
-			if (bid >= 10)
-				break;
-
-			get_user_authid(id, best_auth[bid], charsmax(best_auth[]));
-			best_time[bid] = iStats[id][PLR_STATS_SURVTIME];
-			bid++;
-		}
-
-		for (new i = 0; i < 10; i++) {
-			for (new j = 0; j < 10; j++) {
-				if (best_time[j] < best_time[i]) {
-					new Float:tmp = best_time[i];
-					new tmpauth[MAX_AUTHID_LENGTH];
-					copy(tmpauth, charsmax(tmpauth), best_auth[i]);
-					best_time[i] = best_time[j];
-					best_time[j] = tmp;
-					copy(best_auth[i], charsmax(best_auth[]), best_auth[j]);
-					copy(best_auth[j], charsmax(best_auth[]), tmpauth);
-				}
-			}
-		}
-	}
-	new szMotd[MAX_MOTD_LENGTH], iLen;
-	iLen = formatex(szMotd, charsmax(szMotd), "<html><head><meta charset=UTF-8>\
-					<link rel=^"stylesheet^" href=^"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css^">\
-					</head>\
-						<body>\
-							<div id=^"wrapper^">\
-								<table id=^"keywords^" cellspacing=^"0^" cellpadding=^"0^" class=^"table^">\
-									<thead>\
-										<tr>\
-										<th>Player</th>\
-										<th>SDA</th>\
-										<th>Survive time</th>\
-										<th>DMG</th>\
-										<th>RUN</th>\
-										<th>Flash time</th>\
-										<th>Stabs</th>\
-										</tr>\
-									</thead>\
-									<tbody>");
-	new surv_time[24]; new flash_time[24];
-	for (new i = 0; i < 10; i++) {
-		new id = find_player_ex(FindPlayer_MatchAuthId, best_auth[i]);
-
-		if (!is_user_connected(id))
-			continue;
-
-		fnConvertTime(iStats[id][PLR_STATS_SURVTIME], surv_time, 23);
-		fnConvertTime(iStats[id][PLR_STATS_FLASHTIME], flash_time, 23);
-		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr><td>%n</td><td>%.1f</td><td>%s</td><td>%.0f</td><td>%.1fK</td><td>%s</td><td>%d</td></tr>",
-			id,
-			(float(iStats[id][PLR_STATS_STABS]) + float(iStats[id][PLR_STATS_ASSISTS])) / float(iStats[id][PLR_STATS_DEATHS]),
-			surv_time,
-			iStats[id][PLR_STATS_DMG_TT] + iStats[id][PLR_STATS_DMG_CT],
-			iStats[id][PLR_STATS_RUNNED] / 1000.0,
-			flash_time,
-			iStats[id][PLR_STATS_STABS]);
-	}
-	iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "</tbody>\
-								</table>\
-							</div>\
-						</body>\
-						</html>");
-	show_motd(player, szMotd);
-	//log_to_file("motd.txt", szMotd);
-}
-
-
 public plugin_end() {
 	TrieDestroy(g_tSaveData);
 	TrieDestroy(g_tSaveRoundData);
@@ -497,47 +486,4 @@ stock getUserKey(id) {
 	new szAuth[24];
 	get_user_authid(id, szAuth, charsmax(szAuth));
 	return szAuth;
-}
-
-stock fnConvertTime(Float:time, convert_time[], len, bool:with_intpart = true) {
-	new szTemp[24];
-	new Float:flSeconds = time, iMinutes;
-
-	iMinutes = floatround(flSeconds / 60.0, floatround_floor);
-	flSeconds -= iMinutes * 60.0;
-	new intpart = floatround(flSeconds, floatround_floor);
-	new Float:decpart = (flSeconds - intpart) * 100.0;
-
-	if (with_intpart) {
-		intpart = floatround(decpart);
-		formatex(szTemp, charsmax(szTemp), "%02i:%02.0f.%d", iMinutes, flSeconds, intpart);
-	} else {
-		formatex(szTemp, charsmax(szTemp), "%02i:%02.0f", iMinutes, flSeconds);
-	}
-
-	formatex(convert_time, len, "%s", szTemp);
-
-	return PLUGIN_HANDLED;
-}
-
-public get_matchstats_str(MATCH_STATUS:iStatus) {
-	new szOut[32];
-	switch (iStatus) {
-		case MATCH_CAPTAINPICK .. MATCH_CAPTAINKNIFE: {
-			formatex(szOut, charsmax(szOut), "Captain mode");
-		}
-		case MATCH_TEAMPICK: {
-			formatex(szOut, charsmax(szOut), "Team pick");
-		}
-		case MATCH_TEAMKNIFE: {
-			formatex(szOut, charsmax(szOut), "Knife round");
-		}
-		case MATCH_MAPPICK: {
-			formatex(szOut, charsmax(szOut), "Map pick");
-		}
-		case MATCH_WAITCONNECT: {
-			formatex(szOut, charsmax(szOut), "Wait players");
-		}
-	}
-	return szOut;
 }
