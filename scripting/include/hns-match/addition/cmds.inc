@@ -681,24 +681,20 @@ public cmdShowTimers(id) {
 	
 			get_players(iPlayers, iNum, "ch");
 			for (new j; j < iNum; j++)
-			 {
-			 	if (getUserTeam(iPlayers[j]) == TEAM_TERRORIST)
-			 	{
-			 		hnsteamname[HNS_TEAM:g_isTeamTT] = iPlayers[j];
-			 	}
-			 	else if (getUserTeam(iPlayers[j]) == TEAM_CT)
-			 	{
-					hnsteamname[HNS_TEAM:!g_isTeamTT] = iPlayers[j];
+			{
+				if (getUserTeam(iPlayers[j]) == TEAM_TERRORIST && g_isTeamTT == HNS_TEAM_A) {
+					hnsteamname[HNS_TEAM_A] = iPlayers[j];
+				}
+				else if (getUserTeam(iPlayers[j]) == TEAM_CT && HNS_TEAM:!g_isTeamTT == HNS_TEAM_B) {
+					hnsteamname[HNS_TEAM_B] = iPlayers[j];
 				}
 			}	
 
-			chat_print(id, "%L", id, "SCORE_DUEL", hnsteamname[HNS_TEAM:g_isTeamTT], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], hnsteamname[HNS_TEAM:!g_isTeamTT]);
-
-/* 			if (g_isTeamTT == HNS_TEAM_A) {
-				chat_print(id, "%L", id, "SCORE_DUEL", hnsteamname[HNS_TEAM:g_isTeamTT], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], hnsteamname[HNS_TEAM:!g_isTeamTT]);
+			if (g_isTeamTT == HNS_TEAM_A) {
+				chat_print(id, "%L", id, "SCORE_DUEL", hnsteamname[HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], hnsteamname[HNS_TEAM_B]);
 			} else {
-				chat_print(id, "%L", id, "SCORE_DUEL", hnsteamname[HNS_TEAM:!g_isTeamTT], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], hnsteamname[HNS_TEAM:g_isTeamTT]);
-			} */
+				chat_print(id, "%L", id, "SCORE_DUEL", hnsteamname[HNS_TEAM_B], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], hnsteamname[HNS_TEAM_A]);
+			}
 		}
 	}
 
