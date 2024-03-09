@@ -311,6 +311,7 @@ public mix_roundend(bool:win_ct) {
 			}
 		}
 		case RULES_TIMER: {
+			g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++;
 			if (win_ct) {
 				mix_swap();
 			}
