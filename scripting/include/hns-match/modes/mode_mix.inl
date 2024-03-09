@@ -140,11 +140,10 @@ public mix_stop() {
 public mix_roundstart() {
 	remove_task(TASK_TIMER);
 
-	if (g_eMatchState == STATE_PREPARE)
+	if (g_eMatchState == STATE_PREPARE) {
 		g_eMatchState = STATE_ENABLED;
+	}
 
-	
-	cmdShowTimers(0);
 	g_flRoundTime = 0.0;
 
 	new iPlayers[MAX_PLAYERS], iNum;
@@ -166,6 +165,8 @@ public mix_roundstart() {
 			g_ePlayerData[id][PLAYER_MATCH] = false;
 		}
 	}
+
+	cmdShowTimers(0);
 
 	ResetAfkData();
 	set_task(0.3, "taskSaveAfk");
@@ -189,7 +190,11 @@ public taskCheckLeave() {
 		if (iNum >= 2) {
 			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 		}
-		TrieClear(g_PlayersLeaveData);
+
+		if (g_PlayersLeaveData != Invalid_Trie) {
+			TrieClear(g_PlayersLeaveData);
+		}
+
 		g_bPlayersLeaved = false;
 	}
 }
@@ -319,7 +324,7 @@ public mix_roundend(bool:win_ct) {
 			
 			if(g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT] >= g_iSettings[DUELROUNDS]) {
 				MixFinishedDuel();
-			}	
+			}
 		}
 	}
 }
@@ -391,6 +396,10 @@ public mix_player_join(id) {
 public mix_player_leave(id) {
 	if (g_ePlayerData[id][PLAYER_MATCH]) {
 		g_ePlayerData[id][PLAYER_SAVE_SCORE] = g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + 1;
+
+		if (g_iCurrentRules == RULES_DUEL) {
+			mix_pause();
+		}
 	}
 
 	TrieSetArray(g_PlayersLeaveData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
