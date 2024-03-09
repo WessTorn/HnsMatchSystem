@@ -53,8 +53,6 @@ enum HNS_TEAM {
 
 new HNS_TEAM:g_isTeamTT;
 
-new hnsteamname[HNS_TEAM];
-
 enum _:MatchInfo_s {
 	e_mTeamSize,
 	e_mTeamSizeTT,
