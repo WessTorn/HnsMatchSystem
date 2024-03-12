@@ -47,7 +47,7 @@ public kniferound_roundend(bool:win_ct) {
 
 			g_iMatchStatus = MATCH_TEAMPICK;
 
-			pickMenu(g_iCaptainPick);
+			pickMenu(g_iCaptainPick, true);
 
 			set_task(1.0, "WaitPick");
 		}

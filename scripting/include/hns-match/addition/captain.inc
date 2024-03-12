@@ -141,7 +141,7 @@ public chooseCapsHandler(id, hMenu, item) {
 	return PLUGIN_HANDLED;
 }
 
-public pickMenu(id) {
+public pickMenu(id, bool:bStartWait) {
 	if (!is_user_connected(id)) {
 		return PLUGIN_HANDLED;
 	}
@@ -154,7 +154,10 @@ public pickMenu(id) {
 		return PLUGIN_HANDLED;
 	}
 
-	WaitPick();
+	if(bStartWait == true)
+	{
+		WaitPick();
+	}
 
 	new szMsg[64];
 
@@ -214,7 +217,7 @@ public pickHandler(id, hMenu, item) {
 
 	if (item == MENU_EXIT) {
 		menu_destroy(hMenu);
-		pickMenu(id);
+		pickMenu(id, false);
 		return PLUGIN_HANDLED;
 	}
 
@@ -225,12 +228,12 @@ public pickHandler(id, hMenu, item) {
 	new iPlayer = str_to_num(szData);
 
 	if (!is_user_connected(iPlayer)) {
-		pickMenu(id);
+		pickMenu(id, false);
 		return PLUGIN_HANDLED;
 	}
 
 	if (g_bNoplay[iPlayer]) {
-		pickMenu(id);
+		pickMenu(id, false);
 		return PLUGIN_HANDLED;
 	}
 
@@ -244,7 +247,7 @@ public pickHandler(id, hMenu, item) {
 
 	g_iCaptainPick = id == g_eCaptain[e_cTT] ? g_eCaptain[e_cCT] : g_eCaptain[e_cTT];
 
-	pickMenu(g_iCaptainPick);
+	pickMenu(g_iCaptainPick, true);
 	checkFullTeams();
 
 	return PLUGIN_HANDLED;
@@ -259,6 +262,7 @@ public WaitPick()
 	if (task_exists(TASK_WAITCAP)) {
 		remove_task(TASK_WAITCAP)
 	}
+
 	g_eWaitPick = 25.0;
 
 	set_task(1.0, "wait_function", .id = TASK_WAITCAP, .flags = "b");
@@ -299,7 +303,7 @@ public wait_function(id)
 			}
 
 			checkFullTeams();
-			pickMenu(g_iCaptainPick);
+			pickMenu(g_iCaptainPick, true);
 
 			return;
 
@@ -319,16 +323,16 @@ GetPickRandom() {
 	new iSpecPlayers[MAX_PLAYERS], iSpecNum;
 
 	for (new i; i < iNum; i++) {
-	if (!is_user_connected(iPlayers[i])) {
-		continue;
-	}
-
-	if (g_bNoplay[iPlayers[i]]) {
-		continue;
+		if (!is_user_connected(iPlayers[i])) {
+			continue;
 		}
 
-	iSpecPlayers[iSpecNum] = iPlayers[i];
-	iSpecNum++;
+		if (g_bNoplay[iPlayers[i]]) {
+			continue;
+		}
+
+		iSpecPlayers[iSpecNum] = iPlayers[i];
+		iSpecNum++;
 	}
 
 	if (iSpecNum == 0) {
@@ -336,9 +340,9 @@ GetPickRandom() {
 	}
 
 	if (iSpecNum > 1) {
-	iChoose = iSpecPlayers[random(iSpecNum)];
+		iChoose = iSpecPlayers[random(iSpecNum)];
 	} else {
-	iChoose = iSpecPlayers[iSpecNum - 1];
+		iChoose = iSpecPlayers[iSpecNum - 1];
 	}
 
 	return iChoose;
@@ -365,7 +369,7 @@ public checkFullTeams() {
 		iPlayersMatch++;
 	}
 
-	if (iPlayersMatch == 10 || !iPlayersNotMatch) {
+	if (iPlayersMatch == 10 || !iPlayersNotMatch || (iPlayersMatch % 2 == 0) && (iPlayersNotMatch <= 1)) {
 		resetCaptainData();
 		chat_print(0, "%L", LANG_PLAYER, "TEAM_FULL");
 		g_iMatchStatus = MATCH_TEAMKNIFE;
