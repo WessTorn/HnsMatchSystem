@@ -369,7 +369,7 @@ public checkFullTeams() {
 		iPlayersMatch++;
 	}
 
-	if (iPlayersMatch == 10 || !iPlayersNotMatch) {
+	if (iPlayersMatch == 10 || !iPlayersNotMatch || (iPlayersMatch % 2 == 0) && (iPlayersNotMatch <= 1)) {
 		resetCaptainData();
 		chat_print(0, "%L", LANG_PLAYER, "TEAM_FULL");
 		g_iMatchStatus = MATCH_TEAMKNIFE;
