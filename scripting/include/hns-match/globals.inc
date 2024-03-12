@@ -14,6 +14,8 @@
 
 #define TASK_WAITCAP 13131
 
+#define TASK_SURRENDER 55566
+
 
 new g_PluginId;
 
