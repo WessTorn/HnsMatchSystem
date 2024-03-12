@@ -39,7 +39,9 @@ public delayed_mode() {
 
 public wait_players() {
 	if (g_iMatchStatus == MATCH_STARTED) {
-		remove_task(TASK_WAIT);
+		if(task_exists(TASK_WAIT)) {
+			remove_task(TASK_WAIT);
+		}
 		return PLUGIN_HANDLED;
 	}
 
@@ -60,7 +62,9 @@ public wait_players() {
 		setTaskHud(0, 0.0, 1, 255, 255, 255, 1.0, "%L", LANG_SERVER, "HUD_START_WAIT", sTime, ArraySize(g_aPlayersLoadData) - iNum);
 
 		if (flWaitPlayersTime <= 0.0) {
-			remove_task(TASK_WAIT);
+			if(task_exists(TASK_WAIT)) {
+				remove_task(TASK_WAIT);
+			}
 		}
 	}
 

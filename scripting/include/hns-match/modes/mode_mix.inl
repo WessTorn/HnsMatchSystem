@@ -110,7 +110,9 @@ public mix_unpause() {
 	g_eMatchState = STATE_PREPARE;
 	restartRound(1.0);
 	ChangeGameplay(GAMEPLAY_HNS);
-	remove_task(HUD_PAUSE);
+	if(task_exists(HUD_PAUSE)) {
+		remove_task(HUD_PAUSE);
+	}	
 	setTaskHud(0, 1.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_UNPAUSE");
 	rg_send_audio(0, "fvox/activated.wav");
 	server_cmd("sv_alltalk 3");
@@ -130,7 +132,9 @@ public mix_stop() {
 	g_iMatchStatus = MATCH_NONE;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
 	training_start();
-	remove_task(HUD_PAUSE);
+	if(task_exists(HUD_PAUSE)) {
+		remove_task(HUD_PAUSE);
+	}
 	ExecuteForward(g_hForwards[MATCH_CANCEL], _);
 	g_bPlayersListLoaded = false;
 	g_bPlayersLeaved = false;
@@ -138,7 +142,9 @@ public mix_stop() {
 
 
 public mix_roundstart() {
-	remove_task(TASK_TIMER);
+	if(task_exists(TASK_TIMER)) {
+		remove_task(TASK_TIMER);
+	}
 
 	if (g_eMatchState == STATE_PREPARE) {
 		g_eMatchState = STATE_ENABLED;
@@ -213,7 +219,9 @@ public MixFinishedMR(iWinTeam) {
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
 	TrieDestroy(g_PlayersLeaveData);
-	remove_task(TASK_TIMER);
+	if(task_exists(TASK_TIMER)) {
+		remove_task(TASK_TIMER);
+	}
 }
 
 public MixFinishedWT() {
@@ -232,7 +240,9 @@ public MixFinishedWT() {
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
 	TrieDestroy(g_PlayersLeaveData);
-	remove_task(TASK_TIMER);
+	if(task_exists(TASK_TIMER)) {
+		remove_task(TASK_TIMER);
+	}
 
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, 1);
 }
@@ -251,7 +261,9 @@ public MixFinishedDuel() {
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
 	TrieDestroy(g_PlayersLeaveData);
-	remove_task(TASK_TIMER);
+	if(task_exists(TASK_TIMER)) {
+		remove_task(TASK_TIMER);
+	}
 
 	ExecuteForward(g_hForwards[MATCH_FINISH], _, 1);
 }
@@ -262,7 +274,9 @@ public mix_roundend(bool:win_ct) {
 	}
 
 	g_eMatchState = STATE_PREPARE;
-	remove_task(TASK_TIMER);
+	if(task_exists(TASK_TIMER)) {
+		remove_task(TASK_TIMER);
+	}
 
 	switch (g_iCurrentRules) {
 		case RULES_MR: {
@@ -333,7 +347,9 @@ public mix_roundend(bool:win_ct) {
 
 public taskRoundEvent() {
 	if (g_eMatchState != STATE_ENABLED) {
-		remove_task(TASK_TIMER);
+		if(task_exists(TASK_TIMER)) {
+			remove_task(TASK_TIMER);
+		}
 		return;
 	}
 
@@ -368,7 +384,9 @@ public mix_reverttimer() {
 		return;
 	}
 
-	remove_task(TASK_TIMER);
+	if(task_exists(TASK_TIMER)) {
+		remove_task(TASK_TIMER);
+	}
 
 	g_eMatchInfo[e_flSidesTime][g_isTeamTT] -= g_flRoundTime;
 

@@ -130,7 +130,9 @@ resetSurrenderData() {
 
 	arrayset(g_eSurrenderVotes, 0, SurrenderVote);
 	arrayset(g_eSurrenderData, 0, SurrenderData_s);
-	remove_task();
+	if (task_exists(TASK_SURRENDER)) {
+		remove_task(TASK_SURRENDER);
+	}
 }
 
 autoLose(TeamName:iTeam) {
