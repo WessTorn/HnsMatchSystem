@@ -309,7 +309,9 @@ public wait_function(id)
 
 		}
 		else {
-			remove_task(TASK_WAITCAP);
+			if (task_exists(TASK_WAITCAP)) {
+				remove_task(TASK_WAITCAP)
+			}
 		}
 	}
 }

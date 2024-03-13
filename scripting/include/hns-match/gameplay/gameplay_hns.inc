@@ -15,8 +15,8 @@ public hns_init()
 	g_GPFuncs[GAMEPLAY_HNS][GP_DISABLE]		= CreateOneForward(g_PluginId, "hns_disable_rules");
 	g_GPFuncs[GAMEPLAY_HNS][GP_SETROLE]		= CreateOneForward(g_PluginId, "hns_setrole", FP_CELL);
 	g_GPFuncs[GAMEPLAY_HNS][GP_KILLED]		= CreateOneForward(g_PluginId, "hns_killed", FP_CELL, FP_CELL);
-	g_GPFuncs[GAMEPLAY_HNS][GP_ROUNDSTART]	= CreateOneForward(g_PluginId, "hns_round_start");
-	g_GPFuncs[GAMEPLAY_HNS][GP_ROUNDEND]	= CreateOneForward(g_PluginId, "hns_round_end", FP_CELL);
+	g_GPFuncs[GAMEPLAY_HNS][GP_ROUNDSTART]	= CreateOneForward(g_PluginId, "hns_roundstart");
+	g_GPFuncs[GAMEPLAY_HNS][GP_ROUNDEND]	= CreateOneForward(g_PluginId, "hns_roundend", FP_CELL);
 }
 
 public hns_enable_rules()
@@ -180,7 +180,7 @@ public hns_round_start()
 	g_bLastFlash = LAST_FLASH_NO;
 }
 
-public hns_round_end(bool:win_ct)
+public hns_roundend(bool:win_ct)
 {
 	if (g_iCurrentMode != MODE_MIX && g_iCurrentMode != MODE_ZM) {
 		if (win_ct)

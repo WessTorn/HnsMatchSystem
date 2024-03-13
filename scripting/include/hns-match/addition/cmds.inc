@@ -629,7 +629,7 @@ public cmdSurrender(id) {
 		new iPlayer = iPlayers[i];
 		surrenderMenu(iPlayer);
 	}
-	set_task(1.0, "taskSurrender", .flags = "b");
+	set_task(1.0, "taskSurrender", TASK_SURRENDER, .flags = "b");
 
 	return PLUGIN_HANDLED;
 }

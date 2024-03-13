@@ -92,7 +92,10 @@ public taskAfk() {
 }
 
 ResetAfkData() {
-	remove_task();
+	if(task_exists(TASK_AFK)) {
+		remove_task(TASK_AFK);
+	}
+		
 	iPlayersAfk = 0;
 
 	new iPlayers[MAX_PLAYERS], iNum;
