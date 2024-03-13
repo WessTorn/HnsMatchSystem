@@ -130,6 +130,7 @@ public mix_swap() {
 public mix_stop() {
 	// ResetTeams();
 	g_iMatchStatus = MATCH_NONE;
+	g_eMatchState = STATE_DISABLED;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
 	training_start();
 	if(task_exists(HUD_PAUSE)) {
