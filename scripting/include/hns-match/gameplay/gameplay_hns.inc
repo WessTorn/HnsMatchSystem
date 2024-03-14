@@ -175,7 +175,7 @@ public NadesHandler(id, hMenu, item)
 	return PLUGIN_HANDLED;
 }
 
-public hns_round_start()
+public hns_roundstart()
 {
 	g_bLastFlash = LAST_FLASH_NO;
 }
