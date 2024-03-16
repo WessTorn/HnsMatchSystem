@@ -124,6 +124,7 @@ public mix_unpause() {
 public mix_swap() {
 	rg_swap_all_players();
 	g_isTeamTT = HNS_TEAM:!g_isTeamTT;
+	g_eMatchInfo[e_iMatchSwapped]++;
 }
 
 
@@ -326,7 +327,6 @@ public mix_roundend(bool:win_ct) {
 			}
 		}
 		case RULES_TIMER: {
-			g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++;
 			if (win_ct) {
 				mix_swap();
 			}
@@ -397,9 +397,7 @@ public mix_reverttimer() {
 public mix_player_join(id) {
 	TrieGetArray(g_PlayersLeaveData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
 	if (g_ePlayerData[id][PLAYER_MATCH]) {
-		new iScore = g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + 1;
-		
-		if (iScore == g_ePlayerData[id][PLAYER_SAVE_SCORE]) {
+		if (g_eMatchInfo[e_iMatchSwapped] == g_ePlayerData[id][PLAYER_SAVE_SWAP]) {
 			rg_set_user_team(id, g_ePlayerData[id][PLAYER_TEAM][0] == 'T' ? TEAM_TERRORIST : TEAM_CT);
 		} else {
 			rg_set_user_team(id, g_ePlayerData[id][PLAYER_TEAM][0] == 'T' ? TEAM_CT : TEAM_TERRORIST);
@@ -415,7 +413,7 @@ public mix_player_join(id) {
 
 public mix_player_leave(id) {
 	if (g_ePlayerData[id][PLAYER_MATCH]) {
-		g_ePlayerData[id][PLAYER_SAVE_SCORE] = g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A] + g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B] + 1;
+		g_ePlayerData[id][PLAYER_SAVE_SWAP] = g_eMatchInfo[e_iMatchSwapped];
 
 		if (g_iCurrentRules == RULES_DUEL) {
 			mix_pause();

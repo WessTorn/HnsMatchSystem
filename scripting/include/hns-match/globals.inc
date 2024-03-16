@@ -59,7 +59,8 @@ enum _:MatchInfo_s {
 	e_mTeamSize,
 	e_mTeamSizeTT,
 	Float:e_flSidesTime[HNS_TEAM],
-	e_iRoundsPlayed[HNS_TEAM]
+	e_iRoundsPlayed[HNS_TEAM],
+	e_iMatchSwapped
 };
 
 new g_eMatchInfo[MatchInfo_s];
@@ -99,7 +100,7 @@ new g_hForwards[Forwards];
 enum _: PlayerData_s {
 	bool:PLAYER_MATCH,
 	PLAYER_TEAM[16],
-	PLAYER_SAVE_SCORE
+	PLAYER_SAVE_SWAP
 };
 
 new g_ePlayerData[MAX_PLAYERS + 1][PlayerData_s];
