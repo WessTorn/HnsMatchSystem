@@ -117,7 +117,7 @@ public sayHandle(id) {
 }
 
 public blockCmd(id) {
-	if (g_iCurrentMode != MODE_TRAINING)
+	if (g_iCurrentMode != MODE_TRAINING || (g_iMatchStatus < MATCH_WAITCONNECT && g_iMatchStatus > MATCH_NONE))
 		return PLUGIN_HANDLED;
 
 	return PLUGIN_CONTINUE;

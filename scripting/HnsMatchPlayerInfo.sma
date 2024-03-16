@@ -308,7 +308,15 @@ public ShowTop(player) {
 
 		fnConvertTime(hns_get_stats_surv(STATS_ALL, id), surv_time, 23);
 		fnConvertTime(hns_get_stats_flashtime(STATS_ALL, id), flash_time, 23);
-		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr><td>%n</td><td>%.1f</td><td>%s</td><td>%.0f</td><td>%.1fK</td><td>%s</td><td>%d</td></tr>",
+		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr> \
+		<td>%n</td> \
+		<td>%.1f</td> \
+		<td>%s</td> \
+		<td>%d</td> \
+		<td>%.1fK</td> \
+		<td>%s</td> \
+		<td>%d</td> \
+		</tr>",
 			id,
 			(float(hns_get_stats_stabs(STATS_ALL, id)) + float(hns_get_stats_assists(STATS_ALL, id))) / float(hns_get_stats_deaths(STATS_ALL, id)),
 			surv_time,

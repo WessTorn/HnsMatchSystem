@@ -26,6 +26,7 @@ public plugin_init() {
 	RegisterHookChain(RG_CBasePlayer_ResetMaxSpeed, "rgResetMaxSpeed", false);
 	RegisterHookChain(RG_CSGameRules_RestartRound, "rgRestartRound", false);
 	RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "rgOnRoundFreezeEnd", true);
+	RegisterHookChain(RG_CSGameRules_FlPlayerFallDamage, "rgFlPlayerFallDamage", true);
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", true);
 	RegisterHookChain(RG_CBasePlayer_Killed, "rgPlayerKilled", true);
 	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind", false);
@@ -205,6 +206,13 @@ public rgOnRoundFreezeEnd() {
 		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_FREEZEEND], _);
 
 	ExecuteForward(g_hForwards[HNS_ROUND_FREEZEEND]);
+}
+
+public rgFlPlayerFallDamage(const id) {
+	new Float:flDmg = Float:GetHookChainReturn(ATYPE_FLOAT);
+
+	if (g_ModFuncs[g_iCurrentMode][MODEFUNC_FALLDAMAGE])
+		ExecuteForward(g_ModFuncs[g_iCurrentMode][MODEFUNC_FALLDAMAGE], _, id, flDmg);
 }
 
 public rgPlayerSpawn(id) {

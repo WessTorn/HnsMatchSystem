@@ -191,7 +191,7 @@ public ActivateWatcher(id) {
 public cmdRnw(id) {
 	new iPlayers = get_playersnum();
 	
-	if(iPlayers < 1) {
+	if(iPlayers <= 1) {
 		client_print_color(id, print_team_blue, "%L", id, "WTR_NOT_NEED", g_sPrefix);
 		
 		return PLUGIN_CONTINUE;

@@ -154,15 +154,17 @@ public QueryHandler(iFailState, Handle:hQuery, szError[], iErrnum, cData[], iSiz
 
 				g_iPlayerID[id] = SQL_ReadResult(hQuery, index_id);
 
-				new szNewName[MAX_NAME_LENGTH * 2];
+				new szNewName[MAX_NAME_LENGTH];
+				new szNewNameSQL[MAX_NAME_LENGTH * 2]
 				get_user_name(id, szNewName, charsmax(szNewName));
-				SQL_QuoteString(Empty_Handle, szNewName, charsmax(szNewName), fmt("%s", szNewName));
+				mysql_escape_string(szNewNameSQL, charsmax(szNewNameSQL), szNewName);
+				SQL_QuoteString(Empty_Handle, szNewNameSQL, charsmax(szNewNameSQL), fmt("%s", szNewNameSQL));
 
 				new szOldName[MAX_NAME_LENGTH];
 				SQL_ReadResult(hQuery, index_name, szOldName, charsmax(szOldName));
 
-				if (!equal(szNewName, szOldName))
-					SQL_Name(id, szNewName);
+				if (!equal(szNewNameSQL, szOldName))
+					SQL_Name(id, szNewNameSQL);
 				
 				new szNewIp[MAX_IP_LENGTH]; 
 				get_user_ip(id, szNewIp, charsmax(szNewIp), true);
@@ -304,4 +306,19 @@ public client_disconnected(id) {
 
 public plugin_end() {
 	SQL_FreeHandle(g_hSqlTuple);
+}
+
+stock mysql_escape_string(dest[], len, src[])
+{
+    copy(dest, len, src);
+
+    replace_all(dest, len, "\", "\\");
+    replace_all(dest, len, "\0", "\\0");
+    replace_all(dest, len, "\r", "\\r");
+    replace_all(dest, len, "\n", "\\n");
+    replace_all(dest, len, "\x1a", "\Z");
+    replace_all(dest, len, "'", "\'");
+    replace_all(dest, len, "^"", "\^"");
+
+    return PLUGIN_HANDLED;
 }

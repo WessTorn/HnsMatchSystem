@@ -1,5 +1,6 @@
 public dm_init() {
-	g_ModFuncs[MODE_DM][MODEFUNC_KILL] = CreateOneForward(g_PluginId, "dm_killed", FP_CELL, FP_CELL);	
+	g_ModFuncs[MODE_DM][MODEFUNC_KILL] = CreateOneForward(g_PluginId, "dm_killed", FP_CELL, FP_CELL);
+	g_ModFuncs[MODE_DM][MODEFUNC_FALLDAMAGE] = CreateOneForward(g_PluginId, "dm_falldamage", FP_CELL, FP_FLOAT);
 }
 
 public dm_start() {
@@ -23,23 +24,32 @@ public dm_killed(victim, killer) {
 			
 			hns_setrole(killer);
 		}
-	} else {
-		if (getUserTeam(victim) == TEAM_TERRORIST) {
-			new lucky = GetRandomCT();
-			if (lucky) {
-				rg_set_user_team(lucky, TEAM_TERRORIST);
-				chat_print(0, "%L", LANG_PLAYER, "DM_TRANSF", lucky)
-				rg_set_user_team(victim, TEAM_CT);
-
-				if (!g_iSettings[ONEHPMODE])
-					set_entvar(lucky, var_health, 100.0);
-
-				hns_setrole(lucky);
-			}
-		}
 	}
 
 	set_task(g_iSettings[DMRESPAWN], "RespawnPlayer", victim);
+}
+
+public dm_falldamage(id, Float:flDmg) {
+	new Float:flHp;
+	get_entvar(id, var_health, flHp);
+
+	if (flHp > flDmg) {
+		return;
+	}
+
+	if (getUserTeam(id) == TEAM_TERRORIST) {
+		new lucky = GetRandomCT();
+		if (lucky) {
+			rg_set_user_team(lucky, TEAM_TERRORIST);
+			chat_print(0, "%L", LANG_PLAYER, "DM_TRANSF", lucky)
+			rg_set_user_team(id, TEAM_CT);
+
+			if (!g_iSettings[ONEHPMODE])
+				set_entvar(lucky, var_health, 100.0);
+
+			hns_setrole(lucky);
+		}
+	}
 }
 
 public RespawnPlayer(id) {
