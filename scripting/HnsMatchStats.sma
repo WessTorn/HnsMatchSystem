@@ -56,6 +56,7 @@ public plugin_init() {
 	RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "rgRoundFreezeEnd", true);
 	RegisterHookChain(RG_CSGameRules_RestartRound, "rgRestartRound", true);
 	RegisterHookChain(RG_RoundEnd, "rgRoundEnd", false);
+	RegisterHookChain(RG_PlayerBlind, "rgPlayerBlind");
 
 	register_message(get_user_msgid("ShowMenu"), "msgShowMenu");
 	register_message(get_user_msgid("VGUIMenu"), "msgVguiMenu");
@@ -303,6 +304,8 @@ public rgPlayerKilled(victim, attacker) {
 	if (is_user_connected(attacker) && victim != attacker) {
 		g_StatsRound[attacker][PLR_STATS_KILLS]++;
 		iStats[attacker][PLR_STATS_KILLS]++;
+		g_StatsRound[victim][PLR_STATS_DEATHS]++;
+		iStats[victim][PLR_STATS_DEATHS]++;
 	}
 
 	if (iLastAttacker[victim] && iLastAttacker[victim] != attacker) {
@@ -344,12 +347,17 @@ public rgPlayerFallDamage(id) {
 	}
 }
 
-public PlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold, const alpha) {
-	if (rg_get_user_team(index) == rg_get_user_team(attacker)) {
-		return;
-	}
+public rgPlayerBlind(const index, const inflictor, const attacker, const Float:fadeTime, const Float:fadeHold, const alpha) {
+	if(rg_get_user_team(index) != TEAM_CT || rg_get_user_team(attacker) != TEAM_TERRORIST || index == attacker)
+		return HC_CONTINUE;
+
+	if (alpha != 255 || fadeHold < 1.0)
+		return HC_CONTINUE;
+
 	g_StatsRound[attacker][PLR_STATS_FLASHTIME] += fadeHold;
 	iStats[attacker][PLR_STATS_FLASHTIME] += fadeHold;
+
+	return HC_CONTINUE;
 }
 
 public rgPlayerPreThink(id) {
