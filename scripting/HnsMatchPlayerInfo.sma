@@ -149,6 +149,7 @@ public hns_round_end() {
 
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "ch");
+	new bool:bShowBest;
 
 	for (new i = 0; i < iNum; i++) {
 		new id = iPlayers[i];
@@ -168,8 +169,13 @@ public hns_round_end() {
 			{
 				g_eBestStats[j] = g_eRoundBests[id][j];
 				g_eBestIndex[j] = id;
+				bShowBest = true;
 			}
 		}
+	}
+
+	if (!bShowBest) {
+		return;
 	}
 
 	new iLen = format(g_szMess, sizeof g_szMess - 1, "Best players of the round:^n^n");
@@ -306,6 +312,11 @@ public ShowTop(player) {
 		if (!is_user_connected(id))
 			continue;
 
+		new Float:fS, Float:fD, Float:fA;
+		fS = float(hns_get_stats_stabs(STATS_ALL, id));
+		fD = float(hns_get_stats_deaths(STATS_ALL, id));
+		fA = float(hns_get_stats_assists(STATS_ALL, id));
+
 		fnConvertTime(hns_get_stats_surv(STATS_ALL, id), surv_time, 23);
 		fnConvertTime(hns_get_stats_flashtime(STATS_ALL, id), flash_time, 23);
 		iLen += formatex(szMotd[iLen], charsmax(szMotd) - iLen, "<tr> \
@@ -314,11 +325,11 @@ public ShowTop(player) {
 		<td>%s</td> \
 		<td>%d</td> \
 		<td>%.1fK</td> \
-		<td>%s</td> \
+		<td>%.2f</td> \
 		<td>%d</td> \
 		</tr>",
 			id,
-			(float(hns_get_stats_stabs(STATS_ALL, id)) + float(hns_get_stats_assists(STATS_ALL, id))) / float(hns_get_stats_deaths(STATS_ALL, id)),
+			floatdiv(floatadd(fS, fA), fD),
 			surv_time,
 			hns_get_stats_dmg_tt(STATS_ALL, id) + hns_get_stats_dmg_ct(STATS_ALL, id),
 			hns_get_stats_runned(STATS_ALL, id) / 1000.0,

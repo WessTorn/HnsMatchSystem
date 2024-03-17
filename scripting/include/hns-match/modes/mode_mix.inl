@@ -397,6 +397,13 @@ public mix_reverttimer() {
 public mix_player_join(id) {
 	TrieGetArray(g_PlayersLeaveData, getUserKey(id), g_ePlayerData[id], PlayerData_s);
 	if (g_ePlayerData[id][PLAYER_MATCH]) {
+		new iNum = get_num_players_in_match();
+		if (iNum >= g_eMatchInfo[e_mTeamSize]) {
+			transferUserToSpec(id);
+			return;
+		}
+
+
 		if (g_eMatchInfo[e_iMatchSwapped] == g_ePlayerData[id][PLAYER_SAVE_SWAP]) {
 			rg_set_user_team(id, g_ePlayerData[id][PLAYER_TEAM][0] == 'T' ? TEAM_TERRORIST : TEAM_CT);
 		} else {
