@@ -11,8 +11,8 @@ Counter-Strike Hide'n'Seek Match System plugins.
 - [ReSemiclip (last)](https://dev-cs.ru/resources/71/updates)
 
 ## Характеристики
-- Public / DeathMatch / Knife / Captain mode
-- MR / Wintime match system
+- Public / DeathMatch / Zombie / Knife / Captain mode
+- MR / Wintime / 1x1 match system
 - Watcher (admin) menu (N)
 - Система зависит от администратора.
 - Surrender
@@ -121,6 +121,7 @@ Counter-Strike Hide'n'Seek Match System plugins.
 | hns_rules           | 0         | Режим по умолчанию (0 - MR 1 - Timer) |
 | hns_wintime           | 15         | Время для победы |
 | hns_rounds           | 6         | Кол-во раундов для победы |
+| hns_duel             | 3          | Кол-во выигранных раундов для победы |
 | hns_boost            | 0          | Включить/Отключить буст режим |
 | hns_onehpmode        | 0          | Включить/Отключить 1 хп режим |
 | hns_flash	           | 1          | Кол-во флешек (Плагин сам изменяет) |
