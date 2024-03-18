@@ -325,7 +325,7 @@ public ShowTop(player) {
 		<td>%s</td> \
 		<td>%d</td> \
 		<td>%.1fK</td> \
-		<td>%.2f</td> \
+		<td>%s</td> \
 		<td>%d</td> \
 		</tr>",
 			id,
