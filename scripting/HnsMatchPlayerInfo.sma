@@ -45,6 +45,14 @@ new g_eRoundBests[MAX_PLAYERS + 1][SHOW_STATS];
 new g_eBestIndex[SHOW_STATS];
 new g_eBestStats[SHOW_STATS];
 
+enum _: SPEC_DATA {
+	bool:IS_SPEC,
+	SPEC_TARGET,
+	bool:IS_POV
+}
+
+new g_eSpecPlayers[MAX_PLAYERS + 1][SPEC_DATA];
+
 public plugin_init() {
 	register_plugin("Match: Player info", "1.0", "OpenHNS");
 
@@ -57,9 +65,47 @@ public plugin_init() {
 	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
 
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
+
+	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", false);
+	RegisterHookChain(RG_CBasePlayer_Observer_SetMode,"RG_CBasePlayerObserverSetMode_Pre", .post = false);
+	RegisterHookChain(RG_CBasePlayer_Observer_FindNextPlayer,"RG_CBasePlayerObserverFindNextPlayer_Post", .post = true);
 	
 	g_MsgSync = CreateHudSyncObj();
 	g_RoundSync = CreateHudSyncObj();
+}
+
+public client_disconnected(id) {
+	if (g_eSpecPlayers[id][IS_SPEC]) {
+		arrayset(g_eSpecPlayers[id], 0, SPEC_DATA);
+	}
+}
+
+public rgPlayerSpawn(id) {
+	if (g_eSpecPlayers[id][IS_SPEC]) {
+		arrayset(g_eSpecPlayers[id], 0, SPEC_DATA);
+	}
+}
+
+public RG_CBasePlayerObserverSetMode_Pre(const id, iMode) {
+	if (iMode != OBS_CHASE_FREE && iMode != OBS_IN_EYE) {
+		g_eSpecPlayers[id][SPEC_TARGET] = 0;
+		return HC_CONTINUE;
+	}
+
+	new iTarget = get_member(id, m_hObserverTarget);
+
+	g_eSpecPlayers[id][IS_SPEC] = true;
+	g_eSpecPlayers[id][SPEC_TARGET] = iTarget;
+	g_eSpecPlayers[id][IS_POV] = bool:(iMode == OBS_IN_EYE);
+	
+	return HC_CONTINUE;
+}
+
+public RG_CBasePlayerObserverFindNextPlayer_Post(const id) {
+	new iTarget = get_member(id, m_hObserverTarget);
+
+	g_eSpecPlayers[id][IS_SPEC] = true;
+	g_eSpecPlayers[id][SPEC_TARGET] = iTarget;
 }
 
 public plugin_cfg() {
@@ -376,7 +422,7 @@ public task_ShowPlayerInfo() {
 
 		if (g_HudOnOff[id]) {
 			set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.25, .holdtime = 1.0);
-			new szHudMess[128], iLen;
+			new szHudMess[512], iLen;
 
 			if (show_id != id) {
 				if (g_ePlayerPtsData[show_id][e_bInit]) {
@@ -404,6 +450,27 @@ public task_ShowPlayerInfo() {
 
 			if (hns_get_status() != MATCH_NONE && hns_get_status() != MATCH_STARTED) {
 				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "%s", get_matchstats_str(hns_get_status()));
+			}
+
+			new szSpecMess[256], iSpecLen;
+			new iSpecNum;
+			for (new j = 0; j < MAX_PLAYERS; j++) {
+				if (!g_eSpecPlayers[j][IS_SPEC]) {
+					continue;
+				}
+
+				if (!is_user_connected(j)) {
+					continue;
+				}
+
+				if (g_eSpecPlayers[j][SPEC_TARGET] == show_id) {
+					iSpecNum++;
+					iSpecLen += format(szSpecMess[iSpecLen], sizeof szSpecMess - iSpecLen, "%n%s^n", j, g_eSpecPlayers[j][IS_POV] ? "" : " [3rd Person]");
+				}
+			}
+
+			if (iSpecNum) {
+				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "^nWatching [%d]^n%s", iSpecNum, szSpecMess);
 			}
 
 			ShowSyncHudMsg(id, g_MsgSync, "%s", szHudMess);

@@ -52,11 +52,15 @@ public hideknifeHandler(const id, const menu, const item) {
 		hideTeam = TEAM_TERRORIST;
 
 		hideKnife = g_playerHideKnife[id][hideTeam] = !g_playerHideKnife[id][hideTeam];
+
+		commandHideKnife(id);
 	}
 	case 1: {
 		hideTeam = TEAM_CT;
 
 		hideKnife = g_playerHideKnife[id][hideTeam] = !g_playerHideKnife[id][hideTeam];
+
+		commandHideKnife(id);
 	}
 	}
 
