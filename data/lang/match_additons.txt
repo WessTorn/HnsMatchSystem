@@ -129,13 +129,13 @@ TRNING_NOT_ALIVE = %s Вы должны быть живы, чтобы испол
 TRNING_CPNT_SAVE = %s Чекпоинт сохранена!
 TRNING_TLPRT_NOT = %s У вас нет чекпоинтов!
 TRNING_STUCK_NOT = %s У вас должен быть другой чекпоинт, чтобы использовать stuck!
-TRNING_SHOW_ON = %s Показать урон: ^3влючено^1!
+TRNING_SHOW_ON = %s Показать урон: ^3включено^1!
 TRNING_SHOW_OFF = %s Показать урон: ^3выключено^1!
-TRNING_ANGLES_ON = %s Сохранять прицел ^3влючено^1!
+TRNING_ANGLES_ON = %s Сохранять прицел ^3включено^1!
 TRNING_ANGLES_OFF = %s Сохранять прицел ^3выключено^1!
 TRNING_CLIP_ON = %s Ноклип ^3включен^1!
 TRNING_CLIP_OFF = %s Ноклип ^3выключен^1!
-TRNING_INVIS_ON = %s Невидимные игроки ^3влючено^1!
+TRNING_INVIS_ON = %s Невидимные игроки ^3включено^1!
 TRNING_INVIS_OFF = %s Невидимные игроки ^3выключено^1!
 TRNING_DMG = %s Вы получили ^3%i^1 урона.
 
