@@ -67,7 +67,7 @@ public plugin_init() {
 	set_task(1.0, "task_ShowPlayerInfo", .flags = "b");
 
 	RegisterHookChain(RG_CBasePlayer_Spawn, "rgPlayerSpawn", false);
-	RegisterHookChain(RG_CBasePlayer_Observer_SetMode,"RG_CBasePlayerObserverSetMode_Pre", .post = false);
+	RegisterHookChain(RG_CBasePlayer_Observer_SetMode,"RG_CBasePlayerObserverSetMode_Pre", .post = true);
 	RegisterHookChain(RG_CBasePlayer_Observer_FindNextPlayer,"RG_CBasePlayerObserverFindNextPlayer_Post", .post = true);
 	
 	g_MsgSync = CreateHudSyncObj();
@@ -87,7 +87,8 @@ public rgPlayerSpawn(id) {
 }
 
 public RG_CBasePlayerObserverSetMode_Pre(const id, iMode) {
-	if (iMode != OBS_CHASE_FREE && iMode != OBS_IN_EYE) {
+	new iLastMode = get_member(id, m_iObserverLastMode);
+	if (iLastMode != OBS_CHASE_FREE && iLastMode != OBS_IN_EYE) {
 		g_eSpecPlayers[id][SPEC_TARGET] = 0;
 		return HC_CONTINUE;
 	}
@@ -96,7 +97,7 @@ public RG_CBasePlayerObserverSetMode_Pre(const id, iMode) {
 
 	g_eSpecPlayers[id][IS_SPEC] = true;
 	g_eSpecPlayers[id][SPEC_TARGET] = iTarget;
-	g_eSpecPlayers[id][IS_POV] = bool:(iMode == OBS_IN_EYE);
+	g_eSpecPlayers[id][IS_POV] = bool:(iLastMode == OBS_IN_EYE);
 	
 	return HC_CONTINUE;
 }
@@ -422,7 +423,7 @@ public task_ShowPlayerInfo() {
 
 		if (g_HudOnOff[id]) {
 			set_hudmessage(.red = 100, .green = 100, .blue = 100, .x = 0.01, .y = 0.25, .holdtime = 1.0);
-			new szHudMess[512], iLen;
+			new szHudMess[1024], iLen;
 
 			if (show_id != id) {
 				if (g_ePlayerPtsData[show_id][e_bInit]) {
@@ -443,7 +444,7 @@ public task_ShowPlayerInfo() {
 				fnConvertTime(hns_get_stats_surv(STATS_ALL, show_id), szTime, charsmax(szTime), false);
 				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "\
 				Survive time: %s^n\
-				Stabs: %d",
+				Stabs: %d^n",
 				szTime,
 				hns_get_stats_stabs(STATS_ALL, show_id));
 			}
@@ -452,7 +453,7 @@ public task_ShowPlayerInfo() {
 				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "%s", get_matchstats_str(hns_get_status()));
 			}
 
-			new szSpecMess[256], iSpecLen;
+			new szSpecMess[512], iSpecLen;
 			new iSpecNum;
 			for (new j = 0; j < MAX_PLAYERS; j++) {
 				if (!g_eSpecPlayers[j][IS_SPEC]) {
