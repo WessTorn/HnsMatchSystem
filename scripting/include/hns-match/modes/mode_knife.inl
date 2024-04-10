@@ -10,6 +10,7 @@ public kniferound_start() {
 	g_iCurrentMode = MODE_KNIFE;
 	ChangeGameplay(GAMEPLAY_KNIFE);
 	set_cvars_mode(MODE_KNIFE);
+	g_eMatchState = STATE_PREPARE;
 	restartRound(1.0);
 }
 
@@ -24,11 +25,17 @@ public kniferound_roundstart() {
 			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "%L", LANG_PLAYER, "HUD_START_CAPKF");
 			chat_print(0, "%L", LANG_PLAYER, "START_KNIFE");
 			ChangeGameplay(GAMEPLAY_KNIFE);
+			g_eMatchState = STATE_ENABLED;
 		}
 		case MATCH_TEAMKNIFE: {
 			setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "%L", LANG_PLAYER, "HUD_STARTKNIFE");
 			chat_print(0, "%L", LANG_PLAYER, "START_KNIFE");
 			ChangeGameplay(GAMEPLAY_KNIFE);
+			g_eMatchState = STATE_ENABLED;
+
+			ResetAfkData();
+			set_task(2.0, "taskSaveAfk");
+			set_task(4.0, "taskCheckAfk");
 		}
 		default: {
 			ChangeGameplay(GAMEPLAY_TRAINING);
@@ -47,6 +54,8 @@ public kniferound_roundend(bool:win_ct) {
 
 			g_iMatchStatus = MATCH_TEAMPICK;
 
+			g_eMatchState = STATE_DISABLED;
+
 			pickMenu(g_iCaptainPick, true);
 
 			set_task(1.0, "WaitPick");
@@ -57,6 +66,8 @@ public kniferound_roundend(bool:win_ct) {
 			} else {
 				setTaskHud(0, 2.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_KF_WIN_TT");
 			}
+
+			g_eMatchState = STATE_DISABLED;
 
 			savePlayers(win_ct ? TEAM_CT : TEAM_TERRORIST);
 			training_start();

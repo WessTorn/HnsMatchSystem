@@ -77,9 +77,10 @@ public mix_pause() {
 		return;
 	}
 	g_eMatchState = STATE_PAUSED;
+
 	mix_reverttimer();
+
 	ChangeGameplay(GAMEPLAY_TRAINING);
-	//restartRound(0.5);
 
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "ac");
@@ -93,6 +94,7 @@ public mix_pause() {
 
 	set_task(1.0, "taskHudPaused", .id = HUD_PAUSE, .flags = "b");
 	rg_send_audio(0, "fvox/deactivated.wav");
+	
 	server_cmd("sv_alltalk 1");
 }
 
@@ -109,15 +111,25 @@ public mix_unpause() {
 
 	g_eMatchState = STATE_PREPARE;
 	restartRound(1.0);
-	ChangeGameplay(GAMEPLAY_HNS);
+
+	switch (g_iCurrentMode) {
+		case MODE_MIX: {
+			ChangeGameplay(GAMEPLAY_HNS);
+			g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
+		}
+		case MODE_KNIFE: {
+			ChangeGameplay(GAMEPLAY_KNIFE);
+		}
+	}
+
 	if(task_exists(HUD_PAUSE)) {
 		remove_task(HUD_PAUSE);
-	}	
+	}
+
 	setTaskHud(0, 1.0, 1, 255, 255, 255, 3.0, "%L", LANG_SERVER, "HUD_UNPAUSE");
 	rg_send_audio(0, "fvox/activated.wav");
 	server_cmd("sv_alltalk 3");
 
-	g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 }
 
 
@@ -387,7 +399,7 @@ public taskRoundEvent() {
 
 
 public mix_reverttimer() {
-	if (!task_exists(TASK_TIMER)) {
+	if (!task_exists(TASK_TIMER) && g_iCurrentMode != MODE_MIX) {
 		return;
 	}
 

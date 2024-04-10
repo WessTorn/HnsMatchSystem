@@ -449,7 +449,7 @@ public task_ShowPlayerInfo() {
 				hns_get_stats_stabs(STATS_ALL, show_id));
 			}
 
-			if (hns_get_status() != MATCH_NONE && hns_get_status() != MATCH_STARTED) {
+			if (hns_get_status() != MATCH_NONE && hns_get_status() != MATCH_STARTED && hns_get_state() != STATE_PAUSED) {
 				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "%s", get_matchstats_str(hns_get_status()));
 			}
 
