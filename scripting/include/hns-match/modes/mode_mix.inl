@@ -220,7 +220,9 @@ public MixFinishedMR(iWinTeam) {
 
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
-	TrieDestroy(g_PlayersLeaveData);
+	if(g_PlayersLeaveData != Invalid_Trie) {
+		TrieClear(g_PlayersLeaveData);
+	}
 	if(task_exists(TASK_TIMER)) {
 		remove_task(TASK_TIMER);
 	}
@@ -241,7 +243,9 @@ public MixFinishedWT() {
 
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
-	TrieDestroy(g_PlayersLeaveData);
+	if(g_PlayersLeaveData != Invalid_Trie) {
+		TrieClear(g_PlayersLeaveData);
+	}
 	if(task_exists(TASK_TIMER)) {
 		remove_task(TASK_TIMER);
 	}
@@ -262,7 +266,9 @@ public MixFinishedDuel() {
 
 	g_bPlayersListLoaded = false;
 	arrayset(g_eMatchInfo, 0, MatchInfo_s);
-	TrieDestroy(g_PlayersLeaveData);
+	if(g_PlayersLeaveData != Invalid_Trie) {
+		TrieClear(g_PlayersLeaveData);
+	}
 	if(task_exists(TASK_TIMER)) {
 		remove_task(TASK_TIMER);
 	}
