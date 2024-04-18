@@ -478,7 +478,7 @@ stock bool:checkPlayer(id) {
 
 public ShowTimeAsMoney()
 {
-	if (g_iCurrentMode == MODE_MIX && g_iMatchStatus == MATCH_STARTED) {
+	if (g_iCurrentMode == MODE_MIX && g_iMatchStatus == MATCH_STARTED && g_iCurrentRules == RULES_TIMER) {
 		static players[32], num, id
 		get_players(players, num, "a");
 		for(--num; num>=0; num--)
