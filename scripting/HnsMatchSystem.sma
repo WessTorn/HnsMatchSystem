@@ -41,6 +41,9 @@ public plugin_init() {
 	
 
 	set_msg_block(get_user_msgid("HudTextArgs"), BLOCK_SET);
+	set_msg_block(g_msgMoney = get_user_msgid("Money"), BLOCK_SET);
+
+	set_task(0.1, "ShowTimeAsMoney", 15671983, .flags="b");
 
 	g_aPlayersLoadData = ArrayCreate(PlayersLoad_s);
 	loadPlayers();
@@ -301,8 +304,10 @@ public msgVguiMenu(msgid, dest, id) {
 }
 
 public msgHideWeapon(msgid, dest, id) {
-	const money = (1 << 5);
-	set_msg_arg_int(1, ARG_BYTE, get_msg_arg_int(1) | money);
+	if (g_iCurrentMode != MODE_MIX) {
+		const money = (1 << 5);
+		set_msg_arg_int(1, ARG_BYTE, get_msg_arg_int(1) | money);
+	}
 }
 
 bool:shouldAutoJoin(id) {
@@ -469,6 +474,23 @@ stock bool:checkPlayer(id) {
 		}
 	}
 	return false;
+}
+
+public ShowTimeAsMoney()
+{
+	if (g_iCurrentMode == MODE_MIX && g_iMatchStatus == MATCH_STARTED && g_iCurrentRules == RULES_TIMER) {
+		static players[32], num, id
+		get_players(players, num, "a");
+		for(--num; num>=0; num--)
+		{
+			id = players[num];
+
+			message_begin(MSG_ONE, g_msgMoney, .player=id);
+			write_long(floatround((g_iSettings[WINTIME]*60.0) - g_eMatchInfo[e_flSidesTime][g_isTeamTT], floatround_floor));
+			write_byte(0);
+			message_end();
+		}
+	}
 }
 
 public plugin_cfg() {
