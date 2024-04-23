@@ -219,7 +219,7 @@ public rgFlPlayerFallDamage(const id) {
 }
 
 public rgPlayerSpawn(id) {
-	if (!is_user_alive(id))
+	if (!is_user_alive(id) || is_user_bot(id) || is_user_hltv(id))
 		return;
 
 	if (g_GPFuncs[g_iCurrentGameplay][GP_SETROLE])
