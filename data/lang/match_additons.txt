@@ -72,8 +72,8 @@ ROUNDINFO_OFF = %s Round info is now ^3disabled^1.
 
 DMG_SPAM = %s Please wait ^3%.1f^1 seconds between commands!
 DMG_ERR = %s There is no OR multiple players with matching pattern -> ^3%s^1.
-DMG_SHOW_ROUND = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 - ^3This round^1 HP, ^3%.1f^1 seconds ago.
-DMG_SHOW = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 - ^3Not this round^1 HP, ^3%.1f^1 seconds ago.
+DMG_SHOW_ROUND = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 HP - ^3this round^1, ^3%.1f^1 seconds ago.
+DMG_SHOW = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 HP - ^3not this round^1, ^3%.1f^1 seconds ago.
 
 [ru]
 
@@ -126,13 +126,13 @@ MENU_TRNING_WEAPONS = Получить оружие
 
 
 TRNING_NOT_ALIVE = %s Вы должны быть живы, чтобы использовать эту команду!
-TRNING_CPNT_SAVE = %s Чекпоинт сохранена!
+TRNING_CPNT_SAVE = %s Чекпоинт сохранен!
 TRNING_TLPRT_NOT = %s У вас нет чекпоинтов!
 TRNING_STUCK_NOT = %s У вас должен быть другой чекпоинт, чтобы использовать stuck!
 TRNING_SHOW_ON = %s Показать урон: ^3включено^1!
 TRNING_SHOW_OFF = %s Показать урон: ^3выключено^1!
-TRNING_ANGLES_ON = %s Сохранять прицел ^3включено^1!
-TRNING_ANGLES_OFF = %s Сохранять прицел ^3выключено^1!
+TRNING_ANGLES_ON = %s Сохранение прицела ^3включено^1!
+TRNING_ANGLES_OFF = %s Сохранение прицела ^3выключено^1!
 TRNING_CLIP_ON = %s Ноклип ^3включен^1!
 TRNING_CLIP_OFF = %s Ноклип ^3выключен^1!
 TRNING_INVIS_ON = %s Невидимные игроки ^3включено^1!
@@ -153,5 +153,5 @@ ROUNDINFO_OFF = %s Информация лучших игроков ^3выклю
 
 DMG_SPAM = %s Пожалуйста, подождите ^3%.1f^1 секунды между командами!
 DMG_ERR = %s Не существует ИЛИ нескольких игроков с совпадающим шаблоном -> ^3%s^1.
-DMG_SHOW_ROUND = Урон от падения %s ^3%n^1 ^3%.0f^1 HP - до ^3%.0f^1 - ^3Этот раунд^1 HP, ^3%.1f^1 секунд назад.
-DMG_SHOW = Урон от падения %s ^3%n^1 ^3%.0f^1 HP - до ^3%.0f^1 - ^3Не этот раунд^1 HP, ^3%.1f^1 секунд назад.
+DMG_SHOW_ROUND = %s ^3%n^1 потерял ^3%.0f^1 HP - до ^3%.0f^1 HP - ^3в этом раунде^1, ^3%.1f^1 секунд назад.
+DMG_SHOW = %s ^3%n^1 потерял ^3%.0f^1 HP - до ^3%.0f^1 HP - ^3не в этом раунде^1, ^3%.1f^1 секунд назад.
