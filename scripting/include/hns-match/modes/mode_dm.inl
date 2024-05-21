@@ -14,22 +14,23 @@ public dm_start() {
 }
 
 public dm_killed(victim, killer) {
-	new DeadVictim = get_entvar(victim, var_health, 0.0);
+	if (killer != victim) {
+		if (is_user_connected(killer)) {
+			if (getUserTeam(killer) == TEAM_CT) {
+				rg_set_user_team(killer, TEAM_TERRORIST);
+				rg_set_user_team(victim, TEAM_CT);
 
-	if (killer != victim && is_user_connected(killer)) {
-		if (getUserTeam(killer) == TEAM_CT) {
-			rg_set_user_team(killer, TEAM_TERRORIST);
-			rg_set_user_team(victim, TEAM_CT);
-
-			if (!g_iSettings[ONEHPMODE])
-				set_entvar(killer, var_health, 100.0);
-			
-			hns_setrole(killer);
+				if (!g_iSettings[ONEHPMODE])
+					set_entvar(killer, var_health, 100.0);
+				
+				hns_setrole(killer);
+			}
+		} else {
+			new DeadVictim = get_entvar(victim, var_health, 0.0);
+			if (DeadVictim) {
+				LuckyTransferToTT(victim);
+			}
 		}
-	}
-
-	if (DeadVictim) {
-		LuckyTransferToTT(victim);
 	}
 
 	set_task(g_iSettings[DMRESPAWN], "RespawnPlayer", victim);

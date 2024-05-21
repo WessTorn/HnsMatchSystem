@@ -55,6 +55,11 @@ public plugin_init() {
 	g_PlayersLeaveData = TrieCreate();
 
 	register_dictionary("mixsystem.txt");
+
+	new szPath[PLATFORM_MAX_PATH];
+	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
+	format(szPath, charsmax(szPath), "%s/mixsystem/%s", szPath, "matchsystem.cfg");
+	server_cmd("exec %s", szPath);
 }
 
 public forward_init() {
@@ -491,13 +496,6 @@ public ShowTimeAsMoney()
 			message_end();
 		}
 	}
-}
-
-public plugin_cfg() {
-	new szPath[PLATFORM_MAX_PATH];
-	get_localinfo("amxx_configsdir", szPath, charsmax(szPath));
-	format(szPath, charsmax(szPath), "%s/mixsystem/%s", szPath, "matchsystem.cfg");
-	server_cmd("exec %s", szPath);
 }
 
 restartRound(Float:delay = 0.5) {
