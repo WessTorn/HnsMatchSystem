@@ -69,6 +69,10 @@ HUD_ON = %s HUD info is now ^3enabled^1.
 HUD_OFF = %s HUD info is now ^3disabled^1.
 ROUNDINFO_ON = %s Round info is now ^3enabled^1.
 ROUNDINFO_OFF = %s Round info is now ^3disabled^1.
+SPECLIST_ON = %s Speclist is now ^3enabled^1.
+SPECLIST_OFF = %s Speclist is now ^3disabled^1.
+SPECHIDE_ON = %s Spechide is now ^3enabled^1.
+SPECHIDE_OFF = %s Spechide is now ^3disabled^1.
 
 DMG_SPAM = %s Please wait ^3%.1f^1 seconds between commands!
 DMG_ERR = %s There is no OR multiple players with matching pattern -> ^3%s^1.
@@ -146,10 +150,14 @@ STATS_TOP = %s Показать топ — ^3/top
 
 MAPS_NOM = %s ^3%n^1 номинировал карту: ^3%s^1.
 
-HUD_ON = %s HUD информация ^3включена^1.
-HUD_OFF = %s HUD информация ^3выключена^1.
-ROUNDINFO_ON = %s Информация лучших игроков ^3включена^1.
-ROUNDINFO_OFF = %s Информация лучших игроков ^3выключена^1.
+HUD_ON = %s HUD информация: ^3включена^1.
+HUD_OFF = %s HUD информация: ^3выключена^1.
+ROUNDINFO_ON = %s Информация лучших игроков: ^3включена^1.
+ROUNDINFO_OFF = %s Информация лучших игроков: ^3выключена^1.
+SPECLIST_ON = %s Список наблюдателей: ^3включен^1.
+SPECLIST_OFF = %s Список наблюдателей: ^3выключен^1.
+SPECHIDE_ON = %s Спрятать в списке наблюдателей: ^3включен^1.
+SPECHIDE_OFF = %s Спрятать в списке наблюдателей: ^3выключен^1.
 
 DMG_SPAM = %s Пожалуйста, подождите ^3%.1f^1 секунды между командами!
 DMG_ERR = %s Не существует ИЛИ нескольких игроков с совпадающим шаблоном -> ^3%s^1.

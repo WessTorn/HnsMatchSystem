@@ -46,6 +46,8 @@ new g_eBestIndex[SHOW_STATS];
 new g_eBestStats[SHOW_STATS];
 
 enum _: SPEC_DATA {
+	bool:SHOW_SPEC,
+	bool:SPEC_HIDE,
 	bool:IS_SPEC,
 	SPEC_TARGET,
 	bool:IS_POV
@@ -61,6 +63,8 @@ public plugin_init() {
 	RegisterSayCmd("hud", "hudinfo", "cmdHudInfo", 0, "Show hud info");
 	RegisterSayCmd("ri", "roundinfo", "cmdRoundInfo", 0, "Show hud info");
 	RegisterSayCmd("top", "tops", "ShowTop", 0, "Show top");
+	RegisterSayCmd("showspec", "speclist", "cmdShowSpec", 0, "On/Off speclist");
+	RegisterSayCmd("spechide", "hidespec", "cmdSpecHide", 0, "Spec hide");
 
 	RegisterHookChain(RG_CBasePlayer_TakeDamage, "rgTakeDamage", true);
 
@@ -78,6 +82,7 @@ public client_disconnected(id) {
 	if (g_eSpecPlayers[id][IS_SPEC]) {
 		arrayset(g_eSpecPlayers[id], 0, SPEC_DATA);
 	}
+
 }
 
 public rgPlayerSpawn(id) {
@@ -116,6 +121,8 @@ public plugin_cfg() {
 public client_putinserver(id) {
 	g_HudOnOff[id] = true;
 	g_HudRoundOnOff[id] = true;
+	g_eSpecPlayers[id][SHOW_SPEC] = true;
+	g_eSpecPlayers[id][SPEC_HIDE] = false;
 }
 
 public sayHandle(id) {
@@ -183,6 +190,30 @@ public cmdRoundInfo(id) {
 		client_print_color(id, print_team_blue, "%L", id, "ROUNDINFO_ON", g_szPrefix);
 	} else {
 		client_print_color(id, print_team_blue, "%L", id, "ROUNDINFO_OFF", g_szPrefix);
+	}
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdShowSpec(id) {
+	g_eSpecPlayers[id][SHOW_SPEC] = !g_eSpecPlayers[id][SHOW_SPEC];
+
+	if (g_eSpecPlayers[id][SHOW_SPEC]) {
+		client_print_color(id, print_team_blue, "%L", id, "SPECLIST_ON", g_szPrefix);
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "SPECLIST_OFF", g_szPrefix);
+	}
+
+	return PLUGIN_HANDLED;
+}
+
+public cmdSpecHide(id) {
+	g_eSpecPlayers[id][SPEC_HIDE] = !g_eSpecPlayers[id][SPEC_HIDE];
+
+	if (g_eSpecPlayers[id][SPEC_HIDE]) {
+		client_print_color(id, print_team_blue, "%L", id, "SPECHIDE_ON", g_szPrefix);
+	} else {
+		client_print_color(id, print_team_blue, "%L", id, "SPECHIDE_OFF", g_szPrefix);
 	}
 
 	return PLUGIN_HANDLED;
@@ -456,7 +487,15 @@ public task_ShowPlayerInfo() {
 			new szSpecMess[512], iSpecLen;
 			new iSpecNum;
 			for (new j = 0; j < MAX_PLAYERS; j++) {
+				if (!g_eSpecPlayers[show_id][SHOW_SPEC]) {
+					break;
+				}
+
 				if (!g_eSpecPlayers[j][IS_SPEC]) {
+					continue;
+				}
+
+				if (g_eSpecPlayers[j][SPEC_HIDE]) {
 					continue;
 				}
 
