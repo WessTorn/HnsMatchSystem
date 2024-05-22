@@ -28,7 +28,7 @@ public mix_start() {
 	loadMapCFG();
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "e", "TERRORIST");
+	get_players(iPlayers, iNum, "ce", "TERRORIST");
 	g_eMatchInfo[e_mTeamSizeTT] = iNum;
 	g_eMatchInfo[e_mTeamSize] = get_num_players_in_match();
 
@@ -303,7 +303,7 @@ public mix_roundend(bool:win_ct) {
 			g_eMatchInfo[e_iRoundsPlayed][g_isTeamTT]++;
 
 			new iPlayers[MAX_PLAYERS], iNum;
-			get_players(iPlayers, iNum, "ahe", "CT");
+			get_players(iPlayers, iNum, "ache", "CT");
 
 			if (!iNum) {
 				new Float:roundtime = get_round_time() * 60.0;

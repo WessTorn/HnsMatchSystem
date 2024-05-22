@@ -122,6 +122,7 @@ Counter-Strike Hide'n'Seek Match System plugins
 | hns_last | 1 | Enable/disable grenades to the last TT |
 | hns_dmrespawn | 3 | Time (in seconds) for the player to revive in DM mode |
 | hns_survotetime | 10 | Time (in seconds) for surrender |
+| hns_randompick | 1 | Enable/disable random player selection |
 | hns_knifemap | 35hp_2 | Knifemap |
 | hns_prefix | MATCH | system prefix |
 
@@ -179,6 +180,8 @@ Counter-Strike Hide'n'Seek Match System plugins
 | hud / hudinfo | disable/enable hud |
 | rnw / rocknewwatcher | vote for new watcher |
 | wt / watcher | transfer/assign a new watcher |
+| speclist / showspec | Enable/Disable speclist |
+| spechide / hidespec | Enable/Disable spechide |
 
 ## Acknowledgments / Authors of other plugins
 [Garey](https://github.com/Garey27)

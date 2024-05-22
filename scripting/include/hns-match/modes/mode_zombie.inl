@@ -41,7 +41,7 @@ public zm_roundend(bool:win_ct) {
 
 public zm_set_teams() {
 	new iPlayers[MAX_PLAYERS], iNum
-	get_players(iPlayers, iNum, "h");
+	get_players(iPlayers, iNum, "ch");
 
 	for (new i; i < iNum; i++) {
 		new iPlayer = iPlayers[i];
@@ -56,7 +56,7 @@ public zm_set_teams() {
 
 GetRandomAlive() {
 	static iPlayers[MAX_PLAYERS], iTTNum
-	get_players(iPlayers, iTTNum, "he", "TERRORIST");
+	get_players(iPlayers, iTTNum, "che", "TERRORIST");
 
 	new iAlivePlayers[MAX_PLAYERS], iAliveNum;
 
@@ -109,7 +109,7 @@ public zm_player_leave(id) {
 
 public checkZombie() {
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "he", "CT");
+	get_players(iPlayers, iNum, "che", "CT");
 
 	if (!iNum) {
 		set_zombie();

@@ -14,6 +14,7 @@ enum _: CVARS
 	Float:DMRESPAWN,
 	SUTVOTETIME,
 	SURTIMEDELAY,
+	RANDOMPICK,
 	KNIFEMAP[24],
 	PREFIX[24]
 }
@@ -59,6 +60,9 @@ stock cvars_init() {
 
 	pCvar[SURTIMEDELAY] = create_cvar("hns_surtimedelay", "120", FCVAR_NONE, "Surrender time delay", true, 0.0);
 	bind_pcvar_num(pCvar[SURTIMEDELAY], g_iSettings[SURTIMEDELAY]);
+
+	pCvar[RANDOMPICK] = create_cvar("hns_randompick", "1", FCVAR_NONE, "Random pick", true, 0.0, true, 1.0);
+	bind_pcvar_num(pCvar[RANDOMPICK], g_iSettings[RANDOMPICK]);
 
 	pCvar[KNIFEMAP] = create_cvar("hns_knifemap", "35hp_2", FCVAR_NONE, "Knife map");
 	bind_pcvar_string(pCvar[KNIFEMAP], g_iSettings[KNIFEMAP], charsmax(g_iSettings[KNIFEMAP]));

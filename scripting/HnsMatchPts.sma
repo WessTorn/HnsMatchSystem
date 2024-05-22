@@ -238,7 +238,7 @@ SQL_SetPts(TeamName:team_winners) {
 	cData[0] = SQL_WINNERS;
 
 	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "e", team_winners == TEAM_TERRORIST ? "TERRORIST" : "CT");
+	get_players(iPlayers, iNum, "ce", team_winners == TEAM_TERRORIST ? "TERRORIST" : "CT");
 
 	if (iNum) {
 		for(new i, szAuthId[MAX_AUTHID_LENGTH]; i < iNum; i++) {
@@ -256,7 +256,7 @@ SQL_SetPts(TeamName:team_winners) {
 		iLen = 0;
 	}
 
-	get_players(iPlayers, iNum, "e", team_winners == TEAM_TERRORIST ? "CT" : "TERRORIST");
+	get_players(iPlayers, iNum, "ce", team_winners == TEAM_TERRORIST ? "CT" : "TERRORIST");
 
 	if (iNum) {
 		for(new i, szAuthId[MAX_AUTHID_LENGTH]; i < iNum; i++) {
