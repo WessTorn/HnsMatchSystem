@@ -129,6 +129,7 @@ Counter-Strike Hide'n'Seek Match System plugins.
 | hns_last             | 1        | Включить/Отключить выдачу гранат последнему ТТ |
 | hns_dmrespawn        | 3          | Время (в секундах), в течение которого игрок возродится в режиме DM |
 | hns_survotetime      | 10         | Время (в секундах), в течение которого идет голосование (surrender) |
+| hns_randompick       | 1          | Включить/Отключить случайный выбор игроков |
 | hns_knifemap         | 35hp_2     | Ножевая карта |
 | hns_prefix         | MATCH     | Префикс системы |
 
@@ -186,6 +187,8 @@ Counter-Strike Hide'n'Seek Match System plugins.
 | hud / hudinfo | Отключить/Включить худ |
 | rnw / rocknewwatcher | Голосовать за нового watcher |
 | wt / watcher | Передать/Назначить нового watcher |
+| speclist / showpec | Включить/выключить speclist |
+| spechide / hidespec | Включить/выключить spechide |
 
 ## Благодарности / Aвторы других плагинов
 [Garey](https://github.com/Garey27)

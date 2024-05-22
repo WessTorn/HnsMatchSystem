@@ -159,6 +159,12 @@ public rgRoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) 
 		return HC_SUPERCEDE;
 	}
 
+	if (g_iCurrentMode == MODE_ZM && event == ROUND_TERRORISTS_WIN) {
+        set_member_game(m_bGameStarted, true);
+        SetHookChainReturn(ATYPE_BOOL, false);
+        return HC_SUPERCEDE;
+    }
+
 	if (g_GPFuncs[g_iCurrentGameplay][GP_ROUNDEND])
 		ExecuteForward(g_GPFuncs[g_iCurrentGameplay][GP_ROUNDEND], _, (status == WINSTATUS_CTS) ? true : false);
 
@@ -485,7 +491,7 @@ public ShowTimeAsMoney()
 {
 	if (g_iCurrentMode == MODE_MIX && g_iMatchStatus == MATCH_STARTED && g_iCurrentRules == RULES_TIMER) {
 		static players[32], num, id
-		get_players(players, num, "a");
+		get_players(players, num, "ac");
 		for(--num; num>=0; num--)
 		{
 			id = players[num];

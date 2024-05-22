@@ -154,7 +154,7 @@ public pickMenu(id, bool:bStartWait) {
 		return PLUGIN_HANDLED;
 	}
 
-	if(bStartWait == true)
+	if(bStartWait == true && g_iSettings[RANDOMPICK] == 1)
 	{
 		WaitPick();
 	}
@@ -320,7 +320,7 @@ public wait_function(id)
 GetPickRandom() {
 	new iChoose;
 	static iPlayers[MAX_PLAYERS], iNum
-	get_players(iPlayers, iNum, "he", "SPECTATOR");
+	get_players(iPlayers, iNum, "che", "SPECTATOR");
 
 	new iSpecPlayers[MAX_PLAYERS], iSpecNum;
 

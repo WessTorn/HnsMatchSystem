@@ -58,7 +58,9 @@ public kniferound_roundend(bool:win_ct) {
 
 			pickMenu(g_iCaptainPick, true);
 
-			set_task(1.0, "WaitPick");
+			if (g_iSettings[RANDOMPICK] == 1) {
+				set_task(1.0, "WaitPick");
+			}
 		}
 		case MATCH_TEAMKNIFE: {
 			if (win_ct) {
