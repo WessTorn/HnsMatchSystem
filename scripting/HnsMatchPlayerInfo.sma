@@ -487,7 +487,7 @@ public task_ShowPlayerInfo() {
 			new szSpecMess[512], iSpecLen;
 			new iSpecNum;
 			for (new j = 0; j < MAX_PLAYERS; j++) {
-				if (!g_eSpecPlayers[show_id][SHOW_SPEC]) {
+				if (!g_eSpecPlayers[id][SHOW_SPEC]) {
 					break;
 				}
 
