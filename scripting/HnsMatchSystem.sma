@@ -96,7 +96,7 @@ public native_get_mode(amxx, params) {
 
 public native_set_mode(amxx, params) {
 	enum { iSetMode = 1 };
-	switch (iSetMode) {
+	switch (get_param(iSetMode)) {
 		case MODE_TRAINING: {
 			training_start()
 		}
