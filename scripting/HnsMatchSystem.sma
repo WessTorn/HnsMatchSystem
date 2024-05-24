@@ -95,9 +95,27 @@ public native_get_mode(amxx, params) {
 }
 
 public native_set_mode(amxx, params) {
-	enum { argMode = 1 };
-	g_iCurrentMode = get_param(argMode);
-	// taskPrepareMode(argMode);
+	enum { iSetMode = 1 };
+	switch (iSetMode) {
+		case MODE_TRAINING: {
+			training_start()
+		}
+		case MODE_KNIFE: {
+			kniferound_start()
+		}
+		case MODE_PUB: {
+			pub_start()
+		}
+		case MODE_DM: {
+			dm_start()
+		}
+		case MODE_ZM: {
+			zm_start()
+		}
+		case MODE_MIX: {
+			mix_start()
+		}
+	}
 }
 
 public MATCH_STATUS:native_get_status(amxx, params) {
