@@ -97,6 +97,7 @@ public codeSuperWatcherMenu(id, hMenu, item) {
 	
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 	
 	new iKey = str_to_num(szData);
 	if(iKey == 1) {
@@ -150,6 +151,7 @@ public codeWatcherMenu(id, hMenu, item) {
 	
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 	
 	new iUserID = str_to_num(szData);
 	
@@ -158,8 +160,7 @@ public codeWatcherMenu(id, hMenu, item) {
 	if (iPlayer) {
 		MakeWatcher(id,  iPlayer);
 	}
-	
-	menu_destroy(hMenu);
+
 	return PLUGIN_HANDLED;
 }
 
@@ -266,6 +267,7 @@ public voteWatcherMenu(id) {
 
 public codeVoteWatcherMenu(id, hMenu, item) {
 	if(!g_eRnw[r_bIsVote]) {
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 
@@ -276,6 +278,7 @@ public codeVoteWatcherMenu(id, hMenu, item) {
 	
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 	
 	new iUserID = str_to_num(szData);
 	
@@ -290,7 +293,6 @@ public codeVoteWatcherMenu(id, hMenu, item) {
 		voteWatcherMenu(id);
 	}
 
-	menu_destroy(hMenu);
 	return PLUGIN_HANDLED;
 }
 

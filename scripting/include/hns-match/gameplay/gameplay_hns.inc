@@ -137,6 +137,7 @@ public NadesHandler(id, hMenu, item)
 {
 	if (g_bLastFlash != LAST_FLASH_MENU)
 	{
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 

@@ -71,6 +71,7 @@ public cmdMapsMenuHandler(id, hMenu, item) {
 
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 	new mapid = str_to_num(szData);
 
 	new szMap[32];
@@ -81,6 +82,5 @@ public cmdMapsMenuHandler(id, hMenu, item) {
 		client_print_color(0, print_team_blue, "%L", LANG_PLAYER, "MAPS_NOM", g_szPrefix, id, szMap);
 	}
 
-	menu_destroy(hMenu);
 	return PLUGIN_HANDLED;
 }
