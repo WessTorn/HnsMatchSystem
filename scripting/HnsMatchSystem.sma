@@ -167,7 +167,7 @@ public fwdPreThink(id) {
 	if(!is_user_alive(id))
 		return FMRES_IGNORED;
 
-	if(g_iCurrentMode == MODE_MIX) {
+	if(g_iCurrentMode != MODE_TRAINING) {
 		if(pev(id, pev_waterlevel)) {
 			chat_print(0, "%l", "KILL_WATER", id);
 			user_kill(id, 1);
