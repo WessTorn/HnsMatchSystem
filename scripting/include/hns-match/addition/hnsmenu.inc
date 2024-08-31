@@ -85,6 +85,7 @@ public mainMatchMenuHandler(id, hMenu, item) {
 
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 	
 	new iKey = str_to_num(szData);
 	
@@ -146,7 +147,6 @@ public mainMatchMenuHandler(id, hMenu, item) {
 		}
 	}
 
-	menu_destroy(hMenu);
 	return PLUGIN_HANDLED;
 }
 
@@ -248,8 +248,10 @@ public settingsMatchMenu(id) {
 }
 
 public settingsMatchMenuHandler(id, hMenu, item) {
-	if (!is_user_connected(id))
+	if (!is_user_connected(id)) {
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
+	}
 
 	if (item == MENU_EXIT) {
 		menu_destroy(hMenu);
@@ -258,6 +260,7 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 
 	new iKey = str_to_num(szData);
 	switch (iKey) {
@@ -344,8 +347,6 @@ public settingsMatchMenuHandler(id, hMenu, item) {
 			settingsMatchMenu(id);
 		}
 	}
-
-	menu_destroy(hMenu);
 	return PLUGIN_HANDLED;
 }
 
@@ -375,9 +376,10 @@ public verifMenuHandler(id, hMenu, item) {
 		return PLUGIN_HANDLED;
 	}
 
+	menu_destroy(hMenu);
+
 	switch (item) {
 		case 0: {
-			menu_destroy(hMenu);
 			return PLUGIN_HANDLED;
 		}
 		case 1: {

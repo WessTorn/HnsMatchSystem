@@ -326,11 +326,13 @@ public hns_training_menu(id) {
 
 public hns_training_menu_code(id, hMenu, item) {
 	if (item == MENU_EXIT) {
+		menu_destroy(hMenu);
 		return PLUGIN_HANDLED;
 	}
 
 	new szData[6], szName[64], iAccess, iCallback;
 	menu_item_getinfo(hMenu, item, iAccess, szData, charsmax(szData), szName, charsmax(szName), iCallback);
+	menu_destroy(hMenu);
 
 	new iKey = str_to_num(szData);
 	switch (iKey) {
@@ -359,8 +361,6 @@ public hns_training_menu_code(id, hMenu, item) {
 			cmdWeapons(id);
 		}
 	}
-
-	menu_destroy(hMenu);
 	hns_training_menu(id);
 
 	return PLUGIN_HANDLED;
