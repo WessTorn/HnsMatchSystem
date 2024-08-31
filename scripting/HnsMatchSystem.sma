@@ -19,6 +19,9 @@ public plugin_init() {
 
 	register_forward(FM_EmitSound, "fwdEmitSoundPre", 0);
 	register_forward(FM_ClientKill, "fwdClientKill");
+	if(equali(g_szMapName, "de_piranesi")) {
+		register_forward(FM_PlayerPreThink, "fwdPreThink");
+	}
 
 	RegisterHookChain(RG_CSGameRules_GetPlayerSpawnSpot, "rgPlayerSpawnPost", true);
 
@@ -147,6 +150,19 @@ public fwdClientKill(id) {
 		return FMRES_SUPERCEDE;
 	} else {
 		chat_print(0, "%l", "KILL_HIMSELF", id);
+	}
+	return FMRES_IGNORED;
+}
+
+public fwdPreThink(id) {
+	if(!is_user_alive(id))
+		return FMRES_IGNORED;
+
+	if(g_iCurrentMode == MODE_MIX) {
+		if(pev(id, pev_waterlevel)) {
+			chat_print(0, "%l", "KILL_WATER", id);
+			user_kill(id, 1);
+		}
 	}
 	return FMRES_IGNORED;
 }

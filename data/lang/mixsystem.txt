@@ -10,6 +10,7 @@ SET_WINTIME     = ^3%n^1 set ^3wintime^1 to ^3%d^1 minutes.
 KILL_HIMSELF    = ^3%n^1 killed himself.
 KILL_NOT        = Kill during deathmatch is not available.
 KILL_NOT_MIX    = You need to play ^31.5^1 minutes to kill yourself.
+KILL_WATER      = ^3%n^1 dropped in water.
 
 SUR_WAIT        = Wait ^3%s^1 for surrender!
 SUR_PLAYER      = Player ^3%n^1 (^3%s^1) started vote for surrender!
@@ -193,6 +194,7 @@ SET_WINTIME     = ^3%n^1 установил ^3wintime^1 на ^3%d^1 минут.
 KILL_HIMSELF    = ^3%n^1 убил сам себя.
 KILL_NOT        = Не доступно для режима ДМ.
 KILL_NOT_MIX    = Вам необходимо отыграть ^31.5^1 минуты, чтобы убить самого себя.
+KILL_WATER      = ^3%n^1 упал в воду.
 
 SUR_WAIT        = Подождите ^3%s^1 чтобы сдаться!
 SUR_PLAYER      = Игрок ^3%n^1 (^3%s^1) захотел сдаться!
