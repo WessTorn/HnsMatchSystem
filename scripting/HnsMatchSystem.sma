@@ -20,9 +20,6 @@ public plugin_init() {
 	register_forward(FM_EmitSound, "fwdEmitSoundPre", 0);
 	register_forward(FM_ClientKill, "fwdClientKill");
 	register_forward(FM_GetGameDescription, "fwdGameNameDesc");
-	if(equali(g_szMapName, "de_piranesi")) {
-		register_forward(FM_PlayerPreThink, "fwdPreThink");
-	}
 
 	RegisterHookChain(RG_CSGameRules_GetPlayerSpawnSpot, "rgPlayerSpawnPost", true);
 
@@ -161,19 +158,6 @@ public fwdGameNameDesc()
 	get_pcvar_string(pCvar[GAMENAME], gamename, 31);
 	forward_return(FMV_STRING, gamename);
 	return FMRES_SUPERCEDE;
-}
-
-public fwdPreThink(id) {
-	if(!is_user_alive(id))
-		return FMRES_IGNORED;
-
-	if(g_iCurrentMode != MODE_TRAINING) {
-		if(pev(id, pev_waterlevel)) {
-			chat_print(0, "%l", "KILL_WATER", id);
-			user_kill(id, 1);
-		}
-	}
-	return FMRES_IGNORED;
 }
 
 public rgPlayerSpawnPost() {
