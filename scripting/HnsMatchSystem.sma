@@ -302,9 +302,10 @@ public client_disconnected(id) {
 
 public Knife_PrimaryAttack(ent)
 {
-	new id = get_member(ent, m_pPlayer);
+	//new id = get_member(ent, m_pPlayer); // TODO
+	/* get_member(id, m_iTeam) == _:CS_TEAM_CT */ // Условие тоже TODO
 
-	if (get_member(id, m_iTeam) == _:CS_TEAM_CT || g_iCurrentGameplay == GAMEPLAY_KNIFE)
+	if (g_iCurrentMode || g_iCurrentGameplay == GAMEPLAY_KNIFE)
 	{
 		ExecuteHamB(Ham_Weapon_SecondaryAttack, ent);
 		return HAM_SUPERCEDE;
