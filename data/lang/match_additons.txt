@@ -76,8 +76,8 @@ SPECHIDE_OFF = %s Spechide is now ^3disabled^1.
 
 DMG_SPAM = %s Please wait ^3%.1f^1 seconds between commands!
 DMG_ERR = %s There is no OR multiple players with matching pattern -> ^3%s^1.
-DMG_SHOW_ROUND = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 HP - ^3this round^1, ^3%.1f^1 seconds ago.
-DMG_SHOW = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 HP - ^3not this round^1, ^3%.1f^1 seconds ago.
+DMG_SHOW_ROUND = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 HP - ^3This round^1, ^3%.1f^1 seconds ago.
+DMG_SHOW = %s ^3%n^1's fall damage ^3%.0f^1 HP - before ^3%.0f^1 HP - ^3Not this round^1, ^3%.1f^1 seconds ago.
 
 [ru]
 
@@ -139,8 +139,8 @@ TRNING_ANGLES_ON = %s Сохранение прицела ^3включено^1!
 TRNING_ANGLES_OFF = %s Сохранение прицела ^3выключено^1!
 TRNING_CLIP_ON = %s Ноклип ^3включен^1!
 TRNING_CLIP_OFF = %s Ноклип ^3выключен^1!
-TRNING_INVIS_ON = %s Невидимные игроки ^3включено^1!
-TRNING_INVIS_OFF = %s Невидимные игроки ^3выключено^1!
+TRNING_INVIS_ON = %s Невидимые игроки ^3включено^1!
+TRNING_INVIS_OFF = %s Невидимые игроки ^3выключено^1!
 TRNING_DMG = %s Вы получили ^3%i^1 урона.
 
 HNS_OWNAGE_MIX = %n запрыгнул на голову %n! [#%d]
@@ -161,5 +161,5 @@ SPECHIDE_OFF = %s Спрятаться в списке наблюдателей:
 
 DMG_SPAM = %s Пожалуйста, подождите ^3%.1f^1 секунды между командами!
 DMG_ERR = %s Не существует ИЛИ нескольких игроков с совпадающим шаблоном -> ^3%s^1.
-DMG_SHOW_ROUND = %s ^3%n^1 потерял ^3%.0f^1 HP - до ^3%.0f^1 HP - ^3в этом раунде^1, ^3%.1f^1 секунд назад.
-DMG_SHOW = %s ^3%n^1 потерял ^3%.0f^1 HP - до ^3%.0f^1 HP - ^3не в этом раунде^1, ^3%.1f^1 секунд назад.
+DMG_SHOW_ROUND = %s ^3%n^1 потерял ^3%.0f^1 HP - до ^3%.0f^1 HP - ^3В этом раунде^1, ^3%.1f^1 секунд назад.
+DMG_SHOW = %s ^3%n^1 потерял ^3%.0f^1 HP - до ^3%.0f^1 HP - ^3Не в этом раунде^1, ^3%.1f^1 секунд назад.

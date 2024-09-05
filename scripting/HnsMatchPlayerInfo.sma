@@ -87,7 +87,7 @@ public client_disconnected(id) {
 
 public rgPlayerSpawn(id) {
 	if (g_eSpecPlayers[id][IS_SPEC]) {
-		arrayset(g_eSpecPlayers[id], 0, SPEC_DATA);
+		arrayset(g_eSpecPlayers[id][IS_SPEC], 0, SPEC_DATA);
 	}
 }
 

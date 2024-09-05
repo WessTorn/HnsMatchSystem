@@ -19,6 +19,7 @@ public plugin_init() {
 
 	register_forward(FM_EmitSound, "fwdEmitSoundPre", 0);
 	register_forward(FM_ClientKill, "fwdClientKill");
+	register_forward(FM_GetGameDescription, "fwdGameNameDesc");
 
 	RegisterHookChain(RG_CSGameRules_GetPlayerSpawnSpot, "rgPlayerSpawnPost", true);
 
@@ -149,6 +150,14 @@ public fwdClientKill(id) {
 		chat_print(0, "%l", "KILL_HIMSELF", id);
 	}
 	return FMRES_IGNORED;
+}
+
+public fwdGameNameDesc()
+{
+	static gamename[32];
+	get_pcvar_string(pCvar[GAMENAME], gamename, 31);
+	forward_return(FMV_STRING, gamename);
+	return FMRES_SUPERCEDE;
 }
 
 public rgPlayerSpawnPost() {

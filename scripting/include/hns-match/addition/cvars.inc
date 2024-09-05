@@ -16,7 +16,8 @@ enum _: CVARS
 	SURTIMEDELAY,
 	RANDOMPICK,
 	KNIFEMAP[24],
-	PREFIX[24]
+	PREFIX[24],
+	GAMENAME
 }
 
 new pCvar[CVARS];
@@ -69,6 +70,9 @@ stock cvars_init() {
 
 	pCvar[PREFIX] = create_cvar("hns_prefix", "Match", FCVAR_NONE, "System prefix");
 	bind_pcvar_string(pCvar[PREFIX], g_iSettings[PREFIX], charsmax(g_iSettings[PREFIX]));
+
+	pCvar[GAMENAME] = create_cvar("hns_gamename", "Hide'n'Seek", FCVAR_NONE, "Game name");
+	bind_pcvar_string(pCvar[GAMENAME], g_iSettings[GAMENAME], charsmax(g_iSettings[GAMENAME]));
 }
 
 stock Float:get_round_time() {
