@@ -470,7 +470,7 @@ public task_ShowPlayerInfo() {
 				}
 			}
 
-			if (hns_get_mode() == MODE_MIX && hns_get_state() != STATE_PAUSED) {
+			if (hns_get_mode() == MODE_MIX && hns_get_state() != STATE_PAUSED) { // TODO (fix dlya RULES_DUEL)
 				new szTime[24];
 				fnConvertTime(hns_get_stats_surv(STATS_ALL, show_id), szTime, charsmax(szTime), false);
 				iLen += format(szHudMess[iLen], sizeof szHudMess - iLen, "\
