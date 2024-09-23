@@ -110,6 +110,8 @@ forward hns_round_freezeend();
 
 forward hns_round_end();
 
+forward hns_captain_sets(iCapFirst, iCapSecond);
+
 stock RegisterSayCmd(const szCmd[], const szShort[], const szFunc[], flags = -1, szInfo[] = "") {
 	new szTemp[65], szInfoLang[65];
 	format(szInfoLang, 64, "%L", LANG_SERVER, szInfo);

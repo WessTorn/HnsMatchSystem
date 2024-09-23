@@ -72,6 +72,8 @@ public forward_init() {
 	g_hForwards[HNS_ROUND_START] = CreateMultiForward("hns_round_start", ET_CONTINUE);
 	g_hForwards[HNS_ROUND_FREEZEEND] = CreateMultiForward("hns_round_freezeend", ET_CONTINUE);
 	g_hForwards[HNS_ROUND_END] = CreateMultiForward("hns_round_end", ET_CONTINUE);
+
+	g_hForwards[HNS_CAPTAIN_SETS] = CreateMultiForward("hns_captain_sets", ET_CONTINUE, FP_CELL, FP_CELL);
 }
 
 public plugin_natives() {

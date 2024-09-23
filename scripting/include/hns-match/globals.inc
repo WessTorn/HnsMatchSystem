@@ -92,7 +92,8 @@ enum _: Forwards {
 	MATCH_CANCEL,
 	HNS_ROUND_START,
 	HNS_ROUND_END,
-	HNS_ROUND_FREEZEEND
+	HNS_ROUND_FREEZEEND,
+	HNS_CAPTAIN_SETS
 };
 
 new g_hForwards[Forwards];

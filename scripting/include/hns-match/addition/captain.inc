@@ -130,6 +130,8 @@ public chooseCapsHandler(id, hMenu, item) {
 			rg_set_user_team(g_eCaptain[e_cTT], TEAM_TERRORIST);
 			rg_set_user_team(g_eCaptain[e_cCT], TEAM_CT);
 
+			ExecuteForward(g_hForwards[MATCH_FINISH], _, g_eCaptain[e_cTT], g_eCaptain[e_cCT]);
+
 			g_iMatchStatus = MATCH_CAPTAINKNIFE;
 
 			kniferound_start();
