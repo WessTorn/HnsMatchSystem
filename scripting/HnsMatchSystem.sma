@@ -82,6 +82,11 @@ public plugin_natives() {
 
 	register_native("hns_get_status", "native_get_status");
 	register_native("hns_get_state", "native_get_state");
+
+	register_native("hns_get_rules", "native_get_rules");
+
+	//register_native("hns_get_score_tt", "native_get_score_TT");
+	//register_native("hns_get_score_ct", "native_get_score_CT");
 }
 
 public native_get_prefix(amxx, params) {
@@ -126,6 +131,28 @@ public MATCH_STATUS:native_get_status(amxx, params) {
 public MODE_STATES:native_get_state(amxx, params) {
 	return g_eMatchState;
 }
+
+public NATCH_RULES:native_get_rules(amxx, params) {
+	return g_iCurrentRules;
+}
+
+/* public native_get_score_TT(amxx, params) {
+  if (g_isTeamTT == HNS_TEAM_A) {
+    return g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A];
+    } else {
+    return g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B];
+  }
+}*/
+
+//TEST NATIVES
+
+/*public native_get_score_CT(amxx, params) {
+  if (g_isTeamTT == HNS_TEAM_A) {
+	return g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B];
+  }	 else {
+    return g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A];
+  }
+} */
 
 public fwdEmitSoundPre(id, iChannel, szSample[], Float:volume, Float:attenuation, fFlags, pitch) {
 	if (equal(szSample, "weapons/knife_deploy1.wav")) {

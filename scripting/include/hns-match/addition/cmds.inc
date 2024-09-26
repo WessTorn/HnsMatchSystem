@@ -686,25 +686,32 @@ public cmdShowTimers(id) {
 			new hnsteamname[HNS_TEAM];
 	
 			get_players(iPlayers, iNum, "ch");
-			for (new j; j < iNum; j++)
-			{
-				if (getUserTeam(iPlayers[j]) == TEAM_TERRORIST && g_isTeamTT == HNS_TEAM_A && g_ePlayerData[iPlayers[j]][PLAYER_MATCH]) {
-					hnsteamname[HNS_TEAM_A] = iPlayers[j];
-				}
-				else if (getUserTeam(iPlayers[j]) == TEAM_CT && HNS_TEAM:!g_isTeamTT == HNS_TEAM_B && g_ePlayerData[iPlayers[j]][PLAYER_MATCH]) {
-					hnsteamname[HNS_TEAM_B] = iPlayers[j];
+
+			for (new j; j < iNum; j++) {
+				if (!g_ePlayerData[iPlayers[j]][PLAYER_MATCH]) {
+					continue;                }
+				if (g_isTeamTT == HNS_TEAM_A) {
+					if (getUserTeam(iPlayers[j]) == TEAM_TERRORIST) {                        
+						hnsteamname[HNS_TEAM_A] = iPlayers[j];
+					} else if (getUserTeam(iPlayers[j]) == TEAM_CT) {                        
+						hnsteamname[HNS_TEAM_B] = iPlayers[j];
+					}               
+				} else {
+					if (getUserTeam(iPlayers[j]) == TEAM_CT) {                        
+						hnsteamname[HNS_TEAM_A] = iPlayers[j];
+					} else if (getUserTeam(iPlayers[j]) == TEAM_TERRORIST) {                       
+						hnsteamname[HNS_TEAM_B] = iPlayers[j];
+					}                
 				}
 			}	
 
-
-			if (is_user_connected(hnsteamname[HNS_TEAM_A]) && is_user_connected(hnsteamname[HNS_TEAM_B])){
+			if(is_user_connected(hnsteamname[HNS_TEAM_A]) && is_user_connected(hnsteamname[HNS_TEAM_B])) { // TODO
 				if (g_isTeamTT == HNS_TEAM_A) {
 					chat_print(id, "%L", id, "SCORE_DUEL", hnsteamname[HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], hnsteamname[HNS_TEAM_B]);
 				} else {
 					chat_print(id, "%L", id, "SCORE_DUEL", hnsteamname[HNS_TEAM_B], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], hnsteamname[HNS_TEAM_A]);
-				}	
-			}
-			else {
+				}
+			}  else {
 				if (g_isTeamTT == HNS_TEAM_A) {
 					chat_print(id, "%L", id, "SCORE_DUEL_DEF", g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_A], g_eMatchInfo[e_iRoundsPlayed][HNS_TEAM_B]);
 				} else {
