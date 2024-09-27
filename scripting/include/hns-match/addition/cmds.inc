@@ -180,10 +180,10 @@ public cmdDuelMode(id) {
 		return PLUGIN_HANDLED;
 	}
 
-/* 	if (get_num_players_in_match() > 2) { TODO
+	if (get_num_players_in_match() > 2) {
 		chat_print(0, "%l", "MODE_NOT_SET_DUEL");
 		return PLUGIN_HANDLED;
-	} */
+	}
 
 	chat_print(0, "%l", "MODE_SET_DUEL", id);
 	g_iCurrentRules = RULES_DUEL;
