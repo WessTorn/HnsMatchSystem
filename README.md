@@ -113,6 +113,7 @@ Counter-Strike Hide'n'Seek Match System plugins.
 - HnsMatchMaps.sma - Список карт для игроков (/maps)
 - HnsMatchTraining.sma - Трейнинг меню (Чектоинты)
 - HnsMatchWatcher.sma - Watcher система, позволяет игрокам становиться/голосовать за watcher
+- HnsMatchMapRules.sma - Плагин для установления правил для карт (убийство в воде на карте de_piranesi) 
 
 ## Cvars
 
