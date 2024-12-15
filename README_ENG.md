@@ -124,7 +124,8 @@ Counter-Strike Hide'n'Seek Match System plugins
 | hns_survotetime | 10 | Time (in seconds) for surrender |
 | hns_randompick | 1 | Enable/disable random player selection |
 | hns_knifemap | 35hp_2 | Knifemap |
-| hns_prefix | MATCH | system prefix |
+| hns_prefix | MATCH | System prefix |
+| hns_gamename | Hide'n'Seek | GameName server |
 
 ## Commands
 

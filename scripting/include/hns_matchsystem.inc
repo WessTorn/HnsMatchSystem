@@ -35,6 +35,12 @@ enum MODE_STATES
     STATE_ENABLED
 }
 
+enum NATCH_RULES {
+	RULES_MR,
+	RULES_TIMER,
+	RULES_DUEL
+}
+
 /*
 * Gets the system prefix.
 *
@@ -72,6 +78,26 @@ native MATCH_STATUS:hns_get_status();
 * @return type MODE_STATES
 */
 native MODE_STATES:hns_get_state();
+
+/*
+* Gets match rules
+*
+* @return type NATCH_RULES
+*/
+native NATCH_RULES:hns_get_rules();
+
+/* 
+* Gets score in match (For RULES_DUEL)
+*
+* @return type Score TT
+
+native hns_get_score_tt();
+
+* Gets score in match (For RULES_DUEL)
+*
+* @return type Score CT
+
+native hns_get_score_ct(); */
 
 /*
 * Called when the match play begins.

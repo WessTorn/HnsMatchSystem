@@ -26,6 +26,7 @@ DM_TRANSF       = ^3%n^1 transfered to ^3Terrorist^1.
 
 MODE_ALREADY    = This mode already started!
 MODE_NOT_MIX    = This command is not available during the match!
+MODE_NOT_SET_DUEL = You need 1 player per team to start a duel.
 MODE_SET_MR     = ^3%n^1 change mode to ^3MR^1!
 MODE_SET_WT     = ^3%n^1 change mode to ^3Wintime^1!
 MODE_SET_DUEL   = ^3%n^1 change mode to ^3Duel^1!
@@ -210,6 +211,7 @@ DM_TRANSF       = %n перенесли за ^3Террористов^1.
 
 MODE_ALREADY    = Этот режим уже запущен!
 MODE_NOT_MIX    = Эта команда недоступна во время матча!
+MODE_NOT_SET_DUEL = Чтобы начать дуэль, в каждой команде должно быть по 1 игроку.
 MODE_SET_MR     = ^3%n^1 изменил режим на ^3MR^1!
 MODE_SET_WT     = ^3%n^1 изменил режим на ^3Wintime^1!
 MODE_SET_DUEL   = ^3%n^1 изменил режим на ^3Duel^1!
