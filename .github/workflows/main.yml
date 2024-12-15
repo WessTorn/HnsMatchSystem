@@ -78,8 +78,8 @@ jobs:
       - name: Directory
         run: |
           rm -rf ./dep
-          mkdir -p cstrike/amxmodx
-          mv configs data modules scripting plugins cstrike/amxmodx/
+          mkdir -p cstrike/addons/amxmodx/
+          mv configs data modules scripting plugins cstrike/addons/amxmodx/
           
       - name: Deploy artifact
         uses: actions/upload-artifact@v4
